@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ajustes del Sistema - Finanzas</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13ec5b",
+              "background-light": "#f6f8f6",
+              "background-dark": "#102216",
+              "neutral-surface": "#ffffff",
+              "neutral-border": "#e2e8f0",
+              "neutral-text": "#1e293b",
+              "neutral-text-secondary": "#64748b",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #13ec5b;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #13ec5b;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display antialiased min-h-screen flex flex-col">
+<!-- Header / Navigation -->
+<header class="sticky top-0 z-30 flex items-center justify-between border-b border-neutral-border bg-neutral-surface/90 backdrop-blur-md px-6 py-4 dark:bg-background-dark/90 dark:border-white/10">
+<div class="flex items-center gap-4 text-neutral-text dark:text-white">
+<div class="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">Finanzas</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium text-neutral-text-secondary hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary" href="#">Dashboard</a>
+<a class="text-sm font-medium text-neutral-text-secondary hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary" href="#">Gastos</a>
+<a class="text-sm font-medium text-neutral-text-secondary hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-primary" href="#">Ingresos</a>
+<a class="text-sm font-medium text-primary dark:text-primary" href="#">Ajustes</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full p-2 text-neutral-text-secondary hover:bg-neutral-100 dark:text-gray-400 dark:hover:bg-white/5">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-10 overflow-hidden rounded-full border-2 border-white shadow-sm dark:border-gray-700 bg-cover bg-center" data-alt="User profile avatar showing a smiling man" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcn3QUQWsXr66wFokCdLKfVV9i9_AC8lD_1OvqcPreNfSM3ocALtuORFQy7wZENphqObN5yS_i4152dVwD2TVLpCTTTDebSW5_aKlblUM1GCjvr25QQ31y0MwwVDOV_n2Xe1OAmZZPLrYCr5It8Gyr1CVKfvA63MhDHtFBLOccAb4c2PUP14jt08Qz5_YP7atePc1qIJgJvlMYy9rfBMfwUgBdPYIPUr1722Otw-nHHVNesdjT3a5Ydn_SM9frN2xIIYi7V6hj8sg');"></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-5xl mx-auto px-6 py-10">
+<!-- Page Title & Intro -->
+<div class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-4xl font-extrabold text-neutral-text dark:text-white tracking-tight mb-2">Ajustes del Sistema</h1>
+<p class="text-neutral-text-secondary dark:text-gray-400 text-lg">Gestiona tu perfil, preferencias y seguridad de la cuenta.</p>
+</div>
+<!-- Breadcrumb style indicator -->
+<div class="hidden md:flex items-center gap-2 text-sm text-neutral-text-secondary dark:text-gray-500">
+<span class="material-symbols-outlined text-lg">home</span>
+<span>/</span>
+<span>Configuración</span>
+<span>/</span>
+<span class="text-primary font-semibold">General</span>
+</div>
+</div>
+<form class="flex flex-col gap-8">
+<!-- Section: Perfil -->
+<section class="bg-neutral-surface dark:bg-white/5 rounded-xl border border-neutral-border dark:border-white/10 p-6 md:p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-border dark:border-white/10">
+<span class="material-symbols-outlined text-primary text-2xl">person</span>
+<h3 class="text-xl font-bold text-neutral-text dark:text-white">Perfil Personal</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Avatar Upload -->
+<div class="md:col-span-3 flex flex-col items-center justify-center gap-3">
+<div class="relative group cursor-pointer">
+<div class="size-32 rounded-full overflow-hidden border-4 border-background-light dark:border-gray-700 shadow-md">
+<img alt="Current profile picture" class="w-full h-full object-cover transition-transform group-hover:scale-105" data-alt="Close up of a man smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCGnkgGs3siUqhG1E26vUqzC5vPlf-a5iC-pLboMwLiM7KZ_7AAov8oyJR3_gaHzfKGsnc65KaTSgxjuhw85jZuN0e5QKqbrcuYQELeXdwiv9IL-rD8Uazyc57mzm1jSUmSDAFpB3sbd_lrCOB4Z_gfLdLRZ0_-LHU221zAOpoTTlF7Mig4NiPnXTm2ccJUDk8UAXTS0bVuy53faotfeiqi4olsCmxM6DZfYqOq8rQmqMy0619CJ-YM4U_8gn6eU3db1Ltbdel4qw"/>
+</div>
+<div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white">edit</span>
+</div>
+</div>
+<button class="text-sm font-medium text-primary hover:text-green-600 transition-colors" type="button">Cambiar foto</button>
+</div>
+<!-- Fields -->
+<div class="md:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-6">
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-neutral-text dark:text-gray-200">Nombre completo</span>
+<div class="relative">
+<input class="w-full rounded-lg border-neutral-border bg-background-light px-4 py-3 text-neutral-text placeholder:text-neutral-text-secondary focus:border-primary focus:ring-1 focus:ring-primary dark:bg-black/20 dark:border-white/10 dark:text-white" type="text" value="Carlos Rodriguez"/>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-neutral-text-secondary text-lg">edit</span>
+</div>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-neutral-text dark:text-gray-200">Correo electrónico</span>
+<div class="relative">
+<input class="w-full rounded-lg border-neutral-border bg-background-light px-4 py-3 text-neutral-text placeholder:text-neutral-text-secondary focus:border-primary focus:ring-1 focus:ring-primary dark:bg-black/20 dark:border-white/10 dark:text-white" type="email" value="carlos.rod@example.com"/>
+<span class="material-symbols-outlined absolute right-3 top-3.5 text-neutral-text-secondary text-lg">mail</span>
+</div>
+</label>
+<label class="flex flex-col gap-2 md:col-span-2">
+<span class="text-sm font-semibold text-neutral-text dark:text-gray-200">Bio</span>
+<textarea class="w-full rounded-lg border-neutral-border bg-background-light px-4 py-3 text-neutral-text placeholder:text-neutral-text-secondary focus:border-primary focus:ring-1 focus:ring-primary dark:bg-black/20 dark:border-white/10 dark:text-white min-h-[80px]" placeholder="Breve descripción sobre ti..."></textarea>
+</label>
+</div>
+</div>
+</section>
+<!-- Section: Preferencias & Region -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Regional -->
+<div class="bg-neutral-surface dark:bg-white/5 rounded-xl border border-neutral-border dark:border-white/10 p-6 md:p-8 shadow-sm flex flex-col h-full">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-border dark:border-white/10">
+<span class="material-symbols-outlined text-primary text-2xl">public</span>
+<h3 class="text-xl font-bold text-neutral-text dark:text-white">Región e Idioma</h3>
+</div>
+<div class="flex flex-col gap-5 flex-1">
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-neutral-text dark:text-gray-200">Moneda principal</span>
+<select class="w-full rounded-lg border-neutral-border bg-background-light px-4 py-3 text-neutral-text focus:border-primary focus:ring-1 focus:ring-primary dark:bg-black/20 dark:border-white/10 dark:text-white">
+<option>USD - Dólar Estadounidense</option>
+<option selected="">EUR - Euro</option>
+<option>MXN - Peso Mexicano</option>
+</select>
+</label>
+<label class="flex flex-col gap-2">
+<span class="text-sm font-semibold text-neutral-text dark:text-gray-200">Idioma</span>
+<select class="w-full rounded-lg border-neutral-border bg-background-light px-4 py-3 text-neutral-text focus:border-primary focus:ring-1 focus:ring-primary dark:bg-black/20 dark:border-white/10 dark:text-white">
+<option selected="">Español (España)</option>
+<option>English (US)</option>
+<option>Français</option>
+</select>
+</label>
+</div>
+</div>
+<!-- Appearance -->
+<div class="bg-neutral-surface dark:bg-white/5 rounded-xl border border-neutral-border dark:border-white/10 p-6 md:p-8 shadow-sm flex flex-col h-full">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-border dark:border-white/10">
+<span class="material-symbols-outlined text-primary text-2xl">palette</span>
+<h3 class="text-xl font-bold text-neutral-text dark:text-white">Apariencia</h3>
+</div>
+<div class="flex flex-col gap-6 flex-1">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-base font-semibold text-neutral-text dark:text-white">Modo Oscuro</span>
+<span class="text-sm text-neutral-text-secondary dark:text-gray-400">Reduce la fatiga visual en ambientes oscuros.</span>
+</div>
+<!-- Toggle Switch Component -->
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-neutral-300 dark:border-gray-600" id="dark-mode-toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer dark:bg-gray-700" for="dark-mode-toggle"></label>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 mt-2">
+<button class="group flex flex-col items-center gap-2 p-3 rounded-lg border-2 border-primary bg-primary/5" type="button">
+<div class="w-full aspect-video bg-white rounded border border-gray-200 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-2 bg-gray-100"></div>
+<div class="absolute left-0 top-0 w-4 h-full bg-gray-50 border-r"></div>
+</div>
+<span class="text-xs font-bold text-primary">Claro</span>
+</button>
+<button class="group flex flex-col items-center gap-2 p-3 rounded-lg border border-neutral-border hover:border-primary/50 bg-background-light dark:bg-white/5 dark:border-white/10" type="button">
+<div class="w-full aspect-video bg-gray-900 rounded border border-gray-700 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 left-0 w-full h-2 bg-gray-800"></div>
+<div class="absolute left-0 top-0 w-4 h-full bg-gray-800 border-r border-gray-700"></div>
+</div>
+<span class="text-xs font-medium text-neutral-text-secondary group-hover:text-primary dark:text-gray-400">Oscuro</span>
+</button>
+<button class="group flex flex-col items-center gap-2 p-3 rounded-lg border border-neutral-border hover:border-primary/50 bg-background-light dark:bg-white/5 dark:border-white/10" type="button">
+<div class="w-full aspect-video bg-gradient-to-br from-white to-gray-900 rounded border border-gray-300 shadow-sm relative overflow-hidden">
+</div>
+<span class="text-xs font-medium text-neutral-text-secondary group-hover:text-primary dark:text-gray-400">Auto</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Notificaciones -->
+<section class="bg-neutral-surface dark:bg-white/5 rounded-xl border border-neutral-border dark:border-white/10 p-6 md:p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-border dark:border-white/10">
+<span class="material-symbols-outlined text-primary text-2xl">notifications_active</span>
+<h3 class="text-xl font-bold text-neutral-text dark:text-white">Notificaciones</h3>
+</div>
+<div class="space-y-6">
+<!-- Item 1 -->
+<div class="flex items-center justify-between">
+<div class="flex items-start gap-3">
+<div class="mt-1 hidden sm:block p-2 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
+<span class="material-symbols-outlined text-base">calendar_month</span>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-semibold text-neutral-text dark:text-white">Recordatorios de pago mensual</span>
+<span class="text-sm text-neutral-text-secondary dark:text-gray-400">Recibe una alerta 3 días antes de tus pagos recurrentes.</span>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-neutral-300 dark:border-gray-600" id="notif1" name="notif1" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer dark:bg-gray-700" for="notif1"></label>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between">
+<div class="flex items-start gap-3">
+<div class="mt-1 hidden sm:block p-2 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+<span class="material-symbols-outlined text-base">warning</span>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-semibold text-neutral-text dark:text-white">Alertas de presupuesto excedido</span>
+<span class="text-sm text-neutral-text-secondary dark:text-gray-400">Te avisaremos cuando gastes más del 80% de un presupuesto.</span>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-neutral-300 dark:border-gray-600" id="notif2" name="notif2" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer dark:bg-gray-700" for="notif2"></label>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between">
+<div class="flex items-start gap-3">
+<div class="mt-1 hidden sm:block p-2 rounded-full bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400">
+<span class="material-symbols-outlined text-base">campaign</span>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-semibold text-neutral-text dark:text-white">Novedades y promociones</span>
+<span class="text-sm text-neutral-text-secondary dark:text-gray-400">Noticias sobre nuevas funcionalidades de la app.</span>
+</div>
+</div>
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-neutral-300 dark:border-gray-600" id="notif3" name="notif3" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer dark:bg-gray-700" for="notif3"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Footer -->
+<div class="sticky bottom-0 z-20 mt-8 flex items-center justify-end gap-4 rounded-t-xl border-t border-neutral-border bg-neutral-surface/95 backdrop-blur-sm p-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] dark:bg-background-dark/95 dark:border-white/10">
+<button class="px-6 py-3 text-base font-medium text-neutral-text-secondary hover:text-neutral-text transition-colors dark:text-gray-400 dark:hover:text-white" type="button">
+                    Cancelar
+                </button>
+<button class="flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-base font-bold text-neutral-900 shadow-md shadow-primary/20 hover:bg-green-400 transition-all hover:shadow-lg hover:shadow-primary/30 active:scale-95" type="submit">
+<span class="material-symbols-outlined text-xl">save</span>
+                    Guardar cambios
+                </button>
+</div>
+</form>
+</main>
+</body></html>

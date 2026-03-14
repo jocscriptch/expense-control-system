@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - Sistema de Gastos</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f8fcf9",
+                        "background-dark": "#102216",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a2c20",
+                        "text-main": "#0d1b12",
+                        "text-sub": "#4c9a66",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for better look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex text-text-main dark:text-gray-100 transition-colors duration-200">
+<div class="flex w-full min-h-screen overflow-hidden relative">
+<!-- Left Side: Illustration Panel -->
+<div class="hidden lg:flex lg:w-1/2 relative bg-surface-light dark:bg-surface-dark items-center justify-center p-12 overflow-hidden border-r border-[#e7f3eb] dark:border-gray-800">
+<!-- Decorative abstract circles/gradients -->
+<div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"></div>
+<div class="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-blue-100/30 dark:from-blue-900/20 via-transparent to-transparent"></div>
+<div class="relative z-10 flex flex-col items-center max-w-lg text-center">
+<div class="mb-8 w-full aspect-square max-w-[400px] rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 ring-1 ring-black/5 bg-cover bg-center" data-alt="Plant growing from coins jar on table symbolizing savings" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAbqzLzEqAIpsgk3jMmR3Ah2TJncffNmGGB38DF7xW4GZH4kdW5lSv7Ok8kbT-PzhLJ2_P1xOpxkdZFdNPyUlGrHSNaiOnaNZaE3Qp5MpjVib5WS1XhWXxIRQ2LtbZnK1hpSWAuO-FcvhKN3oA6dGPjJjctVMGLbF1yGhI89soUbXb4-Au2Jc7Q_9RJgKt4Q15g5Fv7ICtK7pVPp0OtX1cTI6atRyruPwdb6MOy7g6Epy7KinX3uYGoAwx4aiqto3vdagn1ODQQZx8');">
+</div>
+<h3 class="text-2xl font-bold tracking-tight text-text-main dark:text-white mb-3">
+                    Control total de tus finanzas
+                </h3>
+<p class="text-gray-500 dark:text-gray-400 text-lg leading-relaxed">
+                    Gestiona tu presupuesto familiar de manera inteligente y visualiza tu crecimiento mes a mes.
+                </p>
+</div>
+</div>
+<!-- Right Side: Login Form -->
+<div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 xl:p-24 relative">
+<!-- Mobile decorative background -->
+<div class="absolute inset-0 lg:hidden pointer-events-none overflow-hidden">
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-100/40 rounded-full blur-3xl"></div>
+</div>
+<div class="w-full max-w-[440px] flex flex-col gap-8 relative z-10">
+<!-- Header -->
+<header class="flex flex-col gap-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-[#0d1b12]">
+<span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+</div>
+<span class="font-bold text-lg tracking-tight">Sistema de Gastos</span>
+</div>
+<h1 class="text-3xl sm:text-4xl font-black tracking-[-0.02em] text-[#0d1b12] dark:text-white">
+                        Bienvenida
+                    </h1>
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal">
+                        Organiza tus gastos y entiende en qué se va tu dinero.
+                    </p>
+</header>
+<!-- Form -->
+<form action="#" class="flex flex-col gap-5" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="space-y-2">
+<label class="text-sm font-medium text-[#0d1b12] dark:text-gray-200 block" for="email">
+                            Correo electrónico
+                        </label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+</div>
+<input class="block w-full rounded-lg border-gray-200 bg-white dark:bg-surface-dark dark:border-gray-700 text-base text-[#0d1b12] dark:text-white py-3 pl-10 pr-4 placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm transition-all duration-200 ease-in-out" id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="text-sm font-medium text-[#0d1b12] dark:text-gray-200 block" for="password">
+                                Contraseña
+                            </label>
+<a class="text-sm font-medium text-primary hover:text-green-600 dark:hover:text-green-400 transition-colors" href="#">
+                                ¿Olvidaste tu contraseña?
+                            </a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<input class="block w-full rounded-lg border-gray-200 bg-white dark:bg-surface-dark dark:border-gray-700 text-base text-[#0d1b12] dark:text-white py-3 pl-10 pr-12 placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary shadow-sm transition-all duration-200 ease-in-out" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility_off</span>
+</button>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="mt-2 w-full flex items-center justify-center rounded-lg bg-primary hover:bg-[#0fd650] active:bg-[#0cb844] text-[#0d1b12] h-12 px-6 text-sm sm:text-base font-bold tracking-wide shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 transform active:scale-[0.99]" type="submit">
+                        Iniciar sesión
+                    </button>
+</form>
+<!-- Social Login Divider (Optional but common in modern UI) -->
+<div class="relative flex py-2 items-center">
+<div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+<span class="flex-shrink-0 mx-4 text-gray-400 text-xs uppercase tracking-wider font-medium">O continúa con</span>
+<div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 h-10 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+<svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-200">Google</span>
+</button>
+<button class="flex items-center justify-center gap-2 h-10 bg-white dark:bg-surface-dark border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group">
+<svg aria-hidden="true" class="w-5 h-5 text-black dark:text-white group-hover:scale-110 transition-transform" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-sm font-medium text-gray-700 dark:text-gray-200">GitHub</span>
+</button>
+</div>
+<!-- Footer -->
+<div class="text-center mt-4">
+<p class="text-sm text-gray-500 dark:text-gray-400">
+                        ¿No tienes cuenta?
+                        <a class="font-bold text-[#0d1b12] dark:text-white hover:text-primary dark:hover:text-primary transition-colors inline-flex items-center gap-1 group" href="#">
+                            Crear cuenta
+                            <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</p>
+</div>
+</div>
+<!-- Bottom Help Link -->
+<div class="absolute bottom-6 w-full text-center">
+<a class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" href="#">Privacidad y Términos</a>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,26 +1,74 @@
 @import "tailwindcss";
 
+/* ============ Design Tokens ============ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* Primary */
+  --color-primary: #13ec5b;
+  --color-primary-hover: #0fd650;
+  --color-primary-active: #0cb844;
+  --color-primary-foreground: #0d1b12;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Backgrounds */
+  --color-bg-light: #f8fcf9;
+  --color-bg-dark: #102216;
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1a2c20;
+
+  /* Text */
+  --color-text-main: #0d1b12;
+  --color-text-sub: #4c9a66;
+
+  /* General */
+  --background: #f8fcf9;
+  --foreground: #0d1b12;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #102216;
+    --foreground: #f1f5f2;
   }
 }
 
+/* ============ Tailwind Theme ============ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-primary-active: var(--color-primary-active);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-surface-light: var(--color-surface-light);
+  --color-surface-dark: var(--color-surface-dark);
+  --color-text-main: var(--color-text-main);
+  --color-text-sub: var(--color-text-sub);
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* ============ Base ============ */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ============ Scrollbar ============ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============ Focus Styles ============ */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }

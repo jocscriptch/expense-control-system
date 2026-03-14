@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reportes y Análisis</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased min-h-screen flex flex-col">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 md:px-10">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Finanzas</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Gastos</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Ingresos</a>
+<a class="text-primary text-sm font-medium leading-normal" href="#">Reportes</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Configuración</a>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBpmuoBg3wW1ArWp6o5BaMWop75eqn7OxnKSlT9yc-9FhqarYMTeTg1Khs_yO1Rd9GZ2vmwFPScz8O9xWVO5Cs8nE0i0_4IVqCQUe6KktDuzqwqvCQ_6woe2hrBH0Ayg_0Zg_6_REk_3JRgY2F88btQ78qNh4ebYOUucBNJwULaWkwx6wK9CLZW_2rqbDJTqd4ynOZW7lOObB6Zg5C4fKryzg117PDhK5JUo6Nawgnh6_nS9VS-JH5H2182v5baDVLEivts6-5j1dw");'></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex flex-1 justify-center py-5 px-4 md:px-10 lg:px-20">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1 w-full gap-6">
+<!-- Header & Period Selector -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-tight">Reportes y Análisis</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal">Visualiza el rendimiento de tus finanzas personales.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+<!-- Period Selector -->
+<div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg self-start">
+<label class="cursor-pointer">
+<input class="peer sr-only" name="period" type="radio"/>
+<span class="block px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-md peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary peer-checked:shadow-sm transition-all hover:text-slate-700 dark:hover:text-slate-200">Semana</span>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="period" type="radio"/>
+<span class="block px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-md peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary peer-checked:shadow-sm transition-all hover:text-slate-700 dark:hover:text-slate-200">Mes</span>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="period" type="radio"/>
+<span class="block px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-md peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary peer-checked:shadow-sm transition-all hover:text-slate-700 dark:hover:text-slate-200">Año</span>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="period" type="radio"/>
+<span class="block px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-md peer-checked:bg-white dark:peer-checked:bg-slate-700 peer-checked:text-primary peer-checked:shadow-sm transition-all hover:text-slate-700 dark:hover:text-slate-200">Personalizado</span>
+</label>
+</div>
+<!-- Actions -->
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                    PDF
+                                </button>
+<button class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-lg">csv</span>
+                                    CSV
+                                </button>
+</div>
+</div>
+</div>
+<!-- Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Total Period -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-2 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl text-primary">payments</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Total del periodo</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">$12,450.00</h3>
+</div>
+<div class="mt-2 flex items-center gap-1 text-sm">
+<span class="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-medium flex items-center">
+<span class="material-symbols-outlined text-sm mr-1">trending_up</span>
+                                    2.4%
+                                </span>
+<span class="text-slate-400">vs. periodo anterior</span>
+</div>
+</div>
+<!-- Top Categories -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-3">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Top 3 categorías</p>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Hogar</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$4,200</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-blue-400"></div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Comida</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$3,150</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-purple-400"></div>
+<span class="text-sm font-semibold text-slate-700 dark:text-slate-200">Transporte</span>
+</div>
+<span class="text-sm font-bold text-slate-900 dark:text-white">$1,800</span>
+</div>
+</div>
+</div>
+<!-- Comparison -->
+<div class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Ahorro vs Anterior</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-bold text-primary tracking-tight">+$1,200.00</h3>
+</div>
+<div class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                                Has gastado <span class="font-bold text-slate-900 dark:text-white">12% menos</span> que el mes pasado a estas alturas.
+                            </div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 mt-3 overflow-hidden">
+<div class="bg-primary h-2 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Bar Chart (Spending Trend) -->
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Tendencia del gasto</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Últimos 6 meses</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-green-50 dark:bg-green-900/20 rounded-full text-green-700 dark:text-green-300 text-xs font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                    +5% Proyección
+                                </div>
+</div>
+<div class="flex-1 flex items-end justify-between gap-2 sm:gap-4 min-h-[250px] pb-2 px-2">
+<!-- Bar Item -->
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary/30 group-hover:bg-primary/50 transition-all duration-300 rounded-t-lg relative" style="height: 45%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 transition-opacity">$5,400</div>
+</div>
+</div>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Ene</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary/30 group-hover:bg-primary/50 transition-all duration-300 rounded-t-lg relative" style="height: 65%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 transition-opacity">$7,800</div>
+</div>
+</div>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Feb</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary/30 group-hover:bg-primary/50 transition-all duration-300 rounded-t-lg relative" style="height: 55%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 transition-opacity">$6,200</div>
+</div>
+</div>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Mar</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary/40 group-hover:bg-primary/60 transition-all duration-300 rounded-t-lg relative" style="height: 80%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 transition-opacity">$9,600</div>
+</div>
+</div>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Abr</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary/40 group-hover:bg-primary/60 transition-all duration-300 rounded-t-lg relative" style="height: 40%;">
+<div class="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10 transition-opacity">$4,800</div>
+</div>
+</div>
+<span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">May</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1 group cursor-pointer">
+<div class="relative w-full bg-slate-100 dark:bg-slate-800 rounded-t-lg h-48 flex items-end justify-center overflow-hidden">
+<div class="w-full bg-primary shadow-[0_0_15px_rgba(19,236,91,0.4)] rounded-t-lg relative" style="height: 90%;">
+<div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap font-bold shadow-lg">$12,450</div>
+</div>
+</div>
+<span class="text-xs font-bold text-slate-900 dark:text-white uppercase">Jun</span>
+</div>
+</div>
+</div>
+<!-- Pie Chart (Category Distribution) -->
+<div class="lg:col-span-1 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">Distribución</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Por categorías este mes</p>
+<div class="flex-1 flex flex-col items-center justify-center relative min-h-[220px]">
+<!-- Donut Chart SVG representation -->
+<div class="relative size-48">
+<svg class="size-full rotate-[-90deg]" viewbox="0 0 36 36">
+<!-- Background Circle -->
+<path class="text-slate-100 dark:text-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.8"></path>
+<!-- Segment 1 (Primary - Hogar) - ~35% -->
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="35, 100" stroke-width="3.8"></path>
+<!-- Segment 2 (Blue - Comida) - ~25% -->
+<path class="text-blue-400" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="25, 100" stroke-dashoffset="-35" stroke-width="3.8"></path>
+<!-- Segment 3 (Purple - Transporte) - ~15% -->
+<path class="text-purple-400" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="15, 100" stroke-dashoffset="-60" stroke-width="3.8"></path>
+<!-- Segment 4 (Gray - Otros) - ~25% -->
+<path class="text-slate-300 dark:text-slate-600" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="25, 100" stroke-dashoffset="-75" stroke-width="3.8"></path>
+</svg>
+<!-- Inner Text -->
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xs text-slate-500 dark:text-slate-400 font-medium">Mayor gasto</span>
+<span class="text-xl font-black text-slate-900 dark:text-white">35%</span>
+<span class="text-[10px] uppercase font-bold text-primary mt-1">Hogar</span>
+</div>
+</div>
+</div>
+<!-- Legend -->
+<div class="mt-6 grid grid-cols-2 gap-2 text-sm">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-primary"></span>
+<span class="text-slate-600 dark:text-slate-300">Hogar</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-blue-400"></span>
+<span class="text-slate-600 dark:text-slate-300">Comida</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-purple-400"></span>
+<span class="text-slate-600 dark:text-slate-300">Transporte</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-slate-300 dark:bg-slate-600">Otros</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Insight -->
+<div class="flex items-start gap-4 p-4 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md">
+<div class="p-2 bg-primary/20 rounded-full text-primary dark:text-green-600 shrink-0">
+<span class="material-symbols-outlined">lightbulb</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-2">
+<div>
+<h4 class="font-bold text-base">Insight Semanal</h4>
+<p class="text-sm text-slate-300 dark:text-slate-600 font-medium">Este mes gastaste más en: <span class="text-primary dark:text-green-600 font-bold">Transporte</span> comparado con tu promedio habitual.</p>
+</div>
+<button class="text-xs font-bold uppercase tracking-wider text-primary dark:text-green-600 hover:underline shrink-0">Ver detalles</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Comprobantes</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13ec5b",
+              "background-light": "#f6f8f6",
+              "background-dark": "#102216",
+              "surface-light": "#ffffff",
+              "surface-dark": "#183221",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for sidebar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #e5e7eb;
+            border-radius: 20px;
+        }
+        .dark .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #374151;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen flex flex-col overflow-hidden">
+<!-- Top Navigation -->
+<header class="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark px-6 py-3 z-20">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-8 flex items-center justify-center bg-primary/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">Finanzas Personales</h2>
+</div>
+<!-- Global Search -->
+<label class="hidden md:flex flex-col min-w-40 h-10 w-64 group">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-background-light dark:bg-background-dark border border-transparent group-focus-within:border-primary/50 transition-colors">
+<div class="text-slate-500 dark:text-slate-400 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg bg-transparent text-sm text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none h-full placeholder:text-slate-400 px-3" placeholder="Buscar..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden sm:flex h-10 items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 transition-colors px-4 text-slate-900 text-sm font-bold shadow-sm shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+<span>Subir Comprobante</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-surface-light dark:border-surface-dark"></span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-slate-100 dark:ring-slate-800 cursor-pointer" data-alt="User profile picture showing a smiling woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDUZDzPWyF4nimYcycG9ZAJFUcVeW8wZQw4RfUzNhWjnZ5ywWxpG3mViXtvA7MoXyY4euW3usTG9JuLYnzjtyhmXnrSX7QBFs5_mlmRwDLnJxnio54IhfDQy2tE68SGamnp0fGeUZj6ATNY4ZYJmUr6eZn8z2K4B0CR1P25zo73jnF-CkrKG4uV7tu5lZ73DIlg6cZ0NAYPBk_hj9APiuBZfvFR-fMMWjn8mC1BN3DpjQpfrvhQGNpybp3E97SG09rgplAtDKA8WXI");'></div>
+</div>
+</header>
+<!-- Main Content Wrapper -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Main Area (Gallery) -->
+<main class="flex-1 flex flex-col min-w-0 bg-background-light dark:bg-background-dark overflow-hidden">
+<!-- Filter Bar -->
+<div class="flex-none px-6 py-5 bg-surface-light dark:bg-surface-dark border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+<div>
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Gestión de Comprobantes</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Organiza y vincula tus recibos digitales.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary-dark dark:text-primary">24 archivos</span>
+<span class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">18 vinculados</span>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<!-- Date Filter -->
+<div class="relative group">
+<button class="flex h-9 items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark px-3 hover:border-primary/50 transition-colors">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium">Este Mes</span>
+<span class="material-symbols-outlined text-[18px] text-slate-400">calendar_today</span>
+</button>
+</div>
+<!-- Category Filter -->
+<div class="relative group">
+<button class="flex h-9 items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark px-3 hover:border-primary/50 transition-colors">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium">Categoría</span>
+<span class="material-symbols-outlined text-[18px] text-slate-400">expand_more</span>
+</button>
+</div>
+<!-- Status Filter -->
+<div class="relative group">
+<button class="flex h-9 items-center justify-between gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-surface-dark px-3 hover:border-primary/50 transition-colors">
+<span class="text-slate-600 dark:text-slate-300 text-sm font-medium">Estado</span>
+<span class="material-symbols-outlined text-[18px] text-slate-400">filter_list</span>
+</button>
+</div>
+<div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1"></div>
+<!-- View Toggle -->
+<div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+<button class="p-1 rounded bg-white dark:bg-surface-dark shadow-sm text-primary">
+<span class="material-symbols-outlined text-[20px] block">grid_view</span>
+</button>
+<button class="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
+<span class="material-symbols-outlined text-[20px] block">view_list</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Grid Content -->
+<div class="flex-1 overflow-y-auto p-6 custom-scroll">
+<div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
+<!-- Card: Active/Selected -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-primary shadow-sm relative">
+<!-- Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" data-alt="Close up of a receipt on a table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvZKjtLRjZGZIlEbSv5IXVtY1PjTDQddrs1hmiBkrbiwZVrEdaJrizg3PXRddgWYnZa4nOdlUmbk-kKoZNks8DVhomO5_yBDHVSQonWBsAAvAUVhkQVw2N2lE7-erSMSLJwDuxvAfLWx7TnP-KB5NUyJ0ONIVaKeb_TDs4Ok4LUSKQKeXw-b2CcVDB-qct7RIhbeNVgBXxr3v6gzklOU1zzbiIYzyhPMzojPNb32T4cTSzsVoWEUhjFHAJoDDj7kHXV9-iBf_KeZY');"></div>
+<!-- Selection Overlay -->
+<div class="absolute inset-0 bg-primary/10"></div>
+<!-- Status Badge -->
+<div class="absolute top-2 right-2">
+<span class="flex items-center justify-center size-6 rounded-full bg-primary text-slate-900 shadow-sm" title="Vinculado">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+</div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Supermercado Día</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">24 Oct • JPG</p>
+</div>
+</div>
+<!-- Card: Unlinked -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" data-alt="Person holding a credit card terminal receipt" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuArdTDZFiYD1WBFZklxfyi931YaTWggLA3_kXoWr_xL2U5BkObAvT5rxYdNmP3wCQLmn7SCwtRNxdrBe0lKjFRyeSR_UUTkssnIdxpjGAgt8pVOa1RBcxfTV0VI4ziz1GeZQTkL1RxapIiYzWr7C6LWd0Ka9tkLg9WGWXYlA85pyt64nBCF_gMLINNQR12myDI1t67PVFnkj5X39eEVMr7QdLDKB9ig1bLo-cIYmAYtuR-mLASIxfgHpO9y9j6QG2pXOHwnbFY-i18');"></div>
+<!-- Status Badge: Unlinked -->
+<div class="absolute top-2 right-2">
+<span class="flex items-center justify-center size-6 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm text-amber-500 shadow-sm" title="Pendiente">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+</span>
+</div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Uber Trip</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">23 Oct • PNG</p>
+</div>
+</div>
+<!-- Card: PDF -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative flex items-center justify-center">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-4xl text-red-500">picture_as_pdf</span>
+<span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">PDF Doc</span>
+</div>
+<!-- Status Badge -->
+<div class="absolute top-2 right-2">
+<span class="flex items-center justify-center size-6 rounded-full bg-primary text-slate-900 shadow-sm" title="Vinculado">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+</div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Factura Luz - Octubre</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">20 Oct • 1.2 MB</p>
+</div>
+</div>
+<!-- More Cards... -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Abstract blurred colorful receipt paper" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAeMgejdcofKbHJlnT2ovaD4mj4pzTxZqHR-2LblKTyMPfDtUBT-i1VoiLyhSuBENuBmWYMcD2B_wkHJU0RrOVzb2ToxoG1Y1BLEl6LiFTKrycgeQYzKxP1_ZfFlhabb2DBlOSnlsUVPJJFwaxBi2-Czsbu2xhM9YOHD_xACKYi-jZ7acg1PoCVof-T0ItiXb3w9l2-dADJ592VuxwbNYqvk-QQ9k2FxO10CD5FhP9_bg2R6PZz_ThMr0JmaPg_L0K-MGiP2RTQ3p4');"></div>
+<!-- Status Badge -->
+<div class="absolute top-2 right-2">
+<span class="flex items-center justify-center size-6 rounded-full bg-white/90 dark:bg-black/50 backdrop-blur-sm text-amber-500 shadow-sm" title="Pendiente">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+</span>
+</div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Restaurante El Club</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">18 Oct • JPG</p>
+</div>
+</div>
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Digital invoice displayed on a tablet screen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCdw69vWElcBE8e10lQMxHEmmhBRwoKwuS2X9oiVzanwL5wXiSJ3N-t1WhI-8pxh1Fw5PIXR1JN0XtkjCRWwKE1AATFN1Y68CYgzvRHFpQONqiahW-ILcA4YrI-spwtY-PJnf7RIBTynGj-nrQUstw2WeHMzF6yLf63ZozDBksCOhGni_q46vDzQ30rtazq2LyqJEE2bO-8_b2zGiF15qaDgkTzVpYwYt-siAji6utkkvd3_RcUpfw-VWyfbfX4Ds5zDqP7buvH2-8');"></div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Amazon ES</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">12 Oct • PNG</p>
+</div>
+</div>
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative flex items-center justify-center">
+<div class="flex flex-col items-center gap-2">
+<span class="material-symbols-outlined text-4xl text-red-500">picture_as_pdf</span>
+</div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Seguro Coche</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">01 Oct • 2.4 MB</p>
+</div>
+</div>
+<!-- Card: Active/Selected -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative">
+<!-- Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" data-alt="Receipt paper on wooden background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQBajX6HGCl0tVlNdLGlTR_S6kLXzvKgmFyxD3WuiNdTRu77Yy8_GnNlONs25KVkSwRxuwyjvJumntYXBupwDFncSdUOzJLzvJDZ0z_svnL0ZkRU8mRsAmvDJBy2hJ6G8IPBMy_LXyO46J0bzykRDVcfkuloUlnZ4VGRml3m_UgS5ENBMktJcd4rCioE-1llQrUVePXB7UrrNn7vOhwf3LlJj52uH0Y1pMdu4vBiR-aBHUKqs5xAZ8IsOY4wqWCyh6yJPmVxe8oII');"></div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Zara Home</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">29 Sep • JPG</p>
+</div>
+</div>
+<!-- Card: Active/Selected -->
+<div class="group relative cursor-pointer">
+<div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative">
+<!-- Image -->
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105" data-alt="Digital receipt interface on mobile" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrIh6EichbvrHspALjLbrSyffhWg5ZQ0QwGT2UBt5gJwCbNGj7drOPoVE6ocaEtILHqwWfziWgvsC5lCk_oZc_Pc5K7XGgBKbp5wjMmiKtTFCRDTtPHQ3IXlqTgocFWIv6d7CUDdUnzw10pBW1iuuwq46DKqHhSjDDmMBBsyneEBlZQKXbEZtS_gcNp7J11Av-ckJgo001oMBODTGb5cR5LzXV6exh3otzKCQdtcpAtGgEfS7b0g9B6fAS8MJ9Bx-v1YOtt0X85xg');"></div>
+</div>
+<div class="mt-2">
+<p class="text-sm font-semibold text-slate-900 dark:text-white truncate">Spotify Premium</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">28 Sep • PNG</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sidebar / Inspector Panel -->
+<aside class="w-[400px] flex-none border-l border-slate-200 dark:border-slate-800 bg-surface-light dark:bg-surface-dark flex flex-col shadow-xl z-10 hidden lg:flex">
+<!-- Header -->
+<div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+<h3 class="font-bold text-slate-900 dark:text-white">Detalles del Comprobante</h3>
+<div class="flex gap-2">
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+<button class="text-slate-400 hover:text-red-500">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+</div>
+<!-- Content -->
+<div class="flex-1 overflow-y-auto p-6 custom-scroll">
+<!-- Preview -->
+<div class="mb-6 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 aspect-video relative group">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Close up of a receipt detail view" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDziVnuNgX0AwNKK_oNuEaSi3fE6X_7vy1ry4AjamcEK_0GNPrfe4crHOqCJ1qi0-v2kSuNTWFuk5oxcvmMcdLcEuOLupsJ9FpmdcKQr1yFowThNgc0Rdybe_0I1n_IE_yEzUCF-4vsVMwvTTTMakEFF8LEQ5kJ8kM8TyIwuwHiXAssiKCv6MQYlFAJ8G6kNs4rnY23Rjg79-Mc9dnQ0UxDeqwLLmHjepYNOGzqKtLZ9U_fE8DOpPmVrmwo9FuyxxnnDrELaMk-6Gk');"></div>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<button class="bg-white/20 backdrop-blur-md border border-white/50 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-white/30 transition-colors">
+                            Ver pantalla completa
+                        </button>
+</div>
+</div>
+<!-- Fields -->
+<div class="space-y-5">
+<!-- Title Input -->
+<div>
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Nombre del Comercio</label>
+<input class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" type="text" value="Supermercado Día"/>
+</div>
+<!-- Amount & Date Grid -->
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Monto Total</label>
+<div class="relative">
+<span class="absolute left-3 top-2 text-slate-500">$</span>
+<input class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg pl-6 pr-3 py-2 text-slate-900 dark:text-white text-sm font-mono font-medium focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" type="text" value="45.00"/>
+</div>
+</div>
+<div>
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Fecha</label>
+<input class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all" type="date" value="2023-10-24"/>
+</div>
+</div>
+<!-- Category -->
+<div>
+<label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Categoría</label>
+<div class="relative">
+<select class="w-full appearance-none bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all">
+<option>Alimentación</option>
+<option>Transporte</option>
+<option>Servicios</option>
+<option>Ocio</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+<span class="material-symbols-outlined text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Status Info -->
+<div class="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 flex items-start gap-3">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 mt-0.5">verified</span>
+<div>
+<p class="text-sm font-bold text-green-800 dark:text-green-300">Vinculado Correctamente</p>
+<p class="text-xs text-green-700/80 dark:text-green-400/70 mt-0.5">Este comprobante está asociado al gasto #4092.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-background-dark/50">
+<button class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary/90 text-slate-900 font-bold h-11 transition-all shadow-md shadow-primary/20 mb-3">
+<span class="material-symbols-outlined text-[20px]">link</span>
+<span>Adjuntar a otro gasto</span>
+</button>
+<div class="text-center">
+<a class="text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors" href="#">Crear nuevo gasto basado en esto</a>
+</div>
+</div>
+</aside>
+</div>
+</body></html>
