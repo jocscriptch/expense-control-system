@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 
 const menuItems = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard", active: true },
@@ -25,6 +26,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user, signOut } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // Prevents hydration mismatch
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   // Load preference from localStorage on mount
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleLogout = async () => {
+    onClose?.();
     await signOut();
     window.location.href = "/login";
   };
@@ -79,16 +82,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </span>
         </div>
 
-        {!isCollapsed && (
-          <div className="flex flex-col whitespace-nowrap overflow-hidden">
-            <h1 className="text-text-main text-lg font-bold leading-none tracking-tight">
-              ControlGastos
-            </h1>
-            <p className="text-text-sub text-xs font-medium mt-1">
-              Gestión Inteligente
-            </p>
-          </div>
-        )}
+        <div className={`flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:hidden" : "block"}`}>
+          <h1 className="text-text-main text-lg font-bold leading-none tracking-tight">
+            ControlGastos
+          </h1>
+          <p className="text-text-sub text-xs font-medium mt-1">
+            Gestión Inteligente
+          </p>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -179,8 +180,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
           {!isCollapsed && (
             <button
-              onClick={handleLogout}
-              className="material-symbols-outlined text-text-sub hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-md transition-all text-lg cursor-pointer"
+              onClick={() => setIsLogoutDialogOpen(true)}
+              className="flex material-symbols-outlined text-text-sub hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-md transition-all text-lg cursor-pointer"
               title="Cerrar sesión"
             >
               logout
@@ -189,6 +190,15 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
       </div>
 
+      <ConfirmDialog
+        isOpen={isLogoutDialogOpen}
+        onClose={() => setIsLogoutDialogOpen(false)}
+        onConfirm={handleLogout}
+        title="¿Cerrar sesión?"
+        description="Estás a punto de salir de tu cuenta. ¿Estás seguro de que deseas continuar?"
+        confirmText="Cerrar sesión"
+        variant="danger"
+      />
     </aside>
   );
 }
