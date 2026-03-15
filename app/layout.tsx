@@ -15,6 +15,8 @@ export const metadata: Metadata = {
     "Gestiona tu presupuesto familiar de manera inteligente y visualiza tu crecimiento mes a mes.",
 };
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,20 +28,27 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className={`${inter.variable} font-sans antialiased`} suppressHydrationWarning>
-        <AuthProvider>
-          {children}
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              style: {
-                borderRadius: "12px",
-                background: "#1a2c20",
-                color: "#f1f5f2",
-                fontSize: "14px",
-              },
-            }}
-          />
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            {children}
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                style: {
+                  borderRadius: "12px",
+                  background: "#1a2c20",
+                  color: "#f1f5f2",
+                  fontSize: "14px",
+                },
+              }}
+            />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

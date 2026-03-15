@@ -4,6 +4,7 @@ import { getUser } from "@/features/auth/actions";
 import type { User } from "@/features/auth/types";
 import { createClient } from "@/lib/supabase/client";
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useTheme } from "next-themes";
 
 // ============ Context Type ============
 export interface AuthContextType {
@@ -20,6 +21,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { setTheme } = useTheme();
 
   /**
    * useCallback evita que la referencia de la función cambie en cada render,
@@ -74,6 +76,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // ← Cleanup obligatorio al desmontar el componente
     return () => subscription.unsubscribe();
   }, [refreshUser]);
+
+  /**
+   * Sincronización de Temas con next-themes
+   * Asegura que la preferencia del usuario en la BD se refleje en el sistema estándar.
+   */
+  useEffect(() => {
+    // Solo sincronizamos el tema si ya cargó el usuario,
+    // para no sobrescribir la preferencia de localStorage con "system" temporalmente, lo que causaba un parpadeo.
+    if (!isLoading && user) {
+      setTheme(user.theme || "system");
+    }
+  }, [user?.theme, isLoading, setTheme]);
 
   return (
     <AuthContext.Provider value={{ user, isLoading, refreshUser, signOut }}>

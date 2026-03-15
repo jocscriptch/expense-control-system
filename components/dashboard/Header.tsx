@@ -9,7 +9,7 @@ export default function Header() {
   const months = getLastMonths(3);
   
   return (
-    <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10 shrink-0">
+    <header className="h-16 bg-surface border-b border-border flex items-center justify-between px-6 z-10 shrink-0">
       {/* Search Bar */}
       <div className="flex items-center flex-1 max-w-xl">
         <div className="relative w-full">
@@ -18,7 +18,7 @@ export default function Header() {
           </div>
           <input 
             type="text"
-            className="block w-full pl-10 pr-3 py-2 border border-gray-100 rounded-lg leading-5 bg-gray-50/50 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary sm:text-sm transition-shadow" 
+            className="block w-full pl-10 pr-3 py-2 border border-border rounded-lg leading-5 bg-background text-text-main placeholder:text-text-dim focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary sm:text-sm transition-shadow" 
             placeholder="Buscar transacciones, categorías..." 
           />
         </div>
@@ -28,19 +28,19 @@ export default function Header() {
       <div className="flex items-center gap-4 ml-6">
         {/* Month Selector */}
         <div className="relative">
-          <select className="appearance-none bg-white border border-gray-100 text-gray-700 py-2 pl-4 pr-10 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-primary text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors capitalize">
+          <select className="appearance-none bg-surface border border-border text-text-main py-2 pl-4 pr-10 rounded-lg leading-tight focus:outline-none focus:border-primary text-sm font-medium cursor-pointer hover:bg-surface-hover transition-colors capitalize">
             {months.map((label) => (
               <option key={label} value={label}>
                 {label}
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-text-dim">
             <span className="material-symbols-outlined text-lg">expand_more</span>
           </div>
         </div>
 
-        <div className="h-6 w-px bg-gray-200 mx-1"></div>
+        <div className="h-6 w-px bg-border mx-1"></div>
 
         <Button 
           onClick={() => router.push('/dashboard/new-expense')}

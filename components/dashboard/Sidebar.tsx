@@ -44,17 +44,17 @@ export default function Sidebar() {
   // Prevent hydration errors by not rendering width until mounted
   if (!isMounted)
     return (
-      <aside className="w-64 bg-white border-r border-gray-100 flex flex-col h-full flex-shrink-0 z-20"></aside>
+      <aside className="w-64 bg-surface border-r border-border flex flex-col h-full flex-shrink-0 z-20"></aside>
     );
 
   return (
     <aside
-      className={`${isCollapsed ? "w-20" : "w-64"} transition-all duration-300 ease-in-out bg-white border-r border-gray-100 flex flex-col h-full flex-shrink-0 z-20 relative`}
+      className={`${isCollapsed ? "w-20" : "w-64"} transition-all duration-300 ease-in-out bg-surface border-r border-border flex flex-col h-full flex-shrink-0 z-20 relative`}
     >
       {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute right-[-2px] translate-x-1/2 top-[64px] w-8 h-8 flex items-center justify-center bg-white border border-gray-200 text-gray-500 rounded-full hover:text-primary hover:border-primary shadow-sm z-30 transition-transform hover:scale-105"
+        className="absolute right-[-2px] translate-x-1/2 top-[64px] w-8 h-8 flex items-center justify-center bg-surface border border-border text-text-sub rounded-full hover:text-primary hover:border-primary shadow-sm z-30 transition-transform hover:scale-105"
       >
         <span className="material-symbols-outlined text-[18px] leading-none">
           {isCollapsed ? "chevron_right" : "chevron_left"}
@@ -73,10 +73,10 @@ export default function Sidebar() {
 
         {!isCollapsed && (
           <div className="flex flex-col whitespace-nowrap overflow-hidden">
-            <h1 className="text-gray-900 text-lg font-bold leading-none tracking-tight">
+            <h1 className="text-text-main text-lg font-bold leading-none tracking-tight">
               ControlGastos
             </h1>
-            <p className="text-gray-500 text-xs font-medium mt-1">
+            <p className="text-text-sub text-xs font-medium mt-1">
               Gestión Inteligente
             </p>
           </div>
@@ -94,12 +94,12 @@ export default function Sidebar() {
               title={isCollapsed ? item.label : undefined}
               className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group ${
                 isActive
-                  ? "bg-[#1A3324] text-[#13EC5B] "
-                  : "text-gray-600 hover:bg-gray-50 :bg-[#1a3324] hover:text-gray-900 :text-white"
+                  ? "bg-primary/10 text-primary "
+                  : "text-text-sub hover:bg-surface-hover hover:text-text-main"
               }`}
             >
               <span
-                className={`material-symbols-outlined ${isActive ? "font-fill text-[#13EC5B]" : "group-hover:text-gray-900 :text-white transition-colors"}`}
+                className={`material-symbols-outlined ${isActive ? "font-fill text-primary" : "group-hover:text-text-main transition-colors"}`}
               >
                 {item.icon}
               </span>
@@ -114,13 +114,13 @@ export default function Sidebar() {
           );
         })}
 
-        <div className="pt-4 mt-4 border-t border-slate-100">
+        <div className="pt-4 mt-4 border-t border-border">
           <Link
             href="/dashboard/settings"
             title={isCollapsed ? "Ajustes" : undefined}
-            className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg text-slate-600 hover:bg-slate-50 :bg-slate-800 hover:text-slate-900 :text-white transition-colors group`}
+            className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg text-text-sub hover:bg-surface-hover hover:text-text-main transition-colors group`}
           >
-            <span className="material-symbols-outlined group-hover:text-slate-900 :text-white transition-colors">
+            <span className="material-symbols-outlined group-hover:text-text-main transition-colors">
               settings
             </span>
             {!isCollapsed && (
@@ -133,36 +133,43 @@ export default function Sidebar() {
       </nav>
 
       {/* User Info / Logout Button */}
-      <div className="p-4 border-t border-gray-100">
-        <div
-          className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-2"} py-2 rounded-lg transition-colors`}
-        >
-          <div className="h-9 w-9 flex-shrink-0 rounded-full bg-[#102216] flex items-center justify-center text-white overflow-hidden">
-            {user?.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-sm font-bold">{user?.name?.charAt(0) || "U"}</span>
+      <div className="p-4 border-t border-border">
+        <div className="flex items-center gap-2 group/user relative">
+          <Link
+            href="/dashboard/settings"
+            className={`flex items-center ${isCollapsed ? "justify-center w-full" : "gap-3 px-2"} py-2 rounded-lg transition-colors hover:bg-surface-hover flex-1 overflow-hidden`}
+            title={isCollapsed ? "Configuración" : undefined}
+          >
+            <div className="h-9 w-9 flex-shrink-0 rounded-full border border-border bg-background flex items-center justify-center text-text-main overflow-hidden shadow-sm group-hover/user:ring-2 group-hover/user:ring-primary/30 transition-all">
+              {user?.avatar_url ? (
+                <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-sm font-bold">{user?.name?.charAt(0) || "U"}</span>
+              )}
+            </div>
+
+            {!isCollapsed && (
+              <div className="flex flex-col flex-1 overflow-hidden whitespace-nowrap text-left">
+                <span className="text-sm font-semibold text-text-main truncate group-hover/user:text-primary transition-colors">
+                  {user?.name || "Usuario"}
+                </span>
+                <span className="text-[10px] text-text-sub truncate">{user?.email || "Cargando..."}</span>
+              </div>
             )}
-          </div>
+          </Link>
 
           {!isCollapsed && (
-            <div className="flex flex-col flex-1 overflow-hidden whitespace-nowrap">
-              <span className="text-sm font-semibold text-gray-900 truncate">
-                {user?.name || "Usuario"}
-              </span>
-              <span className="text-[10px] text-gray-400">{user?.email || "Cargando..."}</span>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="material-symbols-outlined text-text-sub hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-md transition-all text-lg cursor-pointer"
+              title="Cerrar sesión"
+            >
+              logout
+            </button>
           )}
-
-          <button
-            onClick={handleLogout}
-            className={`material-symbols-outlined text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-md transition-colors text-lg cursor-pointer ${isCollapsed ? "hidden" : ""}`}
-            title="Cerrar sesión"
-          >
-            logout
-          </button>
         </div>
       </div>
+
     </aside>
   );
 }
