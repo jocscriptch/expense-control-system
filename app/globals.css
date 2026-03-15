@@ -76,10 +76,12 @@
 }
 
 /* ============ Base ============ */
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
+  overscroll-behavior: none;
+  height: 100%;
 }
 
 .font-fill {

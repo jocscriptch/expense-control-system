@@ -78,7 +78,7 @@ export function ConfirmDialog({
           <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
             <button
               onClick={onClose}
-              className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-text-sub hover:bg-surface-hover hover:text-text-main transition-all border border-border/50 active:scale-[0.98]"
+              className="flex-1 px-6 py-3.5 rounded-2xl text-sm font-bold text-text-sub hover:bg-surface-hover hover:text-text-main transition-all border border-border/50 active:scale-[0.98] whitespace-nowrap"
             >
               {cancelText}
             </button>
@@ -87,7 +87,7 @@ export function ConfirmDialog({
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 px-6 py-3.5 text-sm font-black border-0 shadow-2xl transition-all active:scale-[0.98] ${
+              className={`flex-1 px-6 py-3.5 text-sm font-black border-0 shadow-2xl transition-all active:scale-[0.98] whitespace-nowrap ${
                 variant === "danger" 
                   ? "bg-red-500 hover:bg-red-600 text-white shadow-red-500/30" 
                   : "bg-primary hover:bg-primary-hover text-black shadow-primary/30"

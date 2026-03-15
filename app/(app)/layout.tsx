@@ -26,7 +26,7 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="bg-background text-foreground overflow-hidden h-screen flex transition-colors duration-200 relative">
+    <div className="bg-background text-foreground overflow-hidden h-[100dvh] flex transition-colors duration-200 relative">
       <Sidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
       
       {/* Mobile Overlay */}
