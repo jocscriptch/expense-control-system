@@ -82,12 +82,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           </span>
         </div>
 
-        <div className={`flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:hidden" : "block"}`}>
+        <div className={`flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:w-0" : "opacity-100 w-auto"}`}>
           <h1 className="text-text-main text-lg font-bold leading-none tracking-tight">
             ControlGastos
           </h1>
-          <p className="text-text-sub text-xs font-medium mt-1">
-            Gestión Inteligente
+          <p className="text-text-sub text-[10px] font-bold mt-0.5 uppercase tracking-wider opacity-70">
+            Intelligent Cash
           </p>
         </div>
       </div>
@@ -102,9 +102,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               href={item.href}
               onClick={() => onClose?.()}
               title={isCollapsed ? item.label : undefined}
-              className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-colors group ${
+              className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-all duration-300 group ${
                 isActive
-                  ? "bg-sidebar-active text-primary"
+                  ? "bg-[#102216] text-white shadow-lg shadow-[#102216]/20"
                   : "text-text-sub hover:bg-surface-hover hover:text-text-main"
               }`}
             >
@@ -114,8 +114,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 {item.icon}
               </span>
               <span
-                className={`text-base lg:text-sm whitespace-nowrap overflow-hidden ${isActive ? "font-semibold" : "font-medium"} ${
-                  isCollapsed ? "lg:hidden block" : "block"
+                className={`text-base lg:text-sm whitespace-nowrap overflow-hidden ${isActive ? "font-bold" : "font-medium"} transition-all duration-300 ${
+                  isCollapsed ? "lg:opacity-0 lg:w-0" : "opacity-100 w-auto"
                 }`}
               >
                 {item.label}
@@ -129,9 +129,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             href="/dashboard/settings"
             onClick={() => onClose?.()}
             title={isCollapsed ? "Ajustes" : undefined}
-            className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-colors group ${
+            className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-all duration-300 group ${
               pathname === "/dashboard/settings"
-                ? "bg-sidebar-active text-primary"
+                ? "bg-[#102216] text-white shadow-lg shadow-[#102216]/20"
                 : "text-text-sub hover:bg-surface-hover hover:text-text-main"
             }`}
           >
@@ -168,25 +168,21 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               )}
             </div>
 
-            {!isCollapsed && (
-              <div className="flex flex-col flex-1 overflow-hidden whitespace-nowrap text-left">
-                <span className="text-sm font-semibold text-text-main truncate group-hover/user:text-primary transition-colors">
-                  {user?.name || "Usuario"}
-                </span>
-                <span className="text-[10px] text-text-sub truncate">{user?.email || "Cargando..."}</span>
-              </div>
-            )}
+            <div className={`flex flex-col flex-1 overflow-hidden whitespace-nowrap text-left transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:w-0" : "opacity-100 w-auto"}`}>
+              <span className="text-sm font-bold text-text-main truncate group-hover/user:text-primary transition-colors">
+                {user?.name || "Usuario"}
+              </span>
+              <span className="text-[10px] text-text-sub truncate opacity-70">{user?.email || "Cargando..."}</span>
+            </div>
           </Link>
 
-          {!isCollapsed && (
             <button
               onClick={() => setIsLogoutDialogOpen(true)}
-              className="flex material-symbols-outlined text-text-sub hover:text-red-500 hover:bg-red-500/10 p-1.5 rounded-md transition-all text-lg cursor-pointer"
+              className={`flex-shrink-0 material-symbols-outlined text-text-sub hover:text-red-500 hover:bg-red-500/10 p-2 rounded-xl transition-all text-xl cursor-pointer ${isCollapsed ? "lg:hidden block" : "block"}`}
               title="Cerrar sesión"
             >
               logout
             </button>
-          )}
         </div>
       </div>
 
