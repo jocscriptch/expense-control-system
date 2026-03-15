@@ -46,8 +46,6 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   
-  // Debug log para desarrollo (puedes comentarlo si el terminal se llena mucho)
-  console.log(`[PROXY] Path: ${path}, User: ${user?.email || 'No user'}`);
 
   // Clasificación de rutas: Páginas que solo deben ver usuarios NO logueados
   const isAuthPage =
@@ -67,7 +65,6 @@ export async function updateSession(request: NextRequest) {
 
   // REGLA 1: Si no hay usuario e intenta entrar a un área privada -> Al Login
   if (!user && isDashboardPage) {
-    console.log(`[PROXY] Redirecting to /login (Unauthenticated at ${path})`);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -79,14 +76,12 @@ export async function updateSession(request: NextRequest) {
   if (path.startsWith("/update-password")) {
     const hasRecoveryCookie = request.cookies.has("sb-recovery-mode");
     if (user && !hasRecoveryCookie) {
-      console.log(`[PROXY] Redirecting to /dashboard (Authenticated but no recovery cookie at ${path})`);
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
   }
 
   // REGLA 3: Si ya está logueado e intenta ir a páginas de Auth -> Al Dashboard
   if (user && isAuthPage) {
-    console.log(`[PROXY] Redirecting to /dashboard (Authenticated at ${path})`);
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

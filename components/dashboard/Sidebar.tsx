@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { logout } from "@/features/auth/actions";
+import { useAuth } from "@/context/AuthContext";
 
 const menuItems = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard", active: true },
@@ -17,6 +17,7 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMounted, setIsMounted] = useState(false); // Prevents hydration mismatch
 
@@ -36,7 +37,7 @@ export default function Sidebar() {
   };
 
   const handleLogout = async () => {
-    await logout();
+    await signOut();
     window.location.href = "/login";
   };
 
@@ -137,15 +138,19 @@ export default function Sidebar() {
           className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-2"} py-2 rounded-lg transition-colors`}
         >
           <div className="h-9 w-9 flex-shrink-0 rounded-full bg-[#102216] flex items-center justify-center text-white overflow-hidden">
-            <span className="text-sm font-bold">N</span>
+            {user?.avatar_url ? (
+              <img src={user.avatar_url} alt={user.name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-sm font-bold">{user?.name?.charAt(0) || "U"}</span>
+            )}
           </div>
 
           {!isCollapsed && (
             <div className="flex flex-col flex-1 overflow-hidden whitespace-nowrap">
               <span className="text-sm font-semibold text-gray-900 truncate">
-                Usuario
+                {user?.name || "Usuario"}
               </span>
-              <span className="text-[10px] text-gray-400">Plan Gratuito</span>
+              <span className="text-[10px] text-gray-400">{user?.email || "Cargando..."}</span>
             </div>
           )}
 

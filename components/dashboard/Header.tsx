@@ -2,9 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
+import { getLastMonths } from "@/lib/utils/date";
 
 export default function Header() {
   const router = useRouter();
+  const months = getLastMonths(3);
   
   return (
     <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 z-10 shrink-0">
@@ -26,10 +28,12 @@ export default function Header() {
       <div className="flex items-center gap-4 ml-6">
         {/* Month Selector */}
         <div className="relative">
-          <select className="appearance-none bg-white border border-gray-100 text-gray-700 py-2 pl-4 pr-10 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-primary text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors">
-            <option>Octubre 2023</option>
-            <option>Septiembre 2023</option>
-            <option>Agosto 2023</option>
+          <select className="appearance-none bg-white border border-gray-100 text-gray-700 py-2 pl-4 pr-10 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-primary text-sm font-medium cursor-pointer hover:bg-gray-50 transition-colors capitalize">
+            {months.map((label) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
             <span className="material-symbols-outlined text-lg">expand_more</span>
@@ -47,5 +51,6 @@ export default function Header() {
         </Button>
       </div>
     </header>
- );
+  );
 }
+
