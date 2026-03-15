@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 /* ============ Design Tokens ============ */
 :root {
   /* Primary */
@@ -23,12 +25,7 @@
   --foreground: #0d1b12;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #102216;
-    --foreground: #f1f5f2;
-  }
-}
+
 
 /* ============ Tailwind Theme ============ */
 @theme inline {
@@ -50,6 +47,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Inter', sans-serif;
+}
+
+.font-fill {
+  font-variation-settings: 'FILL' 1;
 }
 
 /* ============ Scrollbar ============ */
