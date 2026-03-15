@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirma tu Email - Sistema de Gastos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f8fcf9;
+            color: #0d1b12;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .email-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(16, 34, 22, 0.08);
+            border: 1px solid #eef3ef;
+        }
+
+        .header {
+            background-color: #102216;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #13ec5b;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: #ffffff;
+            margin-left: 2px;
+        }
+
+        .content {
+            padding: 40px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: #102216;
+            letter-spacing: -0.02em;
+        }
+
+        p {
+            margin-bottom: 24px;
+            font-size: 16px;
+            color: #1c2a1f;
+        }
+
+        .confirm-button {
+            display: inline-block;
+            background-color: #13ec5b;
+            color: #0d1b12;
+            text-decoration: none;
+            padding: 18px 36px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(19, 236, 91, 0.25);
+        }
+
+        .footer {
+            padding: 30px 40px;
+            background-color: #f8fcf9;
+            text-align: center;
+            color: #121a13;
+            font-weight: bold;
+            font-size: 13px;
+            border-top: 1px solid #eef3ef;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">SISTEMA<span>GASTOS</span></div>
+        </div>
+
+        <div class="content">
+            <h2>Confirma tu registro</h2>
+            <p>¡Bienvenido! Estás a un paso de tomar el control total de tus finanzas personales con nuestra plataforma inteligente.</p>
+
+            <div style="margin: 40px 0;">
+                <a href="{{ .SiteURL }}/api/auth/callback?token_hash={{ .TokenHash }}&type=email" class="confirm-button">
+                    Confirmar correo electrónico
+                </a>
+            </div>
+
+            <p style="font-size: 14px; opacity: 0.8;">Si no creaste una cuenta con nosotros, puedes ignorar este mensaje.</p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Sistema de Gastos. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+
+</html>

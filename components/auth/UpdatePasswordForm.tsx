@@ -69,6 +69,7 @@ export default function UpdatePasswordForm() {
           placeholder="••••••••"
           type="password"
           autoComplete="new-password"
+          maxLength={20}
           icon={<Lock className="w-5 h-5" />}
           disabled={isLoading}
         />
@@ -80,6 +81,7 @@ export default function UpdatePasswordForm() {
           placeholder="••••••••"
           type="password"
           autoComplete="new-password"
+          maxLength={20}
           icon={<Lock className="w-5 h-5" />}
           disabled={isLoading}
         />

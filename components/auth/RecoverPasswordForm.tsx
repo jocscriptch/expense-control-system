@@ -71,6 +71,7 @@ export default function RecoverPasswordForm() {
             placeholder="ejemplo@correo.com"
             type="email"
             autoComplete="email"
+            maxLength={150}
             icon={<Mail className="w-5 h-5" />}
             disabled={isLoading}
           />

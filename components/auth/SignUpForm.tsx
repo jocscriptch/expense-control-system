@@ -28,24 +28,31 @@ export default function SignUpForm() {
       if (response.success) {
         toast.success(
           `Hola ${data.name}. Te hemos enviado un correo de confirmación para verificar tu cuenta.`,
-          { duration: 4000, icon: "👋" }
+          { duration: 4000, icon: "👋" },
         );
         reset();
       } else {
         // Handle specific Supabase errors
         const error = response.error || "Error al registrar";
         if (error.includes("User already registered")) {
-          toast.error("Este correo electrónico ya está registrado", { duration: 4000 });
+          toast.error("Este correo electrónico ya está registrado", {
+            duration: 4000,
+          });
         } else if (error.includes("Password should be at least 6 characters")) {
-          toast.error("La contraseña debe tener al menos 6 caracteres", { duration: 4000 });
+          toast.error("La contraseña debe tener al menos 6 caracteres", {
+            duration: 4000,
+          });
         } else if (error.includes("Invalid email")) {
-          toast.error("Por favor ingresa un correo electrónico válido", { duration: 4000 });
+          toast.error("Por favor ingresa un correo electrónico válido", {
+            duration: 4000,
+          });
         } else {
           toast.error(error, { duration: 4000 });
         }
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error inesperado";
+      const message =
+        error instanceof Error ? error.message : "Error inesperado";
       toast.error(message, { duration: 4000 });
     } finally {
       setIsLoading(false);
@@ -58,11 +65,23 @@ export default function SignUpForm() {
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-6">
           <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"
+              />
             </svg>
           </div>
-          <span className="font-bold text-lg tracking-tight">Sistema de Gastos</span>
+          <span className="font-bold text-lg tracking-tight">
+            Sistema de Gastos
+          </span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-[-0.02em] text-white">
           Crear cuenta
@@ -77,11 +96,11 @@ export default function SignUpForm() {
         <FormField
           name="name"
           control={control}
-          label="Nombre"
-          placeholder="Tu nombre"
+          label="Nombre Completo"
+          placeholder="Tu nombre completo"
           type="text"
           autoComplete="name"
-          maxLength={20}
+          maxLength={100}
           icon={<User className="w-5 h-5" />}
           disabled={isLoading}
         />
@@ -93,7 +112,7 @@ export default function SignUpForm() {
           placeholder="ejemplo@correo.com"
           type="email"
           autoComplete="email"
-          maxLength={50}
+          maxLength={150}
           icon={<Mail className="w-5 h-5" />}
           disabled={isLoading}
         />
@@ -105,6 +124,7 @@ export default function SignUpForm() {
           placeholder="••••••••"
           type="password"
           autoComplete="new-password"
+          maxLength={20}
           icon={<Lock className="w-5 h-5" />}
           disabled={isLoading}
         />

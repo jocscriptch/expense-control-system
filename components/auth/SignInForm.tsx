@@ -78,6 +78,7 @@ export default function SignInForm() {
           placeholder="ejemplo@correo.com"
           type="email"
           autoComplete="email"
+          maxLength={150}
           icon={<Mail className="w-5 h-5" />}
           disabled={isLoading}
         />
@@ -89,6 +90,7 @@ export default function SignInForm() {
           placeholder="••••••••"
           type="password"
           autoComplete="current-password"
+          maxLength={20}
           icon={<Lock className="w-5 h-5" />}
           disabled={isLoading}
           labelExtra={
