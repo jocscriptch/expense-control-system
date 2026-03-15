@@ -15,7 +15,12 @@ const menuItems = [
   { icon: "pie_chart", label: "Presupuestos", href: "/dashboard/budgets" },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -44,17 +49,20 @@ export default function Sidebar() {
   // Prevent hydration errors by not rendering width until mounted
   if (!isMounted)
     return (
-      <aside className="w-64 bg-surface border-r border-border flex flex-col h-full flex-shrink-0 z-20"></aside>
+      <aside className="hidden lg:flex lg:w-64 bg-surface border-r border-border flex-col h-full flex-shrink-0 z-20"></aside>
     );
 
   return (
     <aside
-      className={`${isCollapsed ? "w-20" : "w-64"} transition-all duration-300 ease-in-out bg-surface border-r border-border flex flex-col h-full flex-shrink-0 z-20 relative`}
+      className={`fixed lg:relative inset-y-0 left-0 z-50 transform ${
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      } ${
+        isCollapsed ? "lg:w-20" : "lg:w-64"
+      } w-64 transition-all duration-300 ease-in-out bg-surface border-r border-border flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none`}
     >
-      {/* Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute right-[-2px] translate-x-1/2 top-[64px] w-8 h-8 flex items-center justify-center bg-surface border border-border text-text-sub rounded-full hover:text-primary hover:border-primary shadow-sm z-30 transition-transform hover:scale-105"
+        className="hidden lg:flex absolute right-[-2px] translate-x-1/2 top-[64px] w-8 h-8 items-center justify-center bg-surface border border-border text-text-sub rounded-full hover:text-primary hover:border-primary shadow-sm z-30 transition-transform hover:scale-105"
       >
         <span className="material-symbols-outlined text-[18px] leading-none">
           {isCollapsed ? "chevron_right" : "chevron_left"}
@@ -63,7 +71,7 @@ export default function Sidebar() {
 
       {/* Brand */}
       <div
-        className={`py-6 flex items-center ${isCollapsed ? "justify-center px-0" : "px-6 gap-3"}`}
+        className={`py-8 flex items-center ${isCollapsed ? "justify-center px-0" : "px-6 gap-3"}`}
       >
         <div className="h-10 w-10 flex-shrink-0 rounded-xl bg-primary flex items-center justify-center text-[#102216] shadow-sm">
           <span className="material-symbols-outlined text-white font-fill">

@@ -4,9 +4,9 @@ export default function DashboardPage() {
  return (
   <div className="space-y-6 transition-colors duration-200">
     {/* KPI Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
       {/* Card 1: Gasto del mes */}
-      <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
+      <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-text-sub text-sm font-medium">Gasto del mes</h3>
           <span className="material-symbols-outlined text-[20px] text-primary/40">payments</span>
@@ -60,13 +60,13 @@ export default function DashboardPage() {
         <button className="text-sm font-semibold text-primary hover:text-primary-hover">Ver todos</button>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-background/50 text-text-sub text-xs uppercase font-bold tracking-wider">
+        <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-0">
+          <thead className="bg-background/50 text-text-sub text-[10px] md:text-xs uppercase font-bold tracking-wider">
             <tr>
-              <th className="px-6 py-4">Categoría</th>
-              <th className="px-6 py-4">Descripción</th>
-              <th className="px-6 py-4">Fecha</th>
-              <th className="px-6 py-4 text-right">Monto</th>
+              <th className="px-4 md:px-6 py-4">Categoría</th>
+              <th className="px-4 md:px-6 py-4 hidden sm:table-cell">Descripción</th>
+              <th className="px-4 md:px-6 py-4 hidden md:table-cell">Fecha</th>
+              <th className="px-4 md:px-6 py-4 text-right">Monto</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -77,23 +77,26 @@ export default function DashboardPage() {
               { cat: "Ocio", icon: "movie", desc: "Cineplanet Entradas", date: "22 Oct, 2023", amount: "-₡18,500.00", color: "purple" },
               { cat: "Hogar", icon: "bolt", desc: "Pago Electricidad", date: "20 Oct, 2023", amount: "-₡55,000.00", color: "emerald", fill: true },
             ].map((item, idx) => (
-              <tr key={idx} className="hover:bg-surface-hover/50 transition-colors group">
-                <td className="px-6 py-4 text-text-main">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center
+              <tr key={idx} className="hover:bg-surface-hover/50 transition-colors group text-sm md:text-base">
+                <td className="px-4 md:px-6 py-4 text-text-main">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0
                       ${item.color === 'blue' ? 'bg-blue-500/10 text-blue-500' : ''}
                       ${item.color === 'amber' ? 'bg-amber-500/10 text-amber-500' : ''}
                       ${item.color === 'purple' ? 'bg-purple-500/10 text-purple-500' : ''}
                       ${item.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' : ''}
                     `}>
-                      <span className={`material-symbols-outlined text-[20px] ${item.fill ? 'font-fill' : ''}`}>{item.icon}</span>
+                      <span className={`material-symbols-outlined text-[18px] md:text-[20px] ${item.fill ? 'font-fill' : ''}`}>{item.icon}</span>
                     </div>
-                    <span className="font-semibold text-text-main">{item.cat}</span>
+                    <div>
+                      <span className="font-semibold text-text-main block">{item.cat}</span>
+                      <span className="text-[10px] text-text-dim sm:hidden">{item.desc}</span>
+                    </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-text-sub font-medium">{item.desc}</td>
-                <td className="px-6 py-4 text-text-dim text-sm">{item.date}</td>
-                <td className="px-6 py-4 text-right font-bold text-text-main">{item.amount}</td>
+                <td className="px-4 md:px-6 py-4 text-text-sub font-medium hidden sm:table-cell">{item.desc}</td>
+                <td className="px-4 md:px-6 py-4 text-text-dim text-sm hidden md:table-cell">{item.date}</td>
+                <td className="px-4 md:px-6 py-4 text-right font-bold text-text-main">{item.amount}</td>
               </tr>
             ))}
           </tbody>

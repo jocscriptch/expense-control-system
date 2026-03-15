@@ -99,20 +99,20 @@ export default function SettingsForm({ user }: SettingsFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 pb-10">
       {/* Sección: Perfil */}
-      <section className="bg-surface rounded-xl border border-border p-6 md:p-8 shadow-sm transition-colors duration-200">
+      <section className="bg-surface rounded-xl border border-border p-4 md:p-8 shadow-sm transition-colors duration-200">
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
           <span className="material-symbols-outlined text-primary text-2xl">person</span>
           <h3 className="text-xl font-bold text-text-main">Perfil Personal</h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div className="flex flex-col md:grid md:grid-cols-12 gap-8">
           {/* Avatar Upload */}
-          <div className="md:col-span-3 flex flex-col items-center justify-center gap-3">
+          <div className="md:col-span-3 flex flex-col items-center justify-center gap-4">
             <div 
               className="relative group cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center">
+              <div className="size-28 md:size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center">
                 {isUploading ? (
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                 ) : user.avatar_url ? (
@@ -140,7 +140,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
             />
             <button 
               type="button"
-              className="text-sm font-medium text-primary hover:text-primary-hover transition-colors"
+              className="text-sm font-bold text-primary hover:text-primary-hover transition-colors px-4 py-2 bg-primary/5 rounded-full md:bg-transparent md:p-0"
               onClick={() => fileInputRef.current?.click()}
             >
               Cambiar foto
@@ -268,10 +268,10 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       </section>
 
       {/* Action Footer */}
-      <div className="sticky bottom-0 z-20 mt-8 flex items-center justify-end gap-4 rounded-xl border border-border bg-surface/95 backdrop-blur-sm p-6 shadow-lg transition-colors duration-200">
+      <div className="sticky bottom-4 md:bottom-0 z-20 mt-4 md:mt-8 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 md:gap-4 rounded-xl border border-border bg-surface md:bg-surface/95 md:backdrop-blur-sm p-4 md:p-6 shadow-xl md:shadow-lg transition-colors duration-200">
         <button 
           type="button"
-          className="px-6 py-3 text-sm font-medium text-text-sub hover:text-text-main transition-colors"
+          className="w-full sm:w-auto px-6 py-3 text-sm font-medium text-text-sub hover:text-text-main transition-colors"
           onClick={() => window.location.reload()}
         >
           Cancelar
@@ -279,7 +279,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
         <Button 
           type="submit"
           disabled={!isDirty || isSubmitting}
-          className="flex items-center gap-2 px-8 py-3 text-base font-bold text-black border-0 shadow-lg shadow-primary/20 bg-primary hover:bg-primary-hover disabled:opacity-50"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold text-black border-0 shadow-lg shadow-primary/20 bg-primary hover:bg-primary-hover disabled:opacity-50"
         >
           {isSubmitting ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>

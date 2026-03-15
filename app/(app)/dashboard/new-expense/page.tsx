@@ -25,7 +25,7 @@ export default function RegistrarGastoPage() {
           <div className="">
             <label className="block text-sm font-medium text-text-sub mb-2">Monto del gasto</label>
             <div className="relative flex items-center">
-              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-4xl font-bold text-text-main pl-4">₡</span>
+              <span className="absolute left-0 top-1/2 -translate-y-1/2 text-2xl md:text-4xl font-bold text-text-main pl-4">₡</span>
               <input 
                 autoFocus
                 type="number"
@@ -34,7 +34,7 @@ export default function RegistrarGastoPage() {
                 onKeyDown={(e) => {
                   if (e.key === "-" || e.key === "e") e.preventDefault();
                 }}
-                className="w-full bg-background border-0 rounded-2xl py-6 pl-12 pr-6 text-5xl font-bold text-text-main placeholder:text-text-dim focus:ring-2 focus:ring-primary focus:outline-none transition-shadow" 
+                className="w-full bg-background border-0 rounded-2xl py-4 md:py-6 pl-10 md:pl-12 pr-6 text-3xl md:text-5xl font-bold text-text-main placeholder:text-text-dim focus:ring-2 focus:ring-primary focus:outline-none transition-shadow" 
                 placeholder="0.00" 
               />
             </div>
