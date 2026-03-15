@@ -6,9 +6,9 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex w-full h-screen overflow-hidden relative bg-[#0a1b12] text-white transition-colors duration-200">
+    <div className="flex w-full h-screen overflow-hidden relative bg-[#0a1b12] text-white selection:bg-primary/30">
       {/* ============ Left Panel: Illustration ============ */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#e0e7e3] items-start lg:justify-center p-12 lg:pt-24 overflow-hidden border-r border-primary/10">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#e0e7e3] items-start lg:justify-center p-12 lg:pt-24 overflow-hidden border-r border-[#1a2c20]/10">
         {/* Decorative gradients - Un toque de luz esmeralda más definido */}
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
 

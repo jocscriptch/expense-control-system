@@ -1,28 +1,53 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark, .dark *));
 
 /* ============ Design Tokens ============ */
 :root {
+  /* Backgrounds & Surfaces Raw */
+  --color-bg-light: #f8fcf9;
+  --color-bg-dark: #102216;
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1a2c20;
+
   /* Primary */
   --color-primary: #13ec5b;
   --color-primary-hover: #0fd650;
   --color-primary-active: #0cb844;
   --color-primary-foreground: #0d1b12;
 
-  /* Backgrounds */
-  --color-bg-light: #f8fcf9;
-  --color-bg-dark: #102216;
-  --color-surface-light: #ffffff;
-  --color-surface-dark: #1a2c20;
+  /* Surfaces & Cards Semantic */
+  --color-surface: var(--color-surface-light);
+  --color-surface-hover: #f1f5f9;
+  --color-border: #f1f5f9;
+  --color-border-hover: #e2e8f0;
+  
+  --color-sidebar-active: #102216;
 
-  /* Text */
-  --color-text-main: #0d1b12;
-  --color-text-sub: #4c9a66;
+  /* Text & Icons Raw */
+  --color-text: #0d1b12;
+  --color-text-muted: #64748b;
+  --color-text-dim: #94a3b8;
 
-  /* General */
-  --background: #f8fcf9;
+  /* General Bases */
+  --background: var(--color-bg-light);
   --foreground: #0d1b12;
+}
+
+.dark {
+  --background: var(--color-bg-dark);
+  --foreground: #ffffff;
+  
+  --color-surface: var(--color-surface-dark);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.15);
+  
+  --color-sidebar-active: rgba(19, 236, 91, 0.1);
+
+  --color-text: #f1f5f2;
+  --color-text-muted: #88b394;
+  --color-text-dim: #648a6e;
 }
 
 
@@ -35,10 +60,18 @@
   --color-primary-hover: var(--color-primary-hover);
   --color-primary-active: var(--color-primary-active);
   --color-primary-foreground: var(--color-primary-foreground);
-  --color-surface-light: var(--color-surface-light);
-  --color-surface-dark: var(--color-surface-dark);
-  --color-text-main: var(--color-text-main);
-  --color-text-sub: var(--color-text-sub);
+  
+  /* New Mappings */
+  --color-surface: var(--color-surface);
+  --color-surface-hover: var(--color-surface-hover);
+  --color-border: var(--color-border);
+  --color-border-hover: var(--color-border-hover);
+  --color-sidebar-active: var(--color-sidebar-active);
+  
+  --color-text-main: var(--color-text);
+  --color-text-sub: var(--color-text-muted);
+  --color-text-dim: var(--color-text-dim);
+  
   --font-sans: 'Inter', sans-serif;
 }
 

@@ -112,7 +112,7 @@ export async function logout(): Promise<void> {
 }
 
 /**
- * Obtiene el perfil del usuario autenticado cruzando datos de Auth con la tabla 'profiles'.
+ * Obtiene el perfil del usuario autenticado cruzando datos de Auth con la tabla 'users'.
  */
 export async function getUser(): Promise<User | null> {
   try {
@@ -125,9 +125,9 @@ export async function getUser(): Promise<User | null> {
 
     if (!session) return null;
 
-    // Buscamos los metadatos extendidos en nuestra tabla pública de perfiles
+    // Buscamos los metadatos extendidos en nuestra tabla pública de usuarios
     const { data: userData, error: userError } = await supabase
-      .from("profiles")
+      .from("users")
       .select("*")
       .eq("id", session.id)
       .single();

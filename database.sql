@@ -138,15 +138,23 @@ insert into storage.buckets (id, name, public)
 
 -- Reglas de acceso para Storage
 -- 1. Avatares: Cualquiera puede verlos, solo el dueño los sube/edita
+drop policy if exists "Avatar images are publicly accessible." on storage.objects;
 create policy "Avatar images are publicly accessible." on storage.objects
   for select using (bucket_id = 'avatars');
 
+drop policy if exists "Authenticated users can upload an avatar." on storage.objects;
 create policy "Authenticated users can upload an avatar." on storage.objects
   for insert with check (bucket_id = 'avatars' and auth.role() = 'authenticated');
 
+drop policy if exists "Users can update their own avatar." on storage.objects;
 create policy "Users can update their own avatar." on storage.objects
   for update using (auth.uid() = owner) with check (bucket_id = 'avatars');
 
+drop policy if exists "Users can delete their own avatar." on storage.objects;
+create policy "Users can delete their own avatar." on storage.objects
+  for delete using (bucket_id = 'avatars' and auth.uid() = owner);
+
 -- 2. Recibos: Seguridad estricta, solo el dueño puede interactuar
+drop policy if exists "Users can manage their own receipts." on storage.objects;
 create policy "Users can manage their own receipts." on storage.objects
   for all using (bucket_id = 'receipts' and auth.uid() = owner);
