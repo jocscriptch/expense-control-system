@@ -58,7 +58,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       } ${
         isCollapsed ? "lg:w-20" : "lg:w-64"
-      } w-64 transition-all duration-300 ease-in-out bg-surface border-r border-border flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none`}
+      } w-64 md:w-72 lg:w-auto transition-all duration-300 ease-in-out bg-surface border-r border-border flex flex-col h-full flex-shrink-0 shadow-2xl lg:shadow-none`}
     >
       <button
         onClick={toggleSidebar}
@@ -99,8 +99,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => onClose?.()}
               title={isCollapsed ? item.label : undefined}
-              className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group ${
+              className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-colors group ${
                 isActive
                   ? "bg-sidebar-active text-primary"
                   : "text-text-sub hover:bg-surface-hover hover:text-text-main"
@@ -111,13 +112,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 {item.icon}
               </span>
-              {!isCollapsed && (
-                <span
-                  className={`text-sm whitespace-nowrap overflow-hidden ${isActive ? "font-semibold" : "font-medium"}`}
-                >
-                  {item.label}
-                </span>
-              )}
+              <span
+                className={`text-base lg:text-sm whitespace-nowrap overflow-hidden ${isActive ? "font-semibold" : "font-medium"} ${
+                  isCollapsed ? "lg:hidden block" : "block"
+                }`}
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}
@@ -125,8 +126,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="pt-4 mt-4 border-t border-border">
           <Link
             href="/dashboard/settings"
+            onClick={() => onClose?.()}
             title={isCollapsed ? "Ajustes" : undefined}
-            className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group ${
+            className={`flex items-center ${isCollapsed ? "lg:justify-center px-3 lg:px-0" : "gap-3 px-3"} py-3 md:py-2.5 rounded-lg transition-colors group ${
               pathname === "/dashboard/settings"
                 ? "bg-sidebar-active text-primary"
                 : "text-text-sub hover:bg-surface-hover hover:text-text-main"
@@ -137,13 +139,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             }`}>
               settings
             </span>
-            {!isCollapsed && (
-              <span className={`text-sm whitespace-nowrap overflow-hidden ${
+            <span
+              className={`text-base lg:text-sm whitespace-nowrap overflow-hidden ${
                 pathname === "/dashboard/settings" ? "font-semibold" : "font-medium"
-              }`}>
-                Ajustes
-              </span>
-            )}
+              } ${isCollapsed ? "lg:hidden block" : "block"}`}
+            >
+              Ajustes
+            </span>
           </Link>
         </div>
       </nav>
@@ -153,6 +155,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center gap-2 group/user relative">
           <Link
             href="/dashboard/settings"
+            onClick={() => onClose?.()}
             className={`flex items-center ${isCollapsed ? "justify-center w-full" : "gap-3 px-2"} py-2 rounded-lg transition-colors hover:bg-surface-hover flex-1 overflow-hidden`}
             title={isCollapsed ? "Configuración" : undefined}
           >
