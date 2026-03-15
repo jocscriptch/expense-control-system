@@ -94,7 +94,7 @@ export default function Sidebar() {
               title={isCollapsed ? item.label : undefined}
               className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group ${
                 isActive
-                  ? "bg-primary/10 text-primary "
+                  ? "bg-sidebar-active text-primary"
                   : "text-text-sub hover:bg-surface-hover hover:text-text-main"
               }`}
             >
@@ -118,13 +118,21 @@ export default function Sidebar() {
           <Link
             href="/dashboard/settings"
             title={isCollapsed ? "Ajustes" : undefined}
-            className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg text-text-sub hover:bg-surface-hover hover:text-text-main transition-colors group`}
+            className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3 px-3"} py-2.5 rounded-lg transition-colors group ${
+              pathname === "/dashboard/settings"
+                ? "bg-sidebar-active text-primary"
+                : "text-text-sub hover:bg-surface-hover hover:text-text-main"
+            }`}
           >
-            <span className="material-symbols-outlined group-hover:text-text-main transition-colors">
+            <span className={`material-symbols-outlined transition-colors ${
+              pathname === "/dashboard/settings" ? "font-fill text-primary" : "group-hover:text-text-main"
+            }`}>
               settings
             </span>
             {!isCollapsed && (
-              <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+              <span className={`text-sm whitespace-nowrap overflow-hidden ${
+                pathname === "/dashboard/settings" ? "font-semibold" : "font-medium"
+              }`}>
                 Ajustes
               </span>
             )}

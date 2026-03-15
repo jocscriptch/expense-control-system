@@ -21,6 +21,8 @@
   --color-surface-hover: #f1f5f9;
   --color-border: #f1f5f9;
   --color-border-hover: #e2e8f0;
+  
+  --color-sidebar-active: #102216;
 
   /* Text & Icons Raw */
   --color-text: #0d1b12;
@@ -40,6 +42,8 @@
   --color-surface-hover: rgba(255, 255, 255, 0.05);
   --color-border: rgba(255, 255, 255, 0.1);
   --color-border-hover: rgba(255, 255, 255, 0.15);
+  
+  --color-sidebar-active: rgba(19, 236, 91, 0.1);
 
   --color-text: #f1f5f2;
   --color-text-muted: #88b394;
@@ -62,6 +66,7 @@
   --color-surface-hover: var(--color-surface-hover);
   --color-border: var(--color-border);
   --color-border-hover: var(--color-border-hover);
+  --color-sidebar-active: var(--color-sidebar-active);
   
   --color-text-main: var(--color-text);
   --color-text-sub: var(--color-text-muted);

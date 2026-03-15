@@ -191,19 +191,20 @@ export default function SettingsForm({ user }: SettingsFormProps) {
             <h3 className="text-xl font-bold text-text-main">Región e Idioma</h3>
           </div>
           <div className="flex flex-col gap-6 flex-1">
-            <div className="space-y-2">
+            <div className="space-y-2 opacity-60">
               <label className="text-sm font-semibold text-text-main block">
                 Moneda principal
               </label>
-              <select 
-                className="w-full rounded-lg border border-border bg-background text-text-main px-4 py-3 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none cursor-pointer"
-                value={watch("currency")}
-                onChange={(e) => setValue("currency", e.target.value, { shouldDirty: true })}
-              >
-                {CURRENCIES.map(curr => (
-                  <option key={curr.code} value={curr.code}>{curr.name}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <input 
+                  type="text"
+                  className="w-full rounded-lg border border-border bg-surface-hover text-text-main px-4 py-3 text-sm outline-none"
+                  value="CRC - Colón Costarricense"
+                  disabled
+                />
+                <span className="material-symbols-outlined absolute right-3 top-3 text-text-dim">lock</span>
+              </div>
+              <p className="text-[10px] text-text-dim">La administración multi-moneda no está habilitada.</p>
             </div>
 
             <div className="space-y-2 opacity-60">
@@ -247,7 +248,10 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                 <button
                   key={theme.id}
                   type="button"
-                  onClick={() => setValue("theme", theme.id as any, { shouldDirty: true })}
+                  onClick={() => {
+                    setValue("theme", theme.id as any, { shouldDirty: true });
+                    document.dispatchEvent(new CustomEvent("theme-preview", { detail: theme.id }));
+                  }}
                   className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-all ${
                     selectedTheme === theme.id
                       ? "border-primary bg-primary/5 text-primary"
