@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
@@ -10,6 +10,8 @@ import type { User } from "@/features/auth/types";
 import { useAuth } from "@/context/AuthContext";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
+import { processImage } from "@/lib/utils/image";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface SettingsFormProps {
   user: User;
@@ -27,6 +29,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
   const { refreshUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -34,6 +37,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { isDirty },
   } = useForm<SettingsFormData>({
     resolver: zodResolver(settingsSchema),
@@ -46,6 +50,19 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       theme: (user.theme as "light" | "dark" | "system") || "system",
     },
   });
+
+  // Sincronizar el formulario cuando los datos del usuario cambian (ej. tras refreshUser)
+  // Esto asegura que isDirty se recalcule correctamente y el botón se apague tras guardar.
+  useEffect(() => {
+    reset({
+      name: user.name,
+      email: user.email,
+      bio: user.bio || "",
+      currency: user.currency || "CRC",
+      language: user.language || "es",
+      theme: (user.theme as "light" | "dark" | "system") || "system",
+    });
+  }, [user, reset]);
 
   const selectedTheme = watch("theme");
 
@@ -71,18 +88,27 @@ export default function SettingsForm({ user }: SettingsFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar tamaño (máx 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("La imagen es demasiado grande. Máximo 2MB.");
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("La imagen original es demasiado pesada (máx 25MB).");
       return;
     }
 
     setIsUploading(true);
-    const toastId = toast.loading("Subiendo imagen...");
+    const toastId = toast.loading("Procesando y optimizando imagen...");
 
     try {
-      const result = await updateAvatar(user.id, file);
+      const optimizedFile = await processImage(file);
+      
+      toast.loading("Subiendo imagen optimizada...", { id: toastId });
+
+      const formData = new FormData();
+      formData.append("userId", user.id);
+      formData.append("file", optimizedFile);
+
+      const result = await updateAvatar(formData);
+      
       if (result.success) {
+        setIsImageLoading(true); // Bloqueamos el UI hasta que la imagen realmente cargue
         await refreshUser();
         toast.success(result.message || "Imagen actualizada", { id: toastId });
       } else {
@@ -110,16 +136,24 @@ export default function SettingsForm({ user }: SettingsFormProps) {
           <div className="md:col-span-3 flex flex-col items-center justify-center gap-4">
             <div 
               className="relative group cursor-pointer"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => !isUploading && !isImageLoading && fileInputRef.current?.click()}
             >
-              <div className="size-28 md:size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center">
-                {isUploading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                ) : user.avatar_url ? (
+              <div className="size-28 md:size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center relative">
+                {(isUploading || isImageLoading) && (
+                  <div className="absolute inset-0 z-10 bg-background flex items-center justify-center">
+                    <Skeleton className="absolute inset-0 rounded-full" />
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary z-20"></div>
+                  </div>
+                )}
+                
+                {user.avatar_url ? (
                   <img 
                     src={user.avatar_url} 
                     alt="Foto de perfil" 
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105" 
+                    onLoad={() => setIsImageLoading(false)}
+                    className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
+                      (isUploading || isImageLoading) ? "opacity-0" : "opacity-100"
+                    }`} 
                   />
                 ) : (
                   <span className="text-4xl font-bold text-text-sub">
@@ -279,7 +313,11 @@ export default function SettingsForm({ user }: SettingsFormProps) {
         <Button 
           type="submit"
           disabled={!isDirty || isSubmitting}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold text-black border-0 shadow-lg shadow-primary/20 bg-primary hover:bg-primary-hover disabled:opacity-50"
+          className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold transition-all duration-300 ${
+            !isDirty || isSubmitting
+              ? "bg-primary/20 text-black/30 cursor-not-allowed border-0 shadow-none"
+              : "bg-primary text-black border-0 shadow-lg shadow-primary/20 hover:bg-primary-hover hover:scale-105"
+          }`}
         >
           {isSubmitting ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black"></div>
