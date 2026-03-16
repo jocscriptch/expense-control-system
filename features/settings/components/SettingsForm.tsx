@@ -6,8 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-hot-toast";
 import { settingsSchema, type SettingsFormData } from "../schema";
 import { updateProfile, updateAvatar } from "../actions";
+import { updatePassword, logout, verifyCurrentPassword } from "@/features/auth/actions";
 import type { User } from "@/features/auth/types";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
 import { processImage } from "@/lib/utils/image";
@@ -25,7 +27,15 @@ const CURRENCIES = [
   { code: "COP", name: "COP - Peso Colombiano" },
 ];
 
+/**
+ * Formulario de Ajustes del Sistema.
+ * Permite gestionar el perfil del usuario (nombre, bio, avatar) y la configuración
+ * de seguridad (cambio de contraseña), región y apariencia.
+ * 
+ * Centraliza la lógica de validación con Zod y la sincronización de estado con la base de datos.
+ */
 export default function SettingsForm({ user }: SettingsFormProps) {
+  const router = useRouter();
   const { refreshUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -48,6 +58,9 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       currency: user.currency || "CRC",
       language: user.language || "es",
       theme: (user.theme as "light" | "dark" | "system") || "system",
+      currentPassword: "",
+      password: "",
+      confirmPassword: "",
     },
   });
 
@@ -61,19 +74,65 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       currency: user.currency || "CRC",
       language: user.language || "es",
       theme: (user.theme as "light" | "dark" | "system") || "system",
+      currentPassword: "",
+      password: "",
+      confirmPassword: "",
     });
   }, [user, reset]);
 
   const selectedTheme = watch("theme");
 
+  /**
+   * Procesa el envío del formulario.
+   * Coordina la actualización de la contraseña (si se provee) y el perfil del usuario.
+   * Si la seguridad se actualiza, fuerza un cierre de sesión para validar credenciales.
+   */
   const onSubmit = async (data: SettingsFormData) => {
     setIsSubmitting(true);
     const toastId = toast.loading("Guardando cambios...");
     try {
+      let passwordChanged = false;
+
+      // 1. Si hay una nueva contraseña, validamos la actual y luego actualizamos
+      if (data.password && data.password.length > 0) {
+        toast.loading("Verificando contraseña actual...", { id: toastId });
+        
+        const isCurrentValid = await verifyCurrentPassword(data.currentPassword || "");
+        if (!isCurrentValid) {
+          toast.error("La contraseña actual es incorrecta", { id: toastId });
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.loading("Actualizando contraseña...", { id: toastId });
+        const passResult = await updatePassword({
+          password: data.password,
+        });
+
+        if (!passResult.success) {
+          toast.error(passResult.error || "Error al cambiar contraseña", { id: toastId });
+          setIsSubmitting(false);
+          return;
+        }
+        passwordChanged = true;
+      }
+
+      // Actualizamos el resto del perfil del usuario
+      toast.loading("Guardando perfil...", { id: toastId });
       const result = await updateProfile(user.id, data);
+      
       if (result.success) {
-        await refreshUser();
-        toast.success(result.message || "Cambios guardados", { id: toastId });
+        if (passwordChanged) {
+          toast.success("Seguridad actualizada. Por favor inicia sesión de nuevo.", { id: toastId, duration: 4000 });
+          // Esperamos un momento para que el usuario lea el mensaje antes de sacarlo
+          setTimeout(async () => {
+            await logout();
+            router.push("/login?message=Seguridad actualizada, inicia sesión de nuevo");
+          }, 2000);
+        } else {
+          await refreshUser();
+          toast.success(result.message || "Cambios guardados", { id: toastId });
+        }
       } else {
         toast.error(result.error || "Ocurrió un error", { id: toastId });
       }
@@ -84,6 +143,10 @@ export default function SettingsForm({ user }: SettingsFormProps) {
     }
   };
 
+  /**
+   * Gestiona la carga y optimización de la foto de perfil.
+   * Procesa la imagen en el cliente antes de subirla para reducir el peso y mejorar la privacidad.
+   */
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -212,6 +275,56 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                 onChange={(e) => setValue("bio", e.target.value, { shouldDirty: true })}
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección: Seguridad */}
+      <section className="bg-surface rounded-xl border border-border p-4 md:p-8 shadow-sm transition-colors duration-200">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
+          <span className="material-symbols-outlined text-primary text-2xl">lock</span>
+          <h3 className="text-xl font-bold text-text-main">Seguridad</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
+            <FormField
+              name="currentPassword"
+              control={control}
+              label="Contraseña actual"
+              type="password"
+              placeholder="••••••••"
+              icon={<span className="material-symbols-outlined text-lg">lock_person</span>}
+            />
+          </div>
+
+          <div>
+            <FormField
+              name="password"
+              control={control}
+              label="Nueva contraseña"
+              type="password"
+              placeholder="••••••••"
+              icon={<span className="material-symbols-outlined text-lg">password</span>}
+            />
+          </div>
+
+          <div>
+            <FormField
+              name="confirmPassword"
+              control={control}
+              label="Confirmar contraseña"
+              type="password"
+              placeholder="••••••••"
+              icon={<span className="material-symbols-outlined text-lg">verified_user</span>}
+            />
+          </div>
+          
+          <div className="md:col-span-2 px-4 py-3 bg-primary/5 rounded-lg border border-primary/20">
+            <p className="text-xs text-text-sub flex items-center gap-2">
+              <span className="material-symbols-outlined text-sm text-primary">info</span>
+              Si cambias tu contraseña, se cerrará tu sesión actual por seguridad.
+            </p>
           </div>
         </div>
       </section>

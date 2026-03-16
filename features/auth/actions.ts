@@ -25,7 +25,7 @@ export async function login(formData: SignInData): Promise<AuthResponse> {
 /**
  * Crea un nuevo registro de usuario en el sistema.
  * Implementa una lógica especial de UX para detectar correos duplicados incluso
- * si la protección de enumeración de Supabase está activa.
+ * si la protección de enumeración de Supabase está activa (detecta identidades vacías).
  */
 export async function signup(formData: SignUpData): Promise<AuthResponse> {
   const supabase = await createClient();
@@ -43,10 +43,6 @@ export async function signup(formData: SignUpData): Promise<AuthResponse> {
     return { success: false, error: translateError(error.message) };
   }
 
-  /**
-   * OPCIÓN UX: Supabase devuelve un objeto de usuario vacío en sus identidades 
-   * si el correo ya existe por seguridad. Aquí detectamos eso para dar feedback real.
-   */
   if (data.user && data.user.identities?.length === 0) {
     return { 
       success: false, 
@@ -79,7 +75,7 @@ export async function sendRecoveryEmail(formData: RecoverData): Promise<AuthResp
 
 /**
  * Actualiza la contraseña del usuario actualmente autenticado (normalmente tras recuperar cuenta).
- * Al finalizar, limpia la cookie de seguridad sb-recovery-mode.
+ * Al finalizar, limpia la cookie de seguridad sb-recovery-mode para evitar reutilización del flujo.
  */
 export async function updatePassword(formData: UpdatePasswordData): Promise<AuthResponse> {
   const supabase = await createClient();
@@ -93,10 +89,6 @@ export async function updatePassword(formData: UpdatePasswordData): Promise<Auth
     return { success: false, error: translateError(error.message) };
   }
 
-  /**
-   * SEGURIDAD: Limpiamos la cookie de modo recuperación para que el usuario
-   * no pueda volver a entrar a la ruta de actualizar contraseña sin haber solicitado otro correo.
-   */
   const cookieStore = await (await import("next/headers")).cookies();
   cookieStore.delete("sb-recovery-mode");
 
@@ -109,6 +101,27 @@ export async function updatePassword(formData: UpdatePasswordData): Promise<Auth
 export async function logout(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
+}
+
+/**
+ * Verifica si la contraseña actual del usuario es correcta.
+ * Se utiliza como paso de seguridad antes de permitir cambiar la contraseña.
+ */
+export async function verifyCurrentPassword(password: string): Promise<boolean> {
+  const supabase = await createClient();
+  
+  // Obtenemos el correo del usuario actual para la verificación
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user?.email) return false;
+
+  // Intentamos iniciar sesión con la contraseña actual
+  // Esto no afecta la sesión actual si ya está iniciada, solo valida credenciales
+  const { error } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password,
+  });
+
+  return !error;
 }
 
 /**
