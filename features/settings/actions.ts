@@ -7,17 +7,25 @@ import { revalidatePath } from "next/cache";
 
 /**
  * Actualiza los datos del perfil del usuario en la tabla 'users'.
+ * Filtra automáticamente los campos de seguridad que no pertenecen a esta tabla.
+ * 
+ * @param userId - ID único del usuario.
+ * @param data - Objeto con los campos a actualizar (nombre, bio, etc).
+ * @returns AuthResponse con el resultado de la operación.
  */
 export async function updateProfile(
   userId: string,
-  data: Partial<Pick<User, "name" | "bio" | "currency" | "language" | "theme">>
+  data: any
 ): Promise<AuthResponse> {
   const supabase = await createClient();
+
+  // Extraemos los campos que NO van a la tabla de base de datos
+  const { currentPassword, password, confirmPassword, ...dbData } = data;
 
   const { error } = await supabase
     .from("users")
     .update({
-      ...data,
+      ...dbData,
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
@@ -33,6 +41,10 @@ export async function updateProfile(
 
 /**
  * Sube una nueva imagen de avatar al bucket de storage y actualiza la URL en la tabla 'users'.
+ * Maneja la limpieza de archivos antiguos y la generación de una URL única para evitar problemas de caché.
+ * 
+ * @param formData - Contenedor con 'userId' y el archivo 'file' optimizado.
+ * @returns AuthResponse con el resultado de la operación y la URL final.
  */
 export async function updateAvatar(
   formData: FormData
