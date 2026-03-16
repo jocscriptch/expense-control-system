@@ -35,37 +35,39 @@ export async function updateProfile(
  * Sube una nueva imagen de avatar al bucket de storage y actualiza la URL en la tabla 'users'.
  */
 export async function updateAvatar(
-  userId: string,
-  file: File
+  formData: FormData
 ): Promise<AuthResponse> {
-  const supabase = await createClient();
+  const userId = formData.get("userId") as string;
+  const file = formData.get("file") as File;
 
-  // 1. Limpiar archivos antiguos para asegurar que solo exista UNO (independientemente de la extensión)
+  const supabase = await createClient();
+  if (!file || !userId) {
+    return { success: false, error: "Datos incompletos para la subida" };
+  }
+  // 1. Limpiar archivos antiguos para asegurar que no se acumulen
   const { data: existingFiles } = await supabase.storage
     .from("avatars")
     .list(userId);
 
   if (existingFiles && existingFiles.length > 0) {
     const pathsToDelete = existingFiles.map((f) => `${userId}/${f.name}`);
-    const { error: deleteError } = await supabase.storage.from("avatars").remove(pathsToDelete);
-    if (deleteError) {
-      console.error("Error al eliminar archivos antiguos:", deleteError);
-    }
+    await supabase.storage.from("avatars").remove(pathsToDelete);
   }
 
-  // 2. Subir el nuevo archivo con un nombre fijo para que upsert funcione si fuera necesario
-  const fileExt = file.name.split(".").pop();
-  const filePath = `${userId}/avatar.${fileExt}`;
+  // 2. Nombre ÚNICO con timestamp para REVENTAR la caché del CDN y del Dashboard
+  // processImage siempre nos envía un webp, así que forzamos esa extensión
+  const timestamp = Date.now();
+  const filePath = `${userId}/avatar_${timestamp}.webp`;
 
   const { error: uploadError } = await supabase.storage
     .from("avatars")
     .upload(filePath, file, {
       upsert: true,
-      contentType: file.type
+      contentType: "image/webp"
     });
 
   if (uploadError) {
-    console.error("Error al subir avatar:", uploadError);
+    console.error("Error al subir avatar a Storage:", uploadError);
     return { success: false, error: "Error al subir la imagen" };
   }
 
@@ -75,10 +77,12 @@ export async function updateAvatar(
     .getPublicUrl(filePath);
 
   // 3. Actualizar tabla 'users'
+  const finalUrl = `${publicUrl}?t=${Date.now()}`;
+  
   const { error: updateError } = await supabase
     .from("users")
     .update({
-      avatar_url: publicUrl,
+      avatar_url: finalUrl,
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
@@ -89,5 +93,5 @@ export async function updateAvatar(
   }
 
   revalidatePath("/dashboard/settings");
-  return { success: true, message: "Foto de perfil actualizada", data: publicUrl };
+  return { success: true, message: "Foto de perfil actualizada", data: finalUrl };
 }
