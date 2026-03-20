@@ -134,9 +134,12 @@ export async function getUser(): Promise<User | null> {
     // Obtenemos el ID de la sesión actual
     const {
       data: { user: session },
+      error: sessionError
     } = await supabase.auth.getUser();
 
-    if (!session) return null;
+    if (!session) {
+      return null;
+    }
 
     // Buscamos los metadatos extendidos en nuestra tabla pública de usuarios
     const { data: userData, error: userError } = await supabase
@@ -146,13 +149,13 @@ export async function getUser(): Promise<User | null> {
       .single();
 
     if (userError) {
-      console.error("Error al obtener el perfil de base de datos:", userError);
+      console.error("Error al obtener perfil:", userError.message);
       return null;
     }
 
     return userData;
   } catch (error) {
-    console.error("Error inesperado al obtener usuario:", error);
+    console.error("Error inesperado en getUser:", error);
     return null;
   }
 }
