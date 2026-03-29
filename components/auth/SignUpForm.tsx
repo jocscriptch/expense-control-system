@@ -1,103 +1,59 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail, Lock, User } from "lucide-react";
-import toast from "react-hot-toast";
+import { Mail, Lock, User, Loader2 } from "lucide-react";
 import Link from "next/link";
-
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
-import { signUpSchema, type SignUpFormValues } from "@/features/auth/schemas";
+import { signUpSchema } from "@/features/auth/schemas";
 import { signup } from "@/features/auth/actions";
+import { useFormAction } from "@/hooks/useFormAction";
 
+/**
+ * Formulario de Registro.
+ * Utiliza useFormAction para centralizar la validación y el envío de datos.
+ */
 export default function SignUpForm() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { handleSubmit, control, reset } = useForm<SignUpFormValues>({
-    resolver: zodResolver(signUpSchema),
+  const { control, onSubmit, isLoading, reset } = useFormAction({
+    schema: signUpSchema,
+    action: signup,
     defaultValues: { name: "", email: "", password: "" },
+    loadingMessage: "Creando cuenta...",
+    successDuration: 6000,
+    onSuccess: () => {
+      // No redirigimos inmediatamente para que el usuario lea el mensaje del correo
+      reset();
+    },
   });
-
-  const onSubmit = async (data: SignUpFormValues) => {
-    setIsLoading(true);
-    try {
-      const response = await signup(data);
-
-      if (response.success) {
-        toast.success(
-          `Hola ${data.name}. Te hemos enviado un correo de confirmación para verificar tu cuenta.`,
-          { duration: 4000, icon: "👋" },
-        );
-        reset();
-      } else {
-        // Handle specific Supabase errors
-        const error = response.error || "Error al registrar";
-        if (error.includes("User already registered")) {
-          toast.error("Este correo electrónico ya está registrado", {
-            duration: 4000,
-          });
-        } else if (error.includes("Password should be at least 6 characters")) {
-          toast.error("La contraseña debe tener al menos 6 caracteres", {
-            duration: 4000,
-          });
-        } else if (error.includes("Invalid email")) {
-          toast.error("Por favor ingresa un correo electrónico válido", {
-            duration: 4000,
-          });
-        } else {
-          toast.error(error, { duration: 4000 });
-        }
-      }
-    } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : "Error inesperado";
-      toast.error(message, { duration: 4000 });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-[440px] flex flex-col gap-8">
       {/* Header */}
       <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 text-white">
           <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"
-              />
-            </svg>
+            <span className="material-symbols-outlined text-black font-bold">
+              payments
+            </span>
           </div>
           <span className="font-bold text-lg tracking-tight">
             Sistema de Gastos
           </span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-[-0.02em] text-white">
-          Crear cuenta
+          Empezar ahora
         </h1>
         <p className="text-gray-400 text-base font-normal">
-          Comienza a organizar tus gastos de manera inteligente.
+          Crea tu cuenta gratis y toma el control de tu dinero.
         </p>
       </header>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={onSubmit} className="flex flex-col gap-5">
         <FormField
           name="name"
           control={control}
-          label="Nombre Completo"
-          placeholder="Tu nombre completo"
+          label="Nombre completo"
+          placeholder="Ej. Juan Pérez"
           type="text"
           autoComplete="name"
           maxLength={100}
@@ -127,10 +83,23 @@ export default function SignUpForm() {
           maxLength={20}
           icon={<Lock className="w-5 h-5" />}
           disabled={isLoading}
+          labelExtra={
+            <div className="text-[10px] text-gray-500 font-medium">
+              Usa letras, números y al menos un símbolo.
+            </div>
+          }
         />
 
-        <Button type="submit" disabled={isLoading} className="mt-2 w-full">
-          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="mt-2 w-full font-bold"
+        >
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <span className="material-symbols-outlined mr-2">person_add</span>
+          )}
           Crear cuenta
         </Button>
       </form>
@@ -138,12 +107,15 @@ export default function SignUpForm() {
       {/* Footer */}
       <div className="text-center">
         <p className="text-sm text-gray-400">
-          ¿Ya tienes una cuenta?{" "}
+          ¿Ya tienes cuenta?{" "}
           <Link
             href="/login"
-            className="font-bold text-white hover:text-primary transition-colors"
+            className="font-bold text-white hover:text-primary transition-colors inline-flex items-center gap-1 group"
           >
-            Inicia Sesión
+            Iniciar sesión
+            <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
           </Link>
         </p>
       </div>

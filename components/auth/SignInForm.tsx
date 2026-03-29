@@ -1,61 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Mail, Lock } from "lucide-react";
-import toast from "react-hot-toast";
+import { Mail, Lock, Loader2 } from "lucide-react";
 import Link from "next/link";
-
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
-import { signInSchema, type SignInFormValues } from "@/features/auth/schemas";
+import { signInSchema } from "@/features/auth/schemas";
 import { login } from "@/features/auth/actions";
+import { useFormAction } from "@/hooks/useFormAction";
 
+/**
+ * Formulario de Inicio de Sesión.
+ * Implementa un flujo limpio desacoplado de la lógica de negocio mediante useFormAction.
+ */
 export default function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { handleSubmit, control } = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
+  const { control, onSubmit, isLoading } = useFormAction({
+    schema: signInSchema,
+    action: login,
     defaultValues: { email: "", password: "" },
+    loadingMessage: "Autenticando...",
+    onSuccess: () => {
+      // Redirección manual tras éxito ya que el hook maneja el toast
+      window.location.href = "/dashboard";
+    },
   });
-
-  const onSubmit = async (data: SignInFormValues) => {
-    setIsLoading(true);
-    try {
-      const res = await login(data);
-      if (res.success) {
-        window.location.href = "/dashboard";
-      } else {
-        toast.error(res.error || "Error al iniciar sesión", { duration: 3000 });
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error inesperado";
-      toast.error(message, { duration: 3000 });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-[440px] flex flex-col gap-8">
       {/* Header */}
       <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex items-center gap-2 mb-6 text-white">
           <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"
-              />
-            </svg>
+            <span className="material-symbols-outlined text-black font-bold">payments</span>
           </div>
           <span className="font-bold text-lg tracking-tight">
             Sistema de Gastos
@@ -70,7 +45,7 @@ export default function SignInForm() {
       </header>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={onSubmit} className="flex flex-col gap-5">
         <FormField
           name="email"
           control={control}
@@ -103,8 +78,12 @@ export default function SignInForm() {
           }
         />
 
-        <Button type="submit" disabled={isLoading} className="mt-2 w-full">
-          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+        <Button type="submit" disabled={isLoading} className="mt-2 w-full font-bold">
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <span className="material-symbols-outlined mr-2">login</span>
+          )}
           Iniciar sesión
         </Button>
       </form>
@@ -118,19 +97,7 @@ export default function SignInForm() {
             className="font-bold text-white hover:text-primary transition-colors inline-flex items-center gap-1 group"
           >
             Crear cuenta
-            <svg
-              className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
+            <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </Link>
         </p>
       </div>

@@ -50,7 +50,11 @@ export async function signup(formData: SignUpData): Promise<AuthResponse> {
     };
   }
 
-  return { success: true, message: "Usuario registrado correctamente", data };
+  return { 
+    success: true, 
+    message: `¡Cuenta creada con éxito! Hemos enviado un correo de confirmación a ${formData.email}. Por favor, verifícalo para continuar.`, 
+    data 
+  };
 }
 
 /**
