@@ -10,6 +10,7 @@ export interface User {
   currency: string | null;
   language: string | null;
   theme: string | null;
+  monthly_budget: number;
   created_at: string;
   updated_at: string;
 }

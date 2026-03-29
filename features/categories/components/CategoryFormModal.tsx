@@ -1,6 +1,7 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
+import { upsertCategoryAction } from "../actions";
+import { CategoryFormData } from "../types";
+import { formatInputAmount, parseInputAmount } from "@/components/ui/AmountDisplay";
 
 interface CategoryFormModalProps {
   isOpen: boolean;
@@ -35,32 +36,7 @@ const PREDEFINED_EXPENSE_ICONS = [
   "receipt_long",
 ];
 
-const PREDEFINED_INCOME_ICONS = [
-  "payments",
-  "account_balance_wallet",
-  "savings",
-  "trending_up",
-  "work",
-  "redeem",
-  "storefront",
-  "monetization_on",
-  "account_balance",
-  "contract",
-  "volunteer_activism",
-  "real_estate_agent",
-  "sell",
-  "stars",
-  "add_circle",
-  "attach_money",
-  "cases",
-  "assured_workload",
-  "diamond",
-  "point_of_sale",
-  "handshake",
-  "apartment",
-  "verified",
-  "thumb_up",
-];
+
 
 export function CategoryFormModal({
   isOpen,
@@ -69,10 +45,12 @@ export function CategoryFormModal({
 }: CategoryFormModalProps) {
   // Estado local para los campos simulados
   const [name, setName] = useState("");
-  const [type, setType] = useState("expense");
+  const [type, setType] = useState<"expense" | "income">("expense");
   const [color, setColor] = useState("#f97316");
   const [icon, setIcon] = useState("category");
   const [budget, setBudget] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isEditing = !!categoryData;
 
@@ -96,19 +74,37 @@ export function CategoryFormModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Dummy submit (cerrar modal)
-    onClose();
+    setIsLoading(true);
+    setError(null);
+
+    const formData: CategoryFormData = {
+      id: categoryData?.id,
+      name,
+      type: "expense", // Forzamos siempre gasto
+      color,
+      icon: icon || fallbackIcon,
+      amount_limit: budget ? parseFloat(budget) : null,
+    };
+
+    try {
+      const result = await upsertCategoryAction(formData);
+      if (result.success) {
+        onClose();
+      } else {
+        setError(result.error || "Ocurrió un error inesperado.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Error al conectar con el servidor.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const currentIcons =
-    type === "income" ? PREDEFINED_INCOME_ICONS : PREDEFINED_EXPENSE_ICONS;
-  const fallbackIcon = type === "income" ? "payments" : "category";
-  const placeholderText =
-    type === "income"
-      ? "Ej. Salario, Bono, Venta"
-      : "Ej. Comida, Transporte, Renta";
+  const currentIcons = PREDEFINED_EXPENSE_ICONS;
+  const fallbackIcon = "category";
+  const placeholderText = "Ej. Comida, Transporte, Renta";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4">
@@ -130,45 +126,13 @@ export function CategoryFormModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
-          {/* Tipo de Categoría (Segmented Control Avanzado) */}
-          <div className="flex items-center gap-2 bg-surface-hover p-1.5 rounded-xl border border-border">
-            <button
-              type="button"
-              onClick={() => {
-                setType("expense");
-                setIcon("");
-                setColor("#13ec5b");
-              }}
-              className={`flex-1 py-2 text-sm rounded-lg transition-all flex items-center justify-center gap-2 ${
-                type === "expense"
-                  ? "bg-background shadow-md text-red-500 font-bold border border-border"
-                  : "text-text-sub font-medium hover:text-text-main hover:bg-surface"
-              }`}
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${type === "expense" ? "bg-red-500" : "bg-transparent"}`}
-              ></span>
-              Gasto
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setType("income");
-                setIcon("");
-                setColor("#13ec5b");
-              }}
-              className={`flex-1 py-2 text-sm rounded-lg transition-all flex items-center justify-center gap-2 ${
-                type === "income"
-                  ? "bg-background shadow-md text-primary font-bold border border-border"
-                  : "text-text-sub font-medium hover:text-text-main hover:bg-surface"
-              }`}
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${type === "income" ? "bg-primary" : "bg-transparent"}`}
-              ></span>
-              Ingreso
-            </button>
-          </div>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 flex items-center gap-3 text-red-500 text-sm animate-in fade-in slide-in-from-top-1">
+              <span className="material-symbols-outlined text-[18px]">error</span>
+              {error}
+            </div>
+          )}
+
 
           <div className="flex gap-4">
             {/* Ícono seleccionado (visual) */}
@@ -248,33 +212,28 @@ export function CategoryFormModal({
             </div>
           </div>
 
-          {/* Límite de Presupuesto (Sólo para Gastos) */}
-          {type === "expense" && (
-            <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-              <label className="text-xs font-medium text-text-sub mb-1 block">
-                Límite Mensual (Presupuesto)
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim font-medium">
-                  ₡
-                </span>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={budget}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === "" || Number(val) >= 0) {
-                      setBudget(val);
-                    }
-                  }}
-                  placeholder="0.00 (Opcional)"
-                  className="w-full bg-background border border-border rounded-lg pl-8 pr-3 py-2.5 text-sm text-text-main focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-                />
-              </div>
+          {/* Límite de Presupuesto */}
+          <div className="transition-all duration-300 opacity-100 max-h-40">
+            <label className="text-xs font-medium text-text-sub mb-1 block">
+              Monto Mensual de Categoría
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim font-medium">
+                ₡
+              </span>
+              <input
+                type="text"
+                value={formatInputAmount(budget)}
+                onChange={(e) => {
+                  const val = parseInputAmount(e.target.value);
+                  setBudget(val);
+                }}
+                placeholder="Ej. 50 000"
+                required
+                className="w-full bg-background border border-border rounded-lg pl-8 pr-3 py-2.5 text-lg font-bold focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-text-main"
+              />
             </div>
-          )}
+          </div>
 
           {/* Footer del Formulario */}
           <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border/50">
@@ -287,8 +246,10 @@ export function CategoryFormModal({
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-primary text-[#0d1b12] text-sm font-bold rounded-xl hover:bg-primary-hover hover:scale-105 transition-all shadow-md shadow-primary/20"
+              disabled={isLoading}
+              className="px-6 py-2 bg-primary text-[#0d1b12] text-sm font-bold rounded-xl hover:bg-primary-hover hover:scale-105 transition-all shadow-md shadow-primary/20 disabled:opacity-50 disabled:hover:scale-100 flex items-center gap-2"
             >
+              {isLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></div>}
               {isEditing ? "Guardar cambios" : "Crear Categoría"}
             </button>
           </div>

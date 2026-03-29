@@ -35,6 +35,7 @@ export function useSettings(user: User) {
       currency: user.currency || "CRC",
       language: user.language || "es",
       theme: (user.theme as any) || "system",
+      monthly_budget: user.monthly_budget || 0,
       currentPassword: "",
       password: "",
       confirmPassword: "",

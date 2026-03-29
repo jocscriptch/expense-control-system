@@ -15,7 +15,7 @@ const menuItems = [
     href: "/dashboard/new-expense",
   },
   { icon: "list_alt", label: "Gastos", href: "/dashboard/expenses" },
-  { icon: "pie_chart", label: "Presupuestos", href: "/dashboard/categories" },
+  { icon: "category", label: "Categorías", href: "/dashboard/categories" },
   { icon: "receipt_long", label: "Comprobantes", href: "/dashboard/receipts" },
   { icon: "bar_chart", label: "Reportes", href: "/dashboard/reports" },
 ];

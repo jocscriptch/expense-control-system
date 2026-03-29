@@ -11,6 +11,7 @@ export const settingsSchema = z
     currency: z.string(),
     language: z.string(),
     theme: z.enum(["light", "dark", "system"]),
+    monthly_budget: z.coerce.number().min(0, "El presupuesto debe ser positivo"),
     currentPassword: z.string().optional().or(z.literal("")),
     password: z
       .string()

@@ -3,7 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { TransactionFormValues } from "./schema";
-import type { TransactionResponse, Category } from "./types";
+import type { TransactionResponse, Category, Transaction } from "./types";
+import { getUser } from "@/features/auth/actions";
 
 /**
  * Registra una nueva transacción en la base de datos de Supabase.
@@ -120,3 +121,77 @@ export async function getCategories(): Promise<{
   }
 }
 
+/**
+ * Obtiene el resumen consolidado para el Dashboard:
+ * Gasto del mes, Ingresos del mes y el Presupuesto Global.
+ */
+export async function getDashboardSummary() {
+  const supabase = await createClient();
+
+  try {
+    const user = await getUser();
+    if (!user) throw new Error("No autenticado");
+
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+
+    // Traer transacciones del mes actual con su categoría
+    const { data: transactions, error } = await supabase
+      .from("transactions")
+      .select(`
+        id,
+        amount,
+        date,
+        description,
+        category:categories (
+          id,
+          name,
+          icon,
+          color,
+          type
+        )
+      `)
+      .eq("user_id", user.id)
+      .gte("date", firstDay)
+      .lte("date", lastDay)
+      .order("date", { ascending: false });
+
+    if (error) throw error;
+
+    let totalExpenses = 0;
+    let totalIncomes = 0;
+
+    const typedTransactions = (transactions || [])
+      .filter((t: any) => t.category?.type === "expense")
+      .map((t: any) => {
+        const amount = Number(t.amount);
+        totalExpenses += amount;
+        return {
+          ...t,
+          category: t.category
+        };
+      });
+
+    const monthlyBudget = Number(user.monthly_budget || 0);
+    const remainingBudget = monthlyBudget - totalExpenses;
+    const usedPercentage = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
+    const availableBalance = monthlyBudget - totalExpenses;
+
+    return {
+      success: true,
+      data: {
+        totalExpenses,
+        totalIncomes,
+        monthlyBudget,
+        remainingBudget,
+        usedPercentage: Math.min(usedPercentage, 100),
+        availableBalance,
+        recentTransactions: typedTransactions.slice(0, 5), // Top 5 recientes
+      }
+    };
+  } catch (error: any) {
+    console.error("Error getDashboardSummary:", error);
+    return { success: false, error: error.message };
+  }
+}
