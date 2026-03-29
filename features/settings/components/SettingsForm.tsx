@@ -14,20 +14,21 @@ interface SettingsFormProps {
   user: User;
 }
 
-/**
- * Formulario de Ajustes (Versión Arquitectura Limpia).
- * Orquestra sub-componentes especializados y delega la lógica de negocio a hooks.
- */
 export default function SettingsForm({ user }: SettingsFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 1. Hooks de Lógica y Datos
-  const { control, watch, setValue, onSubmit, isSubmitting, reset } =
-    useSettings(user);
+  const {
+    control,
+    watch,
+    setValue,
+    onSubmit,
+    isSubmitting,
+    reset,
+    formState: { isDirty },
+  } = useSettings(user);
   const { isUploading, isImageLoading, setIsImageLoading, handleAvatarChange } =
     useAvatarUpload(user.id);
 
-  // Sincronizar formulario si los datos del usuario cambian (ej. avatar_url tras upload)
   useEffect(() => {
     reset({
       name: user.name,
@@ -41,6 +42,8 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       confirmPassword: "",
     });
   }, [user, reset]);
+
+  const isButtonDisabled = isSubmitting || !isDirty;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-8 pb-10">
@@ -136,11 +139,11 @@ export default function SettingsForm({ user }: SettingsFormProps) {
         </button>
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isButtonDisabled}
           className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold transition-all duration-300 ${
-            isSubmitting
-              ? "bg-primary/20 text-black/30 cursor-not-allowed border-0 shadow-none"
-              : "bg-primary text-black border-0 shadow-lg shadow-primary/20 hover:bg-primary-hover hover:scale-105"
+            isButtonDisabled
+              ? "bg-primary/20 text-[#0d1b12]/50 cursor-not-allowed border-0 shadow-none"
+              : "bg-primary text-[#0d1b12] border-0 shadow-lg shadow-primary/20 hover:bg-primary-hover hover:scale-105"
           }`}
         >
           {isSubmitting ? (
