@@ -65,7 +65,11 @@ export default function UpdatePasswordForm() {
           disabled={isLoading}
         />
 
-        <Button type="submit" disabled={isLoading} className="mt-2 w-full font-bold">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="mt-2 w-full font-bold"
+        >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
@@ -81,7 +85,9 @@ export default function UpdatePasswordForm() {
           href="/login"
           className="text-sm font-medium text-white hover:text-primary transition-colors inline-flex items-center gap-2 group"
         >
-          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
+          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">
+            arrow_back
+          </span>
           Volver a iniciar sesión
         </Link>
       </div>
@@ -89,8 +95,11 @@ export default function UpdatePasswordForm() {
       {/* Security Tip */}
       <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
         <p className="text-xs text-text-sub leading-relaxed">
-          <span className="text-primary font-bold block mb-1">Consejo de seguridad:</span>
-          Asegúrate de que tu contraseña sea difícil de adivinar y no la compartas con nadie.
+          <span className="text-primary font-bold block mb-1">
+            Consejo de seguridad:
+          </span>
+          Asegúrate de que tu contraseña sea difícil de adivinar y no la
+          compartas con nadie.
         </p>
       </div>
     </div>

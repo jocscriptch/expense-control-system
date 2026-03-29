@@ -8,10 +8,6 @@ interface PaymentMethodSelectorProps {
   control: Control<TransactionFormValues>;
 }
 
-/**
- * Control segmentado para elegir el método de pago.
- * Implementa la lógica visual 'peer-checked' del diseño original.
- */
 export function PaymentMethodSelector({ control }: PaymentMethodSelectorProps) {
   const { field } = useController({
     name: "payment_method",
@@ -26,10 +22,15 @@ export function PaymentMethodSelector({ control }: PaymentMethodSelectorProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-text-main">Método de pago</label>
+      <label className="text-sm font-medium text-text-main">
+        Método de pago
+      </label>
       <div className="flex p-1 bg-background rounded-xl border border-border">
         {methods.map((method) => (
-          <label key={method.id} className="flex-1 relative cursor-pointer group">
+          <label
+            key={method.id}
+            className="flex-1 relative cursor-pointer group"
+          >
             <input
               type="radio"
               name="payment_method"

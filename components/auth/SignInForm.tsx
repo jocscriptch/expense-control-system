@@ -30,7 +30,9 @@ export default function SignInForm() {
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-2 mb-6 text-white">
           <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-            <span className="material-symbols-outlined text-black font-bold">payments</span>
+            <span className="material-symbols-outlined text-black font-bold">
+              payments
+            </span>
           </div>
           <span className="font-bold text-lg tracking-tight">
             Sistema de Gastos
@@ -78,7 +80,11 @@ export default function SignInForm() {
           }
         />
 
-        <Button type="submit" disabled={isLoading} className="mt-2 w-full font-bold">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="mt-2 w-full font-bold"
+        >
           {isLoading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
@@ -97,7 +103,9 @@ export default function SignInForm() {
             className="font-bold text-white hover:text-primary transition-colors inline-flex items-center gap-1 group"
           >
             Crear cuenta
-            <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+              arrow_forward
+            </span>
           </Link>
         </p>
       </div>
