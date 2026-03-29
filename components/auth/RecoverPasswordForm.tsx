@@ -2,7 +2,7 @@
 
 import { Mail, ArrowLeft, Loader2, Send } from "lucide-react";
 import Link from "next/link";
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
 import { recoverSchema } from "@/features/auth/schemas";
 import { sendRecoveryEmail } from "@/features/auth/actions";

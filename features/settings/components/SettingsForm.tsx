@@ -20,10 +20,12 @@ interface SettingsFormProps {
  */
 export default function SettingsForm({ user }: SettingsFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // 1. Hooks de Lógica y Datos
-  const { control, watch, setValue, onSubmit, isSubmitting, reset } = useSettings(user);
-  const { isUploading, isImageLoading, setIsImageLoading, handleAvatarChange } = useAvatarUpload(user.id);
+  const { control, watch, setValue, onSubmit, isSubmitting, reset } =
+    useSettings(user);
+  const { isUploading, isImageLoading, setIsImageLoading, handleAvatarChange } =
+    useAvatarUpload(user.id);
 
   // Sincronizar formulario si los datos del usuario cambian (ej. avatar_url tras upload)
   useEffect(() => {
@@ -42,20 +44,23 @@ export default function SettingsForm({ user }: SettingsFormProps) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-8 pb-10">
-      
       {/* SECCIÓN: PERFIL PERSONAL */}
       <section className="bg-surface rounded-xl border border-border p-4 md:p-8 shadow-sm transition-colors duration-200">
         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
-          <span className="material-symbols-outlined text-primary text-2xl">person</span>
+          <span className="material-symbols-outlined text-primary text-2xl">
+            person
+          </span>
           <h3 className="text-xl font-bold text-text-main">Perfil Personal</h3>
         </div>
 
         <div className="flex flex-col md:grid md:grid-cols-12 gap-8">
           {/* Sub-UI: Avatar UI (se mantiene aquí por accesibilidad al ref) */}
           <div className="md:col-span-3 flex flex-col items-center justify-center gap-4">
-            <div 
+            <div
               className="relative group cursor-pointer"
-              onClick={() => !isUploading && !isImageLoading && fileInputRef.current?.click()}
+              onClick={() =>
+                !isUploading && !isImageLoading && fileInputRef.current?.click()
+              }
             >
               <div className="size-28 md:size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center relative">
                 {(isUploading || isImageLoading) && (
@@ -64,15 +69,17 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary z-20"></div>
                   </div>
                 )}
-                
+
                 {user.avatar_url ? (
-                  <img 
-                    src={user.avatar_url} 
-                    alt="Foto de perfil" 
+                  <img
+                    src={user.avatar_url}
+                    alt="Foto de perfil"
                     onLoad={() => setIsImageLoading(false)}
                     className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
-                      (isUploading || isImageLoading) ? "opacity-0" : "opacity-100"
-                    }`} 
+                      isUploading || isImageLoading
+                        ? "opacity-0"
+                        : "opacity-100"
+                    }`}
                   />
                 ) : (
                   <span className="text-4xl font-bold text-text-sub">
@@ -81,15 +88,23 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                 )}
               </div>
               <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="material-symbols-outlined text-white">edit</span>
+                <span className="material-symbols-outlined text-white">
+                  edit
+                </span>
               </div>
             </div>
-            <input 
-              type="file" className="hidden" ref={fileInputRef} accept="image/*"
-              onChange={(e) => e.target.files?.[0] && handleAvatarChange(e.target.files[0])}
+            <input
+              type="file"
+              className="hidden"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={(e) =>
+                e.target.files?.[0] && handleAvatarChange(e.target.files[0])
+              }
             />
-            <button 
-              type="button" onClick={() => fileInputRef.current?.click()}
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
               className="text-sm font-bold text-primary hover:text-primary-hover px-4 py-2 bg-primary/5 rounded-full md:bg-transparent md:p-0"
             >
               Cambiar foto
@@ -112,13 +127,14 @@ export default function SettingsForm({ user }: SettingsFormProps) {
 
       {/* FOOTER DE ACCIONES */}
       <div className="sticky bottom-4 md:bottom-0 z-20 mt-4 md:mt-8 flex flex-col-reverse sm:flex-row items-center justify-end gap-3 md:gap-4 rounded-xl border border-border bg-surface md:bg-surface/95 md:backdrop-blur-sm p-4 md:p-6 shadow-xl md:shadow-lg transition-colors duration-200">
-        <button 
-          type="button" onClick={() => window.location.reload()}
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
           className="w-full sm:w-auto px-6 py-3 text-sm font-medium text-text-sub hover:text-text-main"
         >
           Cancelar
         </button>
-        <Button 
+        <Button
           type="submit"
           disabled={isSubmitting}
           className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold transition-all duration-300 ${
