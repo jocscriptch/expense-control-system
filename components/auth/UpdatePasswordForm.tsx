@@ -1,67 +1,46 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Lock, ArrowLeft } from "lucide-react";
-import toast from "react-hot-toast";
-import Link from "next/link";
+import { Lock, Loader2, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 import Button from "@/components/ui/button";
 import FormField from "@/components/ui/FormField";
-import { updatePasswordSchema, type UpdatePasswordFormValues } from "@/features/auth/schemas";
+import { updatePasswordSchema } from "@/features/auth/schemas";
 import { updatePassword } from "@/features/auth/actions";
+import { useFormAction } from "@/hooks/useFormAction";
 
+/**
+ * Formulario para establecer una nueva contraseña.
+ * Usado en el flujo de "Olvidé mi contraseña" o cambio forzado.
+ */
 export default function UpdatePasswordForm() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const { handleSubmit, control } = useForm<UpdatePasswordFormValues>({
-    resolver: zodResolver(updatePasswordSchema),
+  const { control, onSubmit, isLoading } = useFormAction({
+    schema: updatePasswordSchema,
+    action: updatePassword,
     defaultValues: { password: "", confirmPassword: "" },
+    loadingMessage: "Actualizando contraseña...",
+    successMessage: "Contraseña actualizada. Ya puedes iniciar sesión.",
+    onSuccess: () => {
+      // Redirigir al login tras éxito
+      setTimeout(() => router.push("/login"), 2000);
+    },
   });
-
-  const onSubmit = async (data: UpdatePasswordFormValues) => {
-    setIsLoading(true);
-    try {
-      const res = await updatePassword({ password: data.password });
-      if (res.success) {
-        toast.success(res.message ?? "Contraseña actualizada exitosamente", { duration: 3000 });
-        router.push("/dashboard");
-      } else {
-        toast.error(res.error || "Error al actualizar la contraseña", { duration: 3000 });
-      }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Error inesperado";
-      toast.error(message, { duration: 3000 });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="w-full max-w-[440px] flex flex-col gap-8">
       {/* Header */}
       <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="size-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
-            </svg>
-          </div>
-          <span className="font-bold text-lg tracking-tight">Sistema de Gastos</span>
-        </div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-[-0.02em] text-white">
           Nueva contraseña
         </h1>
         <p className="text-gray-400 text-base font-normal">
-          Ingresa tu nueva contraseña para actualizar tu cuenta.
+          Elige una contraseña segura que no hayas usado antes.
         </p>
       </header>
 
       {/* Form */}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      <form onSubmit={onSubmit} className="flex flex-col gap-5">
         <FormField
           name="password"
           control={control}
@@ -82,25 +61,37 @@ export default function UpdatePasswordForm() {
           type="password"
           autoComplete="new-password"
           maxLength={20}
-          icon={<Lock className="w-5 h-5" />}
+          icon={<CheckCircle2 className="w-5 h-5" />}
           disabled={isLoading}
         />
 
-        <Button type="submit" disabled={isLoading} className="mt-2 w-full">
-          {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+        <Button type="submit" disabled={isLoading} className="mt-2 w-full font-bold">
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <span className="material-symbols-outlined mr-2">lock_reset</span>
+          )}
           Actualizar contraseña
         </Button>
       </form>
 
-      {/* Back */}
+      {/* Footer / Back */}
       <div className="text-center">
         <Link
           href="/login"
           className="text-sm font-medium text-white hover:text-primary transition-colors inline-flex items-center gap-2 group"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <span className="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
           Volver a iniciar sesión
         </Link>
+      </div>
+
+      {/* Security Tip */}
+      <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
+        <p className="text-xs text-text-sub leading-relaxed">
+          <span className="text-primary font-bold block mb-1">Consejo de seguridad:</span>
+          Asegúrate de que tu contraseña sea difícil de adivinar y no la compartas con nadie.
+        </p>
       </div>
     </div>
   );
