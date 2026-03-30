@@ -25,19 +25,19 @@ export function CategoryList() {
     count?: number;
   } | null>(null);
 
-  const fetchCategories = useCallback(async () => {
-    setIsLoading(true);
+  const fetchCategories = useCallback(async (silent = false) => {
+    if (!silent) setIsLoading(true);
     const result = await getCategoriesWithBudgetsAction();
     if (result.success && result.data) {
       setCategories(
         result.data.filter((c: CategoryWithBudget) => c.type === "expense"),
       );
     }
-    setIsLoading(false);
+    if (!silent) setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategories(false);
   }, [fetchCategories]);
 
   const handleOpenNew = () => {
@@ -52,7 +52,7 @@ export function CategoryList() {
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    fetchCategories();
+    fetchCategories(true);
   };
 
   const initiateDelete = (category: CategoryWithBudget) => {
@@ -64,11 +64,17 @@ export function CategoryList() {
   const confirmDelete = async () => {
     if (!categoryToDelete) return;
 
+    if (deleteError) {
+      setIsDeleteConfirmOpen(false);
+      setDeleteError(null);
+      return;
+    }
+
     const result = await deleteCategoryAction(categoryToDelete.id);
     if (result.success) {
       setIsDeleteConfirmOpen(false);
       setCategoryToDelete(null);
-      fetchCategories();
+      fetchCategories(true);
     } else {
       setDeleteError({
         message: result.message || "Error al eliminar",
@@ -208,8 +214,22 @@ export function CategoryList() {
                       </td>
 
                       <td className="px-6 py-3">
-                        <div className="font-bold text-text-main text-base">
-                          {cat.name}
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-text-main text-base leading-none">
+                            {cat.name}
+                          </span>
+                          {(cat.transactionCount ?? 0) > 0 && (
+                            <span 
+                              className="text-[10px] px-2 py-0.5 rounded-md font-bold border leading-none shadow-sm"
+                              style={{
+                                backgroundColor: `${cat.color}15`,
+                                color: cat.color,
+                                borderColor: `${cat.color}30`,
+                              }}
+                            >
+                              {cat.transactionCount} {cat.transactionCount === 1 ? 'gasto' : 'gastos'}
+                            </span>
+                          )}
                         </div>
                       </td>
 
@@ -231,7 +251,7 @@ export function CategoryList() {
                       </td>
 
                       <td className="px-6 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleOpenEdit(cat)}
                             className="p-1 text-text-sub hover:text-primary transition-colors"
@@ -282,6 +302,7 @@ export function CategoryList() {
         confirmText={deleteError ? "Entendido" : "Eliminar"}
         cancelText={deleteError ? "" : "Cancelar"}
         variant={deleteError ? "primary" : "danger"}
+        icon={deleteError ? "error" : "delete"}
       />
     </>
   );

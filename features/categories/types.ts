@@ -6,6 +6,7 @@ export interface CategoryWithBudget extends BaseCategory {
     amount_limit: number;
     period: string;
   } | null;
+  transactionCount?: number;
 }
 
 export interface CategoryActionResponse {

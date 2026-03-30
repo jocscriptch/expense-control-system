@@ -47,6 +47,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleLogout = async () => {
+    setIsLogoutDialogOpen(false);
     onClose?.();
     await signOut();
     window.location.href = "/login";

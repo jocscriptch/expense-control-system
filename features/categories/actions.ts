@@ -30,11 +30,12 @@ export async function getCategoriesWithBudgetsAction(): Promise<CategoryActionRe
           id,
           amount_limit,
           period
-        )
+        ),
+        transactions (count)
       `,
       )
       .eq("user_id", user.id)
-      .order("name", { ascending: true });
+      .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
 
@@ -43,6 +44,7 @@ export async function getCategoriesWithBudgetsAction(): Promise<CategoryActionRe
       data: data.map((cat) => ({
         ...cat,
         budget: Array.isArray(cat.budget) ? cat.budget[0] : cat.budget,
+        transactionCount: Array.isArray(cat.transactions) && cat.transactions.length > 0 ? cat.transactions[0].count : 0
       })) as CategoryWithBudget[],
     };
   } catch (error: any) {

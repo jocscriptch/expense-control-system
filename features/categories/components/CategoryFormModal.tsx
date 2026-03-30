@@ -61,7 +61,7 @@ export function CategoryFormModal({
         setType(categoryData.type);
         setColor(categoryData.color);
         setIcon(categoryData.icon);
-        setBudget(categoryData.budget ? categoryData.budget.toString() : "");
+        setBudget(categoryData.budget?.amount_limit ? categoryData.budget.amount_limit.toString() : "");
       } else {
         setName("");
         setType("expense");
