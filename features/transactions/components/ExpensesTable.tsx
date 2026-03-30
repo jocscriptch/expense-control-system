@@ -1,218 +1,414 @@
-const DUMMY_EXPENSES = [
-  {
-    id: 1,
-    categoryName: "Comida",
-    categoryIcon: "shopping_cart",
-    categoryColor: "orange",
-    description: "Supermercado Semanal",
-    method: "Walmart - Tarjeta Débito",
-    date: "12 Oct 2023",
-    amount: "$1,250.00",
-    hasReceipt: true,
-  },
-  {
-    id: 2,
-    categoryName: "Transporte",
-    categoryIcon: "directions_car",
-    categoryColor: "blue",
-    description: "Uber a la oficina",
-    method: "Uber - PayPal",
-    date: "11 Oct 2023",
-    amount: "$150.00",
-    hasReceipt: false,
-  },
-  {
-    id: 3,
-    categoryName: "Hogar",
-    categoryIcon: "home",
-    categoryColor: "purple",
-    description: "Pago de Internet",
-    method: "Izzi - Domiciliado",
-    date: "10 Oct 2023",
-    amount: "$500.00",
-    hasReceipt: true,
-  },
-  {
-    id: 4,
-    categoryName: "Salud",
-    categoryIcon: "medical_services",
-    categoryColor: "red",
-    description: "Consulta Médica General",
-    method: "Farmacia San Pablo - Efectivo",
-    date: "09 Oct 2023",
-    amount: "$320.50",
-    hasReceipt: false,
-  },
-  {
-    id: 5,
-    categoryName: "Ocio",
-    categoryIcon: "movie",
-    categoryColor: "pink",
-    description: "Cinepolis Entradas VIP",
-    method: "Cinepolis - Tarjeta Crédito",
-    date: "08 Oct 2023",
-    amount: "$280.00",
-    hasReceipt: true,
-  },
-];
+"use client";
 
-// Helper para mapear colores fijos a sus variantes Tailwind (adaptadas a Dark mode base)
-const getColorMap = (colorName: string) => {
-  const map: Record<string, string> = {
-    orange: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-    blue: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-    purple: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    red: "bg-red-500/20 text-red-400 border-red-500/30",
-    pink: "bg-pink-500/20 text-pink-400 border-pink-500/30",
-  };
-  return map[colorName] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
+import React, { useState, useTransition } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+  type ColumnDef,
+  type SortingState,
+} from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
+import type { TransactionWithCategory } from "../types";
+import { deleteTransactionAction, getReceiptSignedUrlAction } from "../actions";
+import { AmountDisplay } from "@/components/ui/AmountDisplay";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
+import toast from "react-hot-toast";
+
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  cash: "Efectivo",
+  card: "Tarjeta",
+  sinpe: "SINPE Móvil",
 };
 
-export function ExpensesTable() {
-  return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-colors duration-200">
-      <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[800px] text-left text-sm whitespace-nowrap">
-          <thead className="bg-background/80 text-text-sub font-medium border-b border-border">
-            <tr>
-              <th className="px-6 py-4 w-48 font-semibold tracking-wide">
-                Categoría
-              </th>
-              <th className="px-6 py-4 w-auto font-semibold tracking-wide">
-                Descripción
-              </th>
-              <th className="px-6 py-4 w-40 font-semibold tracking-wide">
-                Fecha
-              </th>
-              <th className="px-6 py-4 w-32 text-right font-semibold tracking-wide">
-                Monto
-              </th>
-              <th className="px-6 py-4 w-32 text-center font-semibold tracking-wide">
-                Comprobante
-              </th>
-              <th className="px-6 py-4 w-24 text-right font-semibold tracking-wide">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {DUMMY_EXPENSES.map((expense) => (
-              <tr
-                key={expense.id}
-                className="group hover:bg-background/50 transition-colors"
-              >
-                {/* 1. Categoría Pill */}
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border ${getColorMap(
-                      expense.categoryColor,
-                    )}`}
-                  >
-                    <span className="material-symbols-outlined text-[16px]">
-                      {expense.categoryIcon}
-                    </span>
-                    {expense.categoryName}
-                  </span>
-                </td>
+interface ExpensesTableProps {
+  initialData: TransactionWithCategory[];
+}
 
-                {/* 2. Descripción */}
-                <td className="px-6 py-4">
-                  <div className="font-medium text-text-main">
-                    {expense.description}
-                  </div>
-                  <div className="text-xs text-text-sub">{expense.method}</div>
-                </td>
+export function ExpensesTable({ initialData }: ExpensesTableProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [data, setData] = useState<TransactionWithCategory[]>(initialData);
 
-                {/* 3. Fecha */}
-                <td className="px-6 py-4 text-text-sub">{expense.date}</td>
+  // Delete dialog state
+  const [toDelete, setToDelete] = useState<TransactionWithCategory | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-                {/* 4. Monto */}
-                <td className="px-6 py-4 text-right font-medium text-text-main tabular-nums">
-                  {expense.amount}
-                </td>
+  // Preview state
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewName, setPreviewName] = useState<string | null>(null);
 
-                {/* 5. Comprobante */}
-                <td className="px-6 py-4 text-center">
-                  {expense.hasReceipt ? (
-                    <button
-                      className="text-primary hover:text-primary-hover transition-colors"
-                      title="Ver Comprobante"
-                    >
-                      <span className="material-symbols-outlined filled text-[20px]">
-                        receipt_long
-                      </span>
-                    </button>
-                  ) : (
-                    <span
-                      className="text-text-dim/50 cursor-not-allowed"
-                      title="Sin Comprobante"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">
-                        no_sim
-                      </span>
-                    </span>
-                  )}
-                </td>
+  const handleViewReceipt = async (path: string, fileName?: string) => {
+    const loadingToast = toast.loading("Generando vista previa...");
+    const result = await getReceiptSignedUrlAction(path);
+    toast.dismiss(loadingToast);
 
-                {/* 6. Acciones */}
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      className="p-1 text-text-sub hover:text-primary transition-colors"
-                      title="Editar gasto"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">
-                        edit
-                      </span>
-                    </button>
-                    <button
-                      className="p-1 text-text-sub hover:text-red-500 transition-colors"
-                      title="Eliminar gasto"
-                    >
-                      <span className="material-symbols-outlined text-[18px]">
-                        delete
-                      </span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    if (result.success && result.url) {
+      setPreviewUrl(result.url);
+      setPreviewName(fileName || "Comprobante");
+      setIsPreviewOpen(true);
+    } else {
+      toast.error(result.error || "No se pudo cargar la vista previa.");
+    }
+  };
 
-      {/* Pagination Footer */}
-      <div className="flex items-center justify-between border-t border-border bg-surface px-6 py-4">
-        <div className="text-xs text-text-sub">
-          Mostrando <span className="font-medium text-text-main">1</span> a{" "}
-          <span className="font-medium text-text-main">5</span> de{" "}
-          <span className="font-medium text-text-main">128</span> resultados
-        </div>
-        <div className="flex gap-2">
-          <button className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-sub hover:border-primary hover:text-primary disabled:opacity-50 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">
-              chevron_left
+  const handleDeleteClick = (row: TransactionWithCategory) => {
+    setToDelete(row);
+    setDeleteError(null);
+    setIsDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteError) {
+      setIsDeleteOpen(false);
+      setDeleteError(null);
+      return;
+    }
+    if (!toDelete) return;
+
+    startTransition(async () => {
+      const result = await deleteTransactionAction(toDelete.id);
+      if (result.success) {
+        setData((prev) => prev.filter((t) => t.id !== toDelete.id));
+        setIsDeleteOpen(false);
+        setToDelete(null);
+      } else {
+        setDeleteError(result.error || "No se pudo eliminar el gasto.");
+      }
+    });
+  };
+
+  const columns: ColumnDef<TransactionWithCategory>[] = [
+    {
+      id: "category",
+      header: "Categoría",
+      accessorFn: (row) => row.category?.name ?? "—",
+      cell: ({ row }) => {
+        const cat = row.original.category;
+        return (
+          <span
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold border"
+            style={{
+              backgroundColor: cat?.color ? `${cat.color}18` : "transparent",
+              color: cat?.color ?? "var(--color-text-sub)",
+              borderColor: cat?.color ? `${cat.color}35` : "var(--color-border)",
+            }}
+          >
+            <span className="material-symbols-outlined text-[14px]">
+              {cat?.icon ?? "category"}
             </span>
-          </button>
-          <button className="flex size-8 items-center justify-center rounded-lg bg-primary text-[#0d1b12] text-sm font-bold shadow-sm">
-            1
-          </button>
-          <button className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-main hover:border-primary hover:text-primary transition-colors text-sm">
-            2
-          </button>
-          <button className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-main hover:border-primary hover:text-primary transition-colors text-sm">
-            3
-          </button>
-          <span className="flex size-8 items-center justify-center text-text-sub">
-            ...
+            {cat?.name ?? "Sin categoría"}
           </span>
-          <button className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-sub hover:border-primary hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[18px]">
-              chevron_right
-            </span>
+        );
+      },
+    },
+    {
+      id: "description",
+      header: "Descripción",
+      accessorFn: (row) => row.description ?? "—",
+      cell: ({ row }) => (
+        <div>
+          <div className="font-medium text-text-main text-sm">
+            {row.original.description || <span className="text-text-dim italic">Sin descripción</span>}
+          </div>
+          <div className="text-xs text-text-sub mt-0.5">
+            {PAYMENT_METHOD_LABELS[row.original.payment_method] ?? row.original.payment_method}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "date",
+      header: "Fecha",
+      accessorKey: "date",
+      cell: ({ getValue }) => {
+        const raw = getValue() as string;
+        const [year, month, day] = raw.split("-");
+        return (
+          <span className="text-text-sub text-sm">
+            {`${day}/${month}/${year}`}
+          </span>
+        );
+      },
+    },
+    {
+      id: "amount",
+      header: "Monto",
+      accessorKey: "amount",
+      cell: ({ getValue }) => (
+        <div className="text-right">
+          <AmountDisplay value={Number(getValue())} className="text-sm font-bold justify-end" />
+        </div>
+      ),
+    },
+    {
+      id: "receipt",
+      header: "Comprobante",
+      cell: ({ row }) => {
+        const path = row.original.attachment_url;
+        const name = row.original.description || "Gasto sin notas";
+        
+        return path ? (
+          <button
+            onClick={() => handleViewReceipt(path, name)}
+            className="text-primary hover:text-primary-hover transition-colors mx-auto block hover:scale-110"
+            title="Ver comprobante"
+          >
+            <span className="material-symbols-outlined text-[20px] font-fill">receipt_long</span>
+          </button>
+        ) : (
+          <span className="text-text-dim/20 mx-auto block w-fit" title="Sin comprobante">
+            <span className="material-symbols-outlined text-[20px]">hide_source</span>
+          </span>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: "",
+      cell: ({ row }) => (
+        <div className="flex items-center justify-end gap-1">
+          <button
+            onClick={() => router.push(`/dashboard/edit-expense/${row.original.id}`)}
+            className="p-1.5 text-text-sub hover:text-primary transition-colors rounded-lg hover:bg-primary/10"
+            title="Editar gasto"
+          >
+            <span className="material-symbols-outlined text-[18px]">edit</span>
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row.original)}
+            className="p-1.5 text-text-sub hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10"
+            title="Eliminar gasto"
+          >
+            <span className="material-symbols-outlined text-[18px]">delete</span>
           </button>
         </div>
+      ),
+    },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    initialState: { pagination: { pageSize: 10 } },
+  });
+
+  const { pageIndex, pageSize } = table.getState().pagination;
+  const totalRows = table.getFilteredRowModel().rows.length;
+  const from = totalRows === 0 ? 0 : pageIndex * pageSize + 1;
+  const to = Math.min((pageIndex + 1) * pageSize, totalRows);
+  const pageCount = table.getPageCount();
+
+  return (
+    <>
+      <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
+        {/* ─── DESKTOP TABLE ─── */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="w-full min-w-[700px] text-left text-sm whitespace-nowrap">
+            <thead className="bg-background/80 text-text-sub border-b border-border">
+              <tr>
+                {table.getFlatHeaders().map((header) => (
+                  <th
+                    key={header.id}
+                    className={`px-5 py-4 font-semibold tracking-wide ${
+                      header.id === "amount" ? "text-right" : ""
+                    } ${header.id === "receipt" ? "text-center" : ""} ${
+                      header.column.getCanSort() ? "cursor-pointer select-none hover:text-text-main transition-colors" : ""
+                    }`}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    <span className="flex items-center gap-1">
+                      {header.id === "amount" ? (
+                        <span className="ml-auto flex items-center gap-1">
+                          Monto
+                          {header.column.getIsSorted() === "asc" && <span className="material-symbols-outlined text-[14px]">arrow_upward</span>}
+                          {header.column.getIsSorted() === "desc" && <span className="material-symbols-outlined text-[14px]">arrow_downward</span>}
+                        </span>
+                      ) : (
+                        <>
+                          {typeof header.column.columnDef.header === "string" ? header.column.columnDef.header : ""}
+                          {header.column.getIsSorted() === "asc" && <span className="material-symbols-outlined text-[14px]">arrow_upward</span>}
+                          {header.column.getIsSorted() === "desc" && <span className="material-symbols-outlined text-[14px]">arrow_downward</span>}
+                        </>
+                      )}
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="py-16 text-center text-text-sub">
+                    <span className="material-symbols-outlined text-4xl mb-2 block text-text-dim">receipt_long</span>
+                    No hay gastos registrados aún.
+                  </td>
+                </tr>
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-background/50 transition-colors ${isPending ? "opacity-60" : ""}`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className={`px-5 py-3.5 ${cell.column.id === "receipt" ? "text-center" : ""}`}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ─── MOBILE CARDS ─── */}
+        <div className="md:hidden divide-y divide-border">
+          {table.getRowModel().rows.length === 0 ? (
+            <div className="py-16 text-center text-text-sub">
+              <span className="material-symbols-outlined text-4xl mb-2 block text-text-dim">receipt_long</span>
+              No hay gastos registrados aún.
+            </div>
+          ) : (
+            table.getRowModel().rows.map((row) => {
+              const t = row.original;
+              const cat = t.category;
+              const [y, m, d] = t.date.split("-");
+              return (
+                <div key={t.id} className="p-4 flex flex-col gap-2">
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold border"
+                      style={{
+                        backgroundColor: cat?.color ? `${cat.color}18` : "transparent",
+                        color: cat?.color ?? "var(--color-text-sub)",
+                        borderColor: cat?.color ? `${cat.color}35` : "var(--color-border)",
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">{cat?.icon ?? "category"}</span>
+                      {cat?.name ?? "Sin categoría"}
+                    </span>
+                    <AmountDisplay value={Number(t.amount)} className="text-sm font-bold" />
+                  </div>
+                  <div className="text-sm font-medium text-text-main">
+                    {t.description || <span className="text-text-dim italic text-xs">Sin descripción</span>}
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-text-sub">
+                    <span>{`${d}/${m}/${y}`} · {PAYMENT_METHOD_LABELS[t.payment_method] ?? t.payment_method}</span>
+                    <div className="flex items-center gap-1">
+                      {t.attachment_url && (
+                        <button
+                          onClick={() => handleViewReceipt(t.attachment_url!, t.description || "Gasto")}
+                          className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          title="Ver comprobante"
+                        >
+                          <span className="material-symbols-outlined text-[16px] font-fill">receipt_long</span>
+                        </button>
+                      )}
+                      <button
+                        onClick={() => router.push(`/dashboard/edit-expense/${t.id}`)}
+                        className="p-1.5 text-text-sub hover:text-primary rounded-lg hover:bg-primary/10 transition-colors"
+                        title="Editar"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(t)}
+                        className="p-1.5 text-text-sub hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
+                        title="Borrar"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* ─── PAGINATION FOOTER ─── */}
+        {totalRows > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-surface px-5 py-3 gap-3">
+            <div className="text-xs text-text-sub">
+              Mostrando <span className="font-semibold text-text-main">{from}</span> a{" "}
+              <span className="font-semibold text-text-main">{to}</span> de{" "}
+              <span className="font-semibold text-text-main">{totalRows}</span> gastos
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-sub hover:border-primary hover:text-primary disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+              </button>
+
+              {Array.from({ length: pageCount }, (_, i) => i).map((i) => (
+                <button
+                  key={i}
+                  onClick={() => table.setPageIndex(i)}
+                  className={`flex size-8 items-center justify-center rounded-lg text-sm font-bold transition-colors ${
+                    i === pageIndex
+                      ? "bg-primary text-[#0d1b12] shadow-sm"
+                      : "border border-border bg-background text-text-main hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                className="flex size-8 items-center justify-center rounded-lg border border-border bg-background text-text-sub hover:border-primary hover:text-primary disabled:opacity-40 disabled:pointer-events-none transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+
+      <ReceiptPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        fileUrl={previewUrl || ""}
+        fileName={previewName || ""}
+      />
+
+      <ConfirmDialog
+        isOpen={isDeleteOpen}
+        onClose={() => {
+          setIsDeleteOpen(false);
+          setDeleteError(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        title={deleteError ? "No se puede eliminar" : "¿Eliminar gasto?"}
+        description={
+          deleteError
+            ? deleteError
+            : `¿Estás seguro de que deseas eliminar este gasto? Esta acción no se puede deshacer.`
+        }
+        confirmText={deleteError ? "Entendido" : "Eliminar"}
+        cancelText={deleteError ? "" : "Cancelar"}
+        variant={deleteError ? "primary" : "danger"}
+        icon={deleteError ? "error" : "delete"}
+      />
+    </>
   );
 }

@@ -9,14 +9,8 @@ import { SidebarUserSkeleton } from "./SidebarUserSkeleton";
 
 const menuItems = [
   { icon: "dashboard", label: "Dashboard", href: "/dashboard", active: true },
-  {
-    icon: "add_circle",
-    label: "Registrar gasto",
-    href: "/dashboard/new-expense",
-  },
   { icon: "list_alt", label: "Gastos", href: "/dashboard/expenses" },
   { icon: "category", label: "Categorías", href: "/dashboard/categories" },
-  { icon: "receipt_long", label: "Comprobantes", href: "/dashboard/receipts" },
   { icon: "bar_chart", label: "Reportes", href: "/dashboard/reports" },
 ];
 
@@ -100,7 +94,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || 
+            (item.href === "/dashboard/expenses" && pathname.startsWith("/dashboard/edit-expense/"));
           return (
             <Link
               key={item.href}

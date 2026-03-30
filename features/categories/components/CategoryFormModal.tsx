@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { upsertCategoryAction } from "../actions";
 import { CategoryFormData } from "../types";
 import { formatInputAmount, parseInputAmount } from "@/components/ui/AmountDisplay";
@@ -54,6 +55,9 @@ export function CategoryFormModal({
 
   const isEditing = !!categoryData;
 
+  const [mounted, setMounted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       if (categoryData) {
@@ -72,7 +76,28 @@ export function CategoryFormModal({
     }
   }, [isOpen, categoryData]);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      // Pequeño delay para activar la animación
+      requestAnimationFrame(() => setIsVisible(true));
+    } else {
+      setIsVisible(false);
+      const timer = setTimeout(() => {
+        document.body.style.overflow = "unset";
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
+  if (!mounted || !isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,11 +131,29 @@ export function CategoryFormModal({
   const fallbackIcon = "category";
   const placeholderText = "Ej. Comida, Transporte, Renta";
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity p-4">
+  const content = (
+    <div className="fixed inset-0 z-[1000] flex flex-col justify-end sm:items-center sm:justify-center p-0 sm:p-6">
+      {/* Backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? "opacity-100" : "opacity-0"}`}
+        onClick={onClose}
+      />
+
       {/* Contenedor del Modal */}
-      <div className="bg-surface border border-border rounded-2xl w-full max-w-lg shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-border/50">
+      <div 
+        className={`relative w-full sm:max-w-lg bg-surface border-t sm:border border-border sm:rounded-3xl shadow-[0_-20px_60px_-10px_rgba(0,0,0,0.4)] sm:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] overflow-hidden transition-transform duration-350 ease-out flex flex-col max-h-[90vh]
+          ${isVisible
+            ? "translate-y-0 sm:translate-y-0 sm:scale-100 sm:opacity-100"
+            : "translate-y-full sm:translate-y-0 sm:scale-95 sm:opacity-0"
+          }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Handle para el bottom sheet en móvil */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0">
+          <div className="w-10 h-1 rounded-full bg-border" />
+        </div>
+
+        <div className="flex justify-between items-center px-5 pt-3 pb-3 sm:p-6 border-b border-border/50 shrink-0">
           <h2 className="text-xl font-bold text-text-main flex items-center gap-2">
             <span className="material-symbols-outlined text-primary">
               {isEditing ? "edit_note" : "add_circle"}
@@ -125,13 +168,14 @@ export function CategoryFormModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 flex items-center gap-3 text-red-500 text-sm animate-in fade-in slide-in-from-top-1">
-              <span className="material-symbols-outlined text-[18px]">error</span>
-              {error}
-            </div>
-          )}
+        <div className="overflow-y-auto w-full">
+          <form onSubmit={handleSubmit} className="p-5 sm:p-6 flex flex-col gap-5">
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 flex items-center gap-3 text-red-500 text-sm animate-in fade-in slide-in-from-top-1">
+                <span className="material-symbols-outlined text-[18px]">error</span>
+                {error}
+              </div>
+            )}
 
 
           <div className="flex gap-4">
@@ -253,8 +297,11 @@ export function CategoryFormModal({
               {isEditing ? "Guardar cambios" : "Crear Categoría"}
             </button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
+
+  return createPortal(content, document.body);
 }

@@ -1,15 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button";
 import { getLastMonths } from "@/lib/utils/date";
+import { useTransactionModal } from "@/features/transactions/context/TransactionModalContext";
 
 interface HeaderProps {
   onMenuClick?: () => void;
 }
 
 export default function Header({ onMenuClick }: HeaderProps) {
-  const router = useRouter();
+  const { openModal } = useTransactionModal();
   const months = getLastMonths(3);
 
   return (
@@ -62,7 +62,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         <div className="hidden md:block h-6 w-px bg-border mx-1"></div>
 
         <Button
-          onClick={() => router.push("/dashboard/new-expense")}
+          onClick={openModal}
           className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-[#102216] px-3 md:px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all active:scale-95 border-0 font-bold shrink-0"
         >
           <span className="material-symbols-outlined text-xl">add</span>
