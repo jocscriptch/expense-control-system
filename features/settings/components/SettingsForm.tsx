@@ -37,6 +37,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
       currency: user.currency || "CRC",
       language: user.language || "es",
       theme: (user.theme as any) || "system",
+      monthly_budget: user.monthly_budget || 0,
       currentPassword: "",
       password: "",
       confirmPassword: "",
@@ -65,7 +66,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                 !isUploading && !isImageLoading && fileInputRef.current?.click()
               }
             >
-              <div className="size-28 md:size-32 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center relative">
+              <div className="size-36 md:size-44 rounded-full overflow-hidden border-4 border-border shadow-md bg-background flex items-center justify-center relative">
                 {(isUploading || isImageLoading) && (
                   <div className="absolute inset-0 z-10 bg-background flex items-center justify-center">
                     <Skeleton className="absolute inset-0 rounded-full" />
@@ -124,7 +125,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
 
       {/* SECCIONES: REGIÓN Y APARIENCIA */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <RegionalSection />
+        <RegionalSection control={control} />
         <AppearanceSection watch={watch} setValue={setValue} />
       </section>
 

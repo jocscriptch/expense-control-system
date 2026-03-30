@@ -14,7 +14,8 @@ create table if not exists users (
   bio text,
   currency text default 'CRC', 
   language text default 'es',  
-  theme text default 'system'  
+  theme text default 'system',
+  monthly_budget decimal(12,2) default 0
 );
 
 -- Habilitar Row Level Security (RLS) para proteger los datos

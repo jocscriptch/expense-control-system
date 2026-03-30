@@ -15,10 +15,9 @@ const menuItems = [
     href: "/dashboard/new-expense",
   },
   { icon: "list_alt", label: "Gastos", href: "/dashboard/expenses" },
+  { icon: "category", label: "Categorías", href: "/dashboard/categories" },
   { icon: "receipt_long", label: "Comprobantes", href: "/dashboard/receipts" },
   { icon: "bar_chart", label: "Reportes", href: "/dashboard/reports" },
-  { icon: "label", label: "Categorías", href: "/dashboard/categories" },
-  { icon: "pie_chart", label: "Presupuestos", href: "/dashboard/budgets" },
 ];
 
 interface SidebarProps {
@@ -48,6 +47,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   const handleLogout = async () => {
+    setIsLogoutDialogOpen(false);
     onClose?.();
     await signOut();
     window.location.href = "/login";

@@ -13,6 +13,7 @@ interface ConfirmDialogProps {
   confirmText?: string;
   cancelText?: string;
   variant?: "danger" | "primary";
+  icon?: string;
 }
 
 export function ConfirmDialog({
@@ -24,6 +25,7 @@ export function ConfirmDialog({
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   variant = "primary",
+  icon,
 }: ConfirmDialogProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -62,7 +64,7 @@ export function ConfirmDialog({
               : "bg-primary/10 text-primary"
           }`}>
             <span className="material-symbols-outlined text-[36px] font-fill">
-              {variant === "danger" ? "logout" : "help"}
+              {icon || (variant === "danger" ? "logout" : "help")}
             </span>
           </div>
 
@@ -85,7 +87,6 @@ export function ConfirmDialog({
             <Button
               onClick={() => {
                 onConfirm();
-                onClose();
               }}
               className={`flex-1 px-6 py-3.5 text-sm font-black border-0 shadow-2xl transition-all active:scale-[0.98] whitespace-nowrap ${
                 variant === "danger" 

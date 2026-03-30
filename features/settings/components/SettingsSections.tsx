@@ -1,12 +1,11 @@
-import React from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, Controller, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { SettingsFormData } from "../schema";
 
 interface RegionalSectionProps {
-  // Solo descriptivos por ahora
+  control: Control<SettingsFormData>;
 }
 
-export function RegionalSection({}: RegionalSectionProps) {
+export function RegionalSection({ control }: RegionalSectionProps) {
   return (
     <div className="bg-surface rounded-xl border border-border p-6 md:p-8 shadow-sm flex flex-col h-full transition-colors duration-200">
       <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
@@ -45,6 +44,7 @@ export function RegionalSection({}: RegionalSectionProps) {
           </div>
           <p className="text-[10px] text-text-dim">El soporte multi idioma estará disponible pronto.</p>
         </div>
+
       </div>
     </div>
   );
