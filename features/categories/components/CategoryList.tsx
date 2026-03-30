@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { CategoryFormModal } from "@/features/categories/components/CategoryFormModal";
 import {
   getCategoriesWithBudgetsAction,
@@ -9,10 +9,17 @@ import {
 import { CategoryWithBudget } from "../types";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
+import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
 
-export function CategoryList() {
-  const [categories, setCategories] = useState<CategoryWithBudget[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface CategoryListProps {
+  initialCategories: CategoryWithBudget[];
+}
+
+export function CategoryList({ initialCategories }: CategoryListProps) {
+  const [categories, setCategories] = useState<CategoryWithBudget[]>(
+    initialCategories.filter((c) => c.type === "expense"),
+  );
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<CategoryWithBudget | null>(null);
@@ -35,10 +42,6 @@ export function CategoryList() {
     }
     if (!silent) setIsLoading(false);
   }, []);
-
-  useEffect(() => {
-    fetchCategories(false);
-  }, [fetchCategories]);
 
   const handleOpenNew = () => {
     setEditingCategory(null);
@@ -148,8 +151,8 @@ export function CategoryList() {
         </div>
 
         {/* Listado en Tabla */}
-        <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm transition-colors duration-200">
-          <div className="overflow-x-auto custom-scrollbar">
+        <ResponsiveTableWrapper
+          desktopContent={
             <table className="w-full min-w-[800px] text-left text-sm whitespace-nowrap">
               <thead className="bg-background/80 text-text-sub font-medium border-b border-border">
                 <tr>
@@ -219,7 +222,7 @@ export function CategoryList() {
                             {cat.name}
                           </span>
                           {(cat.transactionCount ?? 0) > 0 && (
-                            <span 
+                            <span
                               className="text-[10px] px-2 py-0.5 rounded-md font-bold border leading-none shadow-sm"
                               style={{
                                 backgroundColor: `${cat.color}15`,
@@ -227,7 +230,8 @@ export function CategoryList() {
                                 borderColor: `${cat.color}30`,
                               }}
                             >
-                              {cat.transactionCount} {cat.transactionCount === 1 ? 'gasto' : 'gastos'}
+                              {cat.transactionCount}{" "}
+                              {cat.transactionCount === 1 ? "gasto" : "gastos"}
                             </span>
                           )}
                         </div>
@@ -277,8 +281,109 @@ export function CategoryList() {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
+          }
+          mobileContent={
+            isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="p-4 flex flex-col gap-3 animate-pulse">
+                  <div className="flex justify-between items-center">
+                    <div className="w-24 h-6 bg-border rounded-full" />
+                    <div className="flex gap-2">
+                      <div className="w-8 h-8 bg-border rounded-lg" />
+                      <div className="w-8 h-8 bg-border rounded-lg" />
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-end">
+                    <div className="w-16 h-4 bg-border rounded" />
+                    <div className="w-20 h-6 bg-border rounded" />
+                  </div>
+                </div>
+              ))
+            ) : categories.length === 0 ? (
+              <div className="py-16 text-center text-text-dim italic">
+                <span className="material-symbols-outlined text-4xl mb-2 block text-text-sub">
+                  category
+                </span>
+                No tienes categorías registradas aún.
+              </div>
+            ) : (
+              categories.map((cat) => (
+                <div
+                  key={`mobile-${cat.id}`}
+                  className="p-4 flex flex-col gap-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold border"
+                      style={{
+                        backgroundColor: `${cat.color}15`,
+                        color: cat.color,
+                        borderColor: `${cat.color}30`,
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">
+                        {cat.icon}
+                      </span>
+                      {cat.name}
+                    </span>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => handleOpenEdit(cat)}
+                        className="p-1.5 text-text-sub hover:text-primary transition-colors rounded-lg hover:bg-primary/10"
+                        title="Editar"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          edit
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => initiateDelete(cat)}
+                        className="p-1.5 text-text-sub hover:text-red-500 transition-colors rounded-lg hover:bg-red-500/10"
+                        title="Eliminar"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          delete
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="flex items-end justify-between">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[11px] font-medium text-text-sub uppercase tracking-wider">
+                        Límite Mensual
+                      </span>
+                      {cat.budget ? (
+                        <AmountDisplay
+                          value={Number(cat.budget.amount_limit)}
+                          className="font-bold text-text-main text-lg"
+                        />
+                      ) : (
+                        <span className="text-text-dim text-sm mt-0.5">
+                          Sin límite establecido
+                        </span>
+                      )}
+                    </div>
+
+                    {(cat.transactionCount ?? 0) > 0 && (
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded-md font-bold border leading-none shadow-sm h-fit mb-1"
+                        style={{
+                          backgroundColor: `${cat.color}15`,
+                          color: cat.color,
+                          borderColor: `${cat.color}30`,
+                        }}
+                      >
+                        {cat.transactionCount}{" "}
+                        {cat.transactionCount === 1 ? "gasto" : "gastos"}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )
+          }
+        />
       </div>
 
       {/* Modal de Formulario */}

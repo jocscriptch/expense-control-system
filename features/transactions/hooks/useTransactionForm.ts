@@ -3,15 +3,18 @@ import { transactionSchema, TransactionFormValues } from "../schema";
 import { createTransaction } from "../actions";
 import { useFormAction } from "@/hooks/useFormAction";
 
+interface UseTransactionFormOptions {
+  onSuccess?: () => void;
+}
+
 /**
  * Hook para manejar la lógica del formulario de registro de gasto.
  * Integra validación Zod, estados de envío y notificaciones.
  */
-export function useTransactionForm() {
+export function useTransactionForm({ onSuccess }: UseTransactionFormOptions = {}) {
   const router = useRouter();
 
-  // Inicialización del formulario usando useFormAction estándar
-  const { control, onSubmit, isLoading, watch, setValue } = useFormAction({
+  const { control, onSubmit, isLoading, watch, setValue, reset } = useFormAction({
     schema: transactionSchema,
     action: createTransaction,
     defaultValues: {
@@ -26,8 +29,12 @@ export function useTransactionForm() {
     },
     loadingMessage: "Registrando tu gasto...",
     onSuccess: () => {
-      // Retornar al dashboard tras un guardado exitoso
-      router.push("/dashboard");
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        // Fallback para la página standalone
+        router.push("/dashboard/expenses");
+      }
     },
   });
 
@@ -37,5 +44,7 @@ export function useTransactionForm() {
     isLoading,
     watch,
     setValue,
+    reset,
   };
 }
+
