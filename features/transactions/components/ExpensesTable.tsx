@@ -16,6 +16,8 @@ import { deleteTransactionAction, getReceiptSignedUrlAction } from "../actions";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ReceiptPreviewModal } from "./ReceiptPreviewModal";
+import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
+import { useTransactionModal } from "../context/TransactionModalContext";
 import toast from "react-hot-toast";
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
@@ -30,6 +32,7 @@ interface ExpensesTableProps {
 
 export function ExpensesTable({ initialData }: ExpensesTableProps) {
   const router = useRouter();
+  const { openModal } = useTransactionModal();
   const [isPending, startTransition] = useTransition();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [data, setData] = useState<TransactionWithCategory[]>(initialData);
@@ -175,7 +178,7 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-1">
           <button
-            onClick={() => router.push(`/dashboard/edit-expense/${row.original.id}`)}
+            onClick={() => openModal(row.original)}
             className="p-1.5 text-text-sub hover:text-primary transition-colors rounded-lg hover:bg-primary/10"
             title="Editar gasto"
           >
@@ -212,9 +215,8 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-sm">
-        {/* ─── DESKTOP TABLE ─── */}
-        <div className="hidden md:block overflow-x-auto">
+      <ResponsiveTableWrapper
+        desktopContent={
           <table className="w-full min-w-[700px] text-left text-sm whitespace-nowrap">
             <thead className="bg-background/80 text-text-sub border-b border-border">
               <tr>
@@ -228,18 +230,30 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
                     }`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    <span className="flex items-center gap-1">
+                    <span className="flex items-center gap-1 group/sort">
                       {header.id === "amount" ? (
                         <span className="ml-auto flex items-center gap-1">
                           Monto
-                          {header.column.getIsSorted() === "asc" && <span className="material-symbols-outlined text-[14px]">arrow_upward</span>}
-                          {header.column.getIsSorted() === "desc" && <span className="material-symbols-outlined text-[14px]">arrow_downward</span>}
+                          {header.column.getCanSort() && (
+                            <span className={`material-symbols-outlined text-[16px] transition-colors ${
+                              header.column.getIsSorted() ? "text-text-main" : "text-text-dim opacity-40 group-hover/sort:opacity-100"
+                            }`}>
+                              {header.column.getIsSorted() === "asc" ? "arrow_upward" : 
+                               header.column.getIsSorted() === "desc" ? "arrow_downward" : "unfold_more"}
+                            </span>
+                          )}
                         </span>
                       ) : (
                         <>
                           {typeof header.column.columnDef.header === "string" ? header.column.columnDef.header : ""}
-                          {header.column.getIsSorted() === "asc" && <span className="material-symbols-outlined text-[14px]">arrow_upward</span>}
-                          {header.column.getIsSorted() === "desc" && <span className="material-symbols-outlined text-[14px]">arrow_downward</span>}
+                          {header.column.getCanSort() && (
+                            <span className={`material-symbols-outlined text-[16px] transition-colors ${
+                              header.column.getIsSorted() ? "text-text-main" : "text-text-dim opacity-40 group-hover/sort:opacity-100"
+                            }`}>
+                              {header.column.getIsSorted() === "asc" ? "arrow_upward" : 
+                               header.column.getIsSorted() === "desc" ? "arrow_downward" : "unfold_more"}
+                            </span>
+                          )}
                         </>
                       )}
                     </span>
@@ -274,11 +288,9 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
               )}
             </tbody>
           </table>
-        </div>
-
-        {/* ─── MOBILE CARDS ─── */}
-        <div className="md:hidden divide-y divide-border">
-          {table.getRowModel().rows.length === 0 ? (
+        }
+        mobileContent={
+          table.getRowModel().rows.length === 0 ? (
             <div className="py-16 text-center text-text-sub">
               <span className="material-symbols-outlined text-4xl mb-2 block text-text-dim">receipt_long</span>
               No hay gastos registrados aún.
@@ -289,7 +301,7 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
               const cat = t.category;
               const [y, m, d] = t.date.split("-");
               return (
-                <div key={t.id} className="p-4 flex flex-col gap-2">
+                <div key={t.id} className="p-4 flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <span
                       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold border"
@@ -302,48 +314,54 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
                       <span className="material-symbols-outlined text-[14px]">{cat?.icon ?? "category"}</span>
                       {cat?.name ?? "Sin categoría"}
                     </span>
-                    <AmountDisplay value={Number(t.amount)} className="text-sm font-bold" />
+                    <span className="text-xs font-medium text-text-sub">{`${d}/${m}/${y}`}</span>
                   </div>
-                  <div className="text-sm font-medium text-text-main">
-                    {t.description || <span className="text-text-dim italic text-xs">Sin descripción</span>}
-                  </div>
-                  <div className="flex items-center justify-between text-xs text-text-sub">
-                    <span>{`${d}/${m}/${y}`} · {PAYMENT_METHOD_LABELS[t.payment_method] ?? t.payment_method}</span>
-                    <div className="flex items-center gap-1">
+                  
+                  <div className="flex items-end justify-between mt-1">
+                    <div className="flex flex-col gap-1 overflow-hidden pr-2">
+                      <span className="text-[13px] font-medium text-text-main line-clamp-1 truncate">
+                        {t.description || <span className="text-text-dim italic text-xs">Sin descripción</span>}
+                      </span>
+                      <AmountDisplay value={Number(t.amount)} className="text-xl font-bold text-text-main tracking-tight mt-0.5" />
+                      <span className="text-[10px] font-bold text-text-dim uppercase tracking-wider mt-0.5 bg-background border border-border w-fit px-2 py-0.5 rounded-md">
+                        {PAYMENT_METHOD_LABELS[t.payment_method] ?? t.payment_method}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-1 shrink-0 mb-1">
                       {t.attachment_url && (
                         <button
                           onClick={() => handleViewReceipt(t.attachment_url!, t.description || "Gasto")}
                           className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
                           title="Ver comprobante"
                         >
-                          <span className="material-symbols-outlined text-[16px] font-fill">receipt_long</span>
+                          <span className="material-symbols-outlined text-[18px] font-fill">receipt_long</span>
                         </button>
                       )}
                       <button
-                        onClick={() => router.push(`/dashboard/edit-expense/${t.id}`)}
+                        onClick={() => openModal(t)}
                         className="p-1.5 text-text-sub hover:text-primary rounded-lg hover:bg-primary/10 transition-colors"
                         title="Editar"
                       >
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
                       </button>
                       <button
                         onClick={() => handleDeleteClick(t)}
                         className="p-1.5 text-text-sub hover:text-red-500 rounded-lg hover:bg-red-500/10 transition-colors"
                         title="Borrar"
                       >
-                        <span className="material-symbols-outlined text-[16px]">delete</span>
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
                       </button>
                     </div>
                   </div>
                 </div>
               );
             })
-          )}
-        </div>
-
-        {/* ─── PAGINATION FOOTER ─── */}
-        {totalRows > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-surface px-5 py-3 gap-3">
+          )
+        }
+        footerContent={
+          totalRows > 0 ? (
+            <div className="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-surface px-5 py-3 gap-3">
             <div className="text-xs text-text-sub">
               Mostrando <span className="font-semibold text-text-main">{from}</span> a{" "}
               <span className="font-semibold text-text-main">{to}</span> de{" "}
@@ -381,8 +399,9 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
               </button>
             </div>
           </div>
-        )}
-      </div>
+          ) : null
+        }
+      />
 
       <ReceiptPreviewModal
         isOpen={isPreviewOpen}

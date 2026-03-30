@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { Category, TransactionWithCategory } from "../types";
 import type { TransactionFormValues } from "../schema";
-import { updateTransactionAction, getReceiptSignedUrlAction, deleteReceiptAction } from "../actions";
+import {
+  updateTransactionAction,
+  getReceiptSignedUrlAction,
+  deleteReceiptAction,
+} from "../actions";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { TransactionOptions } from "./TransactionOptions";
 import { CategorySelect } from "./CategorySelect";
@@ -19,16 +23,24 @@ import toast from "react-hot-toast";
 interface EditTransactionFormProps {
   transaction: TransactionWithCategory;
   categories: Category[];
+  onClose?: () => void;
+  onSuccess?: () => void;
 }
 
-export function EditTransactionForm({ transaction, categories }: EditTransactionFormProps) {
+export function EditTransactionForm({
+  transaction,
+  categories,
+  onClose,
+  onSuccess,
+}: EditTransactionFormProps) {
   const router = useRouter();
+  const isModalMode = !!onClose;
   const [isLoading, setIsLoading] = React.useState(false);
-  
-  // Estado para gestionar si el archivo actual fue borrado
-  const [currentAttachment, setCurrentAttachment] = React.useState<string | null>(transaction.attachment_url || null);
-  
-  // Confirm Delete state
+
+  const [currentAttachment, setCurrentAttachment] = React.useState<
+    string | null
+  >(transaction.attachment_url || null);
+
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = React.useState(false);
 
   // Preview state
@@ -92,7 +104,11 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
       const result = await updateTransactionAction(transaction.id, data);
       if (result.success) {
         toast.success("¡Gasto actualizado correctamente!");
-        router.push("/dashboard/expenses");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          router.push("/dashboard/expenses");
+        }
       } else {
         toast.error(result.error || "Error al actualizar el gasto.");
       }
@@ -105,8 +121,12 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-6">
-      <div className="w-full max-w-5xl bg-surface rounded-xl border border-border flex flex-col lg:flex-row transition-colors overflow-hidden ring-1 ring-border/50 shadow-sm">
-        <div className="flex-1 p-6 sm:p-8 flex flex-col gap-6 border-r border-border">
+      <div
+        className={`w-full bg-surface flex flex-col lg:flex-row transition-colors overflow-hidden ${isModalMode ? "gap-0" : "max-w-5xl rounded-xl border border-border ring-1 ring-border/50 shadow-sm"}`}
+      >
+        <div
+          className={`flex-1 flex flex-col gap-6 border-border ${isModalMode ? "p-5 border-b lg:border-b-0 lg:border-r" : "p-6 sm:p-8 border-r"}`}
+        >
           {/* Monto */}
           <div>
             <label className="block text-sm font-medium text-text-sub mb-2">
@@ -157,7 +177,9 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
           </div>
         </div>
 
-        <div className="w-full lg:w-[320px] bg-surface p-6 sm:p-8 flex flex-col gap-6 justify-between border-l border-border">
+        <div
+          className={`w-full lg:w-[320px] bg-surface flex flex-col gap-6 justify-between border-border ${isModalMode ? "p-5 border-l" : "p-6 sm:p-8 border-l"}`}
+        >
           <div className="flex flex-col gap-6">
             <TransactionOptions control={control} />
 
@@ -169,7 +191,9 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
                 </label>
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 overflow-hidden">
-                    <span className="material-symbols-outlined text-primary font-fill">receipt_long</span>
+                    <span className="material-symbols-outlined text-primary font-fill">
+                      receipt_long
+                    </span>
                     <span className="text-sm font-medium text-text-main truncate">
                       {currentAttachment.split("/").pop()}
                     </span>
@@ -181,7 +205,9 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
                       className="p-1.5 text-text-sub hover:text-primary transition-colors hover:bg-primary/10 rounded-lg"
                       title="Ver actual"
                     >
-                      <span className="material-symbols-outlined text-[18px]">visibility</span>
+                      <span className="material-symbols-outlined text-[18px]">
+                        visibility
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -189,7 +215,9 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
                       className="p-1.5 text-text-sub hover:text-red-500 transition-colors hover:bg-red-500/10 rounded-lg"
                       title="Borrar actual"
                     >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      <span className="material-symbols-outlined text-[18px]">
+                        delete
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -209,14 +237,19 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#0d1b12]" />
               ) : (
                 <>
-                  <span className="material-symbols-outlined font-fill text-[20px]">check_circle</span>
+                  <span className="material-symbols-outlined font-fill text-[20px]">
+                    check_circle
+                  </span>
                   Guardar cambios
                 </>
               )}
             </button>
             <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => {
+                if (onClose) onClose();
+                else router.back();
+              }}
               className="w-full h-12 bg-transparent hover:bg-surface-hover text-text-sub hover:text-text-main font-medium rounded-xl transition-colors"
             >
               Cancelar
@@ -224,8 +257,8 @@ export function EditTransactionForm({ transaction, categories }: EditTransaction
           </div>
         </div>
       </div>
-      
-      <ReceiptPreviewModal 
+
+      <ReceiptPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
         fileUrl={previewUrl || ""}

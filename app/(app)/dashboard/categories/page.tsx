@@ -1,7 +1,10 @@
-import React from "react";
 import { CategoryList } from "@/features/categories/components/CategoryList";
+import { getCategoriesWithBudgetsAction } from "@/features/categories/actions";
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const { data: initialCategories = [] } =
+    await getCategoriesWithBudgetsAction();
+
   return (
     <div className="space-y-6 transition-colors duration-200">
       {/* Page Header */}
@@ -17,8 +20,7 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      {/* Listado Principal de Categorías (con botones encapsulados) */}
-      <CategoryList />
+      <CategoryList initialCategories={initialCategories} />
     </div>
   );
 }

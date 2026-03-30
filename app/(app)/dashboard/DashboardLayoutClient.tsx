@@ -5,11 +5,13 @@ import Header from "@/components/dashboard/Header";
 import { useAuth } from "@/context/AuthContext";
 import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
-import { TransactionModalProvider, useTransactionModal } from "@/features/transactions/context/TransactionModalContext";
+import {
+  TransactionModalProvider,
+  useTransactionModal,
+} from "@/features/transactions/context/TransactionModalContext";
 import { TransactionModal } from "@/features/transactions/components/TransactionModal";
 import type { Category } from "@/features/transactions/types";
 
-// Componente interno con acceso al contexto del modal
 function DashboardInner({
   children,
   categories,
@@ -19,14 +21,16 @@ function DashboardInner({
 }) {
   const { isLoading } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isOpen, closeModal } = useTransactionModal();
+  const { isOpen, closeModal, editingTransaction } = useTransactionModal();
 
   if (isLoading) {
     return (
       <div className="bg-white h-screen w-screen flex items-center justify-center dark:bg-bg-dark">
         <div className="flex flex-col items-center gap-4">
           <Spinner size="lg" />
-          <p className="text-slate-500 font-medium animate-pulse text-sm">Validando acceso...</p>
+          <p className="text-slate-500 font-medium animate-pulse text-sm">
+            Validando acceso...
+          </p>
         </div>
       </div>
     );
@@ -34,11 +38,14 @@ function DashboardInner({
 
   return (
     <div className="bg-background text-foreground overflow-hidden h-[100dvh] flex transition-colors duration-200 relative">
-      <Sidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
-      
+      <Sidebar
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+      />
+
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -51,11 +58,12 @@ function DashboardInner({
         </div>
       </main>
 
-      {/* Modal Global de Registro de Gasto */}
+      {/* Modal Global de Registro/Edición de Gasto */}
       <TransactionModal
         isOpen={isOpen}
         onClose={closeModal}
         categories={categories}
+        editingTransaction={editingTransaction}
       />
     </div>
   );
@@ -70,9 +78,7 @@ export function DashboardLayoutClient({
 }) {
   return (
     <TransactionModalProvider>
-      <DashboardInner categories={categories}>
-        {children}
-      </DashboardInner>
+      <DashboardInner categories={categories}>{children}</DashboardInner>
     </TransactionModalProvider>
   );
 }
