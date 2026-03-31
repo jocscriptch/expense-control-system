@@ -103,11 +103,11 @@ export default function ReportsPage() {
                     }
                   }}
                   className={`
-                  px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300
+                  px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 border
                   ${
                     isActive
-                      ? "bg-text-main text-primary shadow-lg scale-[1.02]"
-                      : "text-text-dim hover:text-text-main hover:bg-surface-hover/50"
+                      ? "bg-black text-primary border-primary/40 shadow-[0_0_15px_-5px_rgba(var(--primary-rgb),0.2)] scale-[1.02]"
+                      : "bg-transparent text-text-dim border-transparent hover:text-text-main hover:bg-surface-hover/20"
                   }
                 `}
                 >
