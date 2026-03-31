@@ -12,6 +12,9 @@ import {
 import { TransactionModal } from "@/features/transactions/components/TransactionModal";
 import type { Category } from "@/features/transactions/types";
 
+import { CommandMenuProvider } from "@/context/CommandMenuContext";
+import { CommandMenu } from "@/components/dashboard/CommandMenu";
+
 function DashboardInner({
   children,
   categories,
@@ -65,6 +68,9 @@ function DashboardInner({
         categories={categories}
         editingTransaction={editingTransaction}
       />
+
+      {/* Buscador Inteligente Global (Command Palette) */}
+      <CommandMenu />
     </div>
   );
 }
@@ -78,7 +84,9 @@ export function DashboardLayoutClient({
 }) {
   return (
     <TransactionModalProvider>
-      <DashboardInner categories={categories}>{children}</DashboardInner>
+      <CommandMenuProvider>
+        <DashboardInner categories={categories}>{children}</DashboardInner>
+      </CommandMenuProvider>
     </TransactionModalProvider>
   );
 }
