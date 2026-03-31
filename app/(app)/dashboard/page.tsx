@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { getDashboardSummary } from "@/features/transactions/actions";
 import { getDashboardTrendData, getReportsData } from "@/features/transactions/reportsActions";
+import { useSearchParams } from "next/navigation";
 import type { TrendDataPoint, CategoryChartData } from "@/features/transactions/reportsActions";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { SpendingTrendChart, CategoryDistributionChart } from "@/features/transactions/components/ReportsCharts";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
+import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -14,10 +16,15 @@ export default function DashboardPage() {
   const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryChartData[]>([]);
 
+  const searchParams = useSearchParams();
+  const month = searchParams.get("month") ? Number(searchParams.get("month")) : undefined;
+  const year = searchParams.get("year") ? Number(searchParams.get("year")) : undefined;
+
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
       const [summaryResult, trendResult, reportsResult] = await Promise.all([
-        getDashboardSummary(),
+        getDashboardSummary(month, year),
         getDashboardTrendData(),
         getReportsData({ period: "month" }),
       ]);
@@ -29,7 +36,7 @@ export default function DashboardPage() {
       setLoading(false);
     }
     fetchData();
-  }, []);
+  }, [month, year]);
 
   if (loading) {
     return (
@@ -144,70 +151,128 @@ export default function DashboardPage() {
 
 
       {/* Recent Transactions List */}
-      <div className="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mt-6">
-        <div className="px-6 py-5 border-b border-border flex justify-between items-center">
-          <h3 className="text-base font-bold text-text-main">Últimos movimientos</h3>
-          <a href="/dashboard/expenses" className="text-sm font-semibold text-primary hover:text-primary-hover uppercase tracking-widest text-[10px]">Ver todos</a>
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4 px-2">
+          <h3 className="text-sm font-black uppercase tracking-widest text-text-dim">Últimos movimientos</h3>
+          <a
+            href="/dashboard/expenses"
+            className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest flex items-center gap-1 group"
+          >
+            Ver todos <span className="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+          </a>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-0">
-            <thead className="bg-background/50 text-text-sub text-[10px] md:text-xs uppercase font-bold tracking-wider">
-              <tr>
-                <th className="px-4 md:px-6 py-4">Concepto</th>
-                <th className="px-4 md:px-6 py-4 hidden sm:table-cell">Descripción</th>
-                <th className="px-4 md:px-6 py-4 hidden md:table-cell">Fecha</th>
-                <th className="px-4 md:px-6 py-4 text-right">Monto</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {recentTransactions.length === 0 ? (
+
+        <ResponsiveTableWrapper
+          desktopContent={
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-background/40 text-text-sub text-[10px] uppercase font-bold tracking-widest border-b border-border/50">
                 <tr>
-                  <td colSpan={4} className="px-6 py-10 text-center text-text-dim italic">
-                    Aún no hay movimientos este mes.
-                  </td>
+                  <th className="px-6 py-4">Concepto</th>
+                  <th className="px-6 py-4">Descripción</th>
+                  <th className="px-6 py-4 text-center">Fecha</th>
+                  <th className="px-6 py-4 text-right">Monto</th>
                 </tr>
-              ) : (
-                recentTransactions.map((trx: any) => (
-                  <tr key={trx.id} className="hover:bg-surface-hover/50 transition-colors group text-sm md:text-base">
-                    <td className="px-4 md:px-6 py-4 text-text-main">
-                      <div className="flex items-center gap-3 md:gap-4">
-                        <div 
-                          className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center shrink-0 border"
-                          style={{
-                            backgroundColor: `${trx.category?.color || '#3b82f6'}15`,
-                            color: trx.category?.color || '#3b82f6',
-                            borderColor: `${trx.category?.color || '#3b82f6'}30`
-                          }}
-                        >
-                          <span className="material-symbols-outlined text-[18px] md:text-[20px]">
-                            {trx.category?.icon || 'payments'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-text-main block">{trx.category?.name || 'Varios'}</span>
-                          <span className="text-[10px] text-text-dim sm:hidden">{trx.description}</span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 md:px-6 py-4 text-text-sub font-medium hidden sm:table-cell">{trx.description}</td>
-                    <td className="px-4 md:px-6 py-4 text-text-dim text-sm hidden md:table-cell">
-                      {new Date(trx.date).toLocaleDateString("es-CR", { day: '2-digit', month: 'short' })}
-                    </td>
-                    <td className="px-4 md:px-6 py-4 text-right font-bold">
-                      <div className="flex justify-end">
-                        <AmountDisplay 
-                          value={Number(trx.amount)} 
-                          className="text-lg font-black text-text-main"
-                          symbolClassName="text-text-dim/40"
-                        />
-                      </div>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {recentTransactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-text-dim italic">
+                      No hay movimientos este mes.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                ) : (
+                  recentTransactions.map((trx: any) => (
+                    <tr key={trx.id} className="hover:bg-surface-hover/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border border-white/5"
+                            style={{
+                              backgroundColor: `${trx.category?.color || "#3b82f6"}15`,
+                              color: trx.category?.color || "#3b82f6",
+                            }}
+                          >
+                            <span className="material-symbols-outlined text-[18px]">
+                              {trx.category?.icon || "payments"}
+                            </span>
+                          </div>
+                          <span className="font-bold text-text-main text-sm truncate max-w-[120px]">
+                            {trx.category?.name || "Varios"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-text-sub text-sm truncate max-w-[180px] block">
+                          {trx.description || <span className="italic opacity-40">Sin detalles</span>}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="text-[11px] font-bold text-text-dim uppercase tracking-tighter bg-background/50 px-2 py-1 rounded-md border border-border/40">
+                          {new Date(trx.date).toLocaleDateString("es-ES", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <AmountDisplay
+                          value={Number(trx.amount)}
+                          className="text-base font-black text-text-main justify-end"
+                          symbolClassName="text-primary/40 mr-1"
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          }
+          mobileContent={
+            recentTransactions.length === 0 ? (
+              <div className="p-10 text-center text-text-dim italic">
+                Aún no hay movimientos este mes.
+              </div>
+            ) : (
+              recentTransactions.map((trx: any) => (
+                <div key={trx.id} className="p-4 flex flex-col gap-3 group active:bg-surface-hover/50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <span
+                        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider border"
+                        style={{
+                          backgroundColor: `${trx.category?.color || "#3b82f6"}15`,
+                          color: trx.category?.color || "#3b82f6",
+                          borderColor: `${trx.category?.color || "#3b82f6"}30`,
+                        }}
+                      >
+                        <span className="material-symbols-outlined text-[14px]">
+                          {trx.category?.icon || "payments"}
+                        </span>
+                        {trx.category?.name || "Varios"}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold text-text-dim uppercase">
+                      {new Date(trx.date).toLocaleDateString("es-ES", { day: '2-digit', month: 'short' })}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-end">
+                    <div className="flex flex-col gap-0.5 overflow-hidden pr-4">
+                      <span className="text-sm font-medium text-text-main truncate">
+                        {trx.description || <span className="italic opacity-30">Sin descripción</span>}
+                      </span>
+                    </div>
+                    <AmountDisplay 
+                      value={Number(trx.amount)} 
+                      className="text-lg font-black text-text-main flex-shrink-0" 
+                    />
+                  </div>
+                </div>
+              ))
+            )
+          }
+        />
       </div>
     </div>
   );

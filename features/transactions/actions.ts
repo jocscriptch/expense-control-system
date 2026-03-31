@@ -125,7 +125,7 @@ export async function getCategories(): Promise<{
  * Obtiene el resumen consolidado para el Dashboard:
  * Gasto del mes, Ingresos del mes y el Presupuesto Global.
  */
-export async function getDashboardSummary() {
+export async function getDashboardSummary(month?: number, year?: number) {
   const supabase = await createClient();
 
   try {
@@ -133,10 +133,13 @@ export async function getDashboardSummary() {
     if (!user) throw new Error("No autenticado");
 
     const now = new Date();
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    const targetMonth = month !== undefined ? month : now.getMonth();
+    const targetYear = year !== undefined ? year : now.getFullYear();
 
-    // Traer los 5 movimientos más recientes de todo el historial (para el feed)
+    const firstDay = new Date(targetYear, targetMonth, 1).toISOString();
+    const lastDay = new Date(targetYear, targetMonth + 1, 0).toISOString();
+
+    // Traer los 5 movimientos más recientes de ese periodo específico
     const { data: recent, error: recentError } = await supabase
       .from("transactions")
       .select(`
@@ -144,6 +147,8 @@ export async function getDashboardSummary() {
         category:categories ( id, name, icon, color, type )
       `)
       .eq("user_id", user.id)
+      .gte("date", firstDay)
+      .lte("date", lastDay)
       .order("date", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(5);
