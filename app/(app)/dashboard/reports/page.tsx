@@ -138,23 +138,20 @@ export default function ReportsPage() {
                         onSelect={(range: any) => {
                           setTempRange(range);
 
-                          // Si ya hay un rango completo y el usuario hace clic para uno nuevo,
-                          // resetear el filtro de reportes de inmediato.
-                          const isRestarting =
-                            customRange?.from &&
-                            customRange?.to &&
-                            range?.from &&
-                            !range?.to;
-                          if (isRestarting) {
-                            setCustomRange(undefined);
-                          }
-
-                          const isRealRangeSelection =
+                          // determinar si el rango está completo
+                          const isNowComplete =
                             range?.from &&
                             range?.to &&
                             range.from.getTime() !== range.to.getTime();
 
-                          if (isRealRangeSelection) {
+                          // si lo está, resetear el filtro de reportes de inmediato.
+                          const wasComplete =
+                            customRange?.from && customRange?.to;
+                          if (!isNowComplete && wasComplete) {
+                            setCustomRange(undefined);
+                          }
+
+                          if (isNowComplete) {
                             setCustomRange(range);
                             setPeriod("custom");
                             setIsCalendarOpen(false);
