@@ -23,12 +23,12 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 bg-surface rounded-2xl border border-border" />
+            <Skeleton key={i} className="h-32 rounded-2xl" />
           ))}
         </div>
-        <Skeleton className="h-64 bg-surface rounded-2xl border border-border" />
+        <Skeleton className="h-[400px] rounded-2xl" />
       </div>
     );
   }

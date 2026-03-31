@@ -74,8 +74,8 @@ export async function createTransaction(
       throw new Error(error.message);
     }
     
-    // 4. Revalidar
-    revalidatePath("/dashboard");
+    // 4. Revalidar de forma anidada todo el dashboard (tabla y metricas)
+    revalidatePath("/dashboard", "layout");
 
     return {
       success: true,
@@ -248,8 +248,7 @@ export async function deleteTransactionAction(id: string): Promise<{
 
     if (error) throw new Error(error.message);
 
-    revalidatePath("/dashboard/expenses");
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -344,8 +343,7 @@ export async function updateTransactionAction(
       }
     }
 
-    revalidatePath("/dashboard/expenses");
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard", "layout");
 
     return { success: true, message: "Gasto actualizado correctamente.", data };
   } catch (error: any) {
@@ -395,7 +393,7 @@ export async function deleteReceiptAction(transactionId: string, path: string) {
 
     if (dbError) throw dbError;
 
-    revalidatePath("/dashboard/expenses");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

@@ -1,10 +1,13 @@
 import React from "react";
 import { ExpensesFilters } from "@/features/transactions/components/ExpensesFilters";
 import { ExpensesTable } from "@/features/transactions/components/ExpensesTable";
-import { getTransactionsAction } from "@/features/transactions/actions";
+import { getTransactionsAction, getCategories } from "@/features/transactions/actions";
 
 export default async function ExpensesListPage() {
-  const { data: transactions } = await getTransactionsAction();
+  const [{ data: transactions }, { data: categories }] = await Promise.all([
+    getTransactionsAction(),
+    getCategories(),
+  ]);
 
   return (
     <div className="space-y-6 transition-colors duration-200">
@@ -21,7 +24,7 @@ export default async function ExpensesListPage() {
       </div>
 
       {/* Filters */}
-      <ExpensesFilters />
+      <ExpensesFilters categories={categories} />
 
       {/* Table */}
       <ExpensesTable initialData={transactions} />

@@ -19,6 +19,11 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
   const [categories, setCategories] = useState<CategoryWithBudget[]>(
     initialCategories.filter((c) => c.type === "expense"),
   );
+  
+  React.useEffect(() => {
+    setCategories(initialCategories.filter((c) => c.type === "expense"));
+  }, [initialCategories]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] =

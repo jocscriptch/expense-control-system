@@ -49,12 +49,13 @@ function Calendar({
           "w-9 h-9 font-normal text-sm rounded-xl transition-all cursor-pointer",
           "flex items-center justify-center bg-transparent border-0",
           "text-text-sub hover:bg-surface-hover hover:text-text-main",
-          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary",
+          "active:scale-90 active:bg-surface-hover active:text-text-main",
+          "focus-visible:outline-none",
           "aria-selected:bg-primary aria-selected:text-[#0d1b12] aria-selected:font-bold aria-selected:shadow-md aria-selected:hover:bg-primary-hover",
         ),
 
         today:
-          "font-bold text-primary bg-primary/5 ring-1 ring-inset ring-primary/30",
+          "font-extrabold text-[#0d1b12] dark:text-white bg-primary/30 border-2 border-primary rounded-[10px]",
         outside: "text-text-dim opacity-30 aria-selected:opacity-50",
         disabled:
           "text-text-dim opacity-50 cursor-not-allowed hover:bg-transparent",

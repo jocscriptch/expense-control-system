@@ -10,7 +10,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { TransactionWithCategory } from "../types";
 import { deleteTransactionAction, getReceiptSignedUrlAction } from "../actions";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
@@ -36,6 +36,54 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
   const [isPending, startTransition] = useTransition();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [data, setData] = useState<TransactionWithCategory[]>(initialData);
+
+  const searchParams = useSearchParams();
+
+  // Sincronizar y filtrar datos del servidor
+  React.useEffect(() => {
+    const q = searchParams.get("q")?.toLowerCase();
+    const cat = searchParams.get("category");
+    const method = searchParams.get("method");
+    const household = searchParams.get("household");
+    const dateFilter = searchParams.get("date"); // "this_month", "this_year", "YYYY-MM-DD"
+
+    let filtered = [...initialData];
+
+    if (q) {
+      filtered = filtered.filter(tx => 
+        (tx.description || "").toLowerCase().includes(q) || 
+        (tx.category?.name.toLowerCase() || "").includes(q)
+      );
+    }
+    if (cat) {
+      filtered = filtered.filter(tx => tx.category_id === cat);
+    }
+    if (method) {
+      filtered = filtered.filter(tx => tx.payment_method === method);
+    }
+    if (household === "true") {
+      filtered = filtered.filter(tx => tx.is_household === true);
+    }
+    if (dateFilter) {
+      const today = new Date();
+      if (dateFilter === "this_month") {
+        // En YYYY-MM-DD
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        filtered = filtered.filter(tx => tx.date >= startOfMonth);
+      } else if (dateFilter === "this_year") {
+        const startOfYear = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+        filtered = filtered.filter(tx => tx.date >= startOfYear);
+      } else {
+        // Match exacto YYYY-MM-DD
+        filtered = filtered.filter(tx => tx.date === dateFilter);
+      }
+    }
+
+    // Excluir ingresos por defecto (la tabla es de Gastos)
+    filtered = filtered.filter(tx => tx.category?.type !== "income");
+
+    setData(filtered);
+  }, [initialData, searchParams]);
 
   // Delete dialog state
   const [toDelete, setToDelete] = useState<TransactionWithCategory | null>(null);
