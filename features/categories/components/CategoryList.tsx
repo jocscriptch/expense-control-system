@@ -10,6 +10,7 @@ import { CategoryWithBudget } from "../types";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
 import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
+import toast from "react-hot-toast";
 
 interface CategoryListProps {
   initialCategories: CategoryWithBudget[];
@@ -80,6 +81,7 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
 
     const result = await deleteCategoryAction(categoryToDelete.id);
     if (result.success) {
+      toast.success("Categoría eliminada", { icon: "🗑️" });
       setIsDeleteConfirmOpen(false);
       setCategoryToDelete(null);
       fetchCategories(true);

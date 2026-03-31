@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { upsertCategoryAction } from "../actions";
 import { CategoryFormData } from "../types";
 import { formatInputAmount, parseInputAmount } from "@/components/ui/AmountDisplay";
+import toast from "react-hot-toast";
 
 interface CategoryFormModalProps {
   isOpen: boolean;
@@ -116,6 +117,7 @@ export function CategoryFormModal({
     try {
       const result = await upsertCategoryAction(formData);
       if (result.success) {
+        toast.success(isEditing ? "Categoría actualizada" : "Categoría creada");
         onClose();
       } else {
         setError(result.error || "Ocurrió un error inesperado.");
