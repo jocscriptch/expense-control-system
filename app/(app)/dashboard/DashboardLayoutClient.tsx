@@ -28,12 +28,30 @@ function DashboardInner({
 
   if (isLoading) {
     return (
-      <div className="bg-white h-screen w-screen flex items-center justify-center dark:bg-bg-dark">
-        <div className="flex flex-col items-center gap-4">
-          <Spinner size="lg" />
-          <p className="text-slate-500 font-medium animate-pulse text-sm">
-            Validando acceso...
-          </p>
+      <div className="bg-background h-screen w-screen flex flex-col items-center justify-center transition-colors duration-500">
+        <div className="relative flex flex-col items-center gap-6">
+          {/* Logo/Icon Container with Pulse */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+            <div className="relative bg-surface p-6 rounded-full border border-border/50 shadow-2xl flex items-center justify-center w-24 h-24">
+              <span className="material-symbols-outlined text-primary text-[44px] font-fill">
+                savings
+              </span>
+            </div>
+            {/* Spinning ring outside the logo */}
+            <div className="absolute -inset-2 border border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-text-main font-black tracking-widest uppercase text-[10px] animate-pulse">
+              Validando acceso
+            </p>
+            <div className="flex gap-1">
+              <div className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <div className="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <div className="w-1 h-1 bg-primary rounded-full animate-bounce" />
+            </div>
+          </div>
         </div>
       </div>
     );
