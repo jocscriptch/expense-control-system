@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { SpendingTrendChart, CategoryDistributionChart } from "@/features/transactions/components/ReportsCharts";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
 import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
+import { useTransactionModal } from "@/features/transactions/context/TransactionModalContext";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -19,6 +20,8 @@ export default function DashboardPage() {
   const searchParams = useSearchParams();
   const month = searchParams.get("month") ? Number(searchParams.get("month")) : undefined;
   const year = searchParams.get("year") ? Number(searchParams.get("year")) : undefined;
+  
+  const { refreshTrigger } = useTransactionModal();
 
   useEffect(() => {
     async function fetchData() {
@@ -36,7 +39,7 @@ export default function DashboardPage() {
       setLoading(false);
     }
     fetchData();
-  }, [month, year]);
+  }, [month, year, refreshTrigger]);
 
   if (loading) {
     return (
@@ -74,23 +77,31 @@ export default function DashboardPage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {/* Card 1: Gasto del mes */}
-        <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
+        <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-red-500/30 transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Gasto del mes</h3>
-            <span className="material-symbols-outlined text-[20px] text-primary/40">payments</span>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Gastos</h3>
+            <div className="size-8 rounded-full bg-red-500/10 flex items-center justify-center transition-colors group-hover:bg-red-500/20">
+              <span className="material-symbols-outlined text-[18px] text-red-500/80">payments</span>
+            </div>
           </div>
-          <AmountDisplay value={totalExpenses} className="text-3xl font-black text-text-main" />
-          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Total acumulado este mes</p>
+          <div>
+            <AmountDisplay value={totalExpenses} className="text-3xl font-black text-text-main" symbolClassName="text-red-500/60" />
+            <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Acumulado del mes</p>
+          </div>
         </div>
 
         {/* Card 2: Meta Mensual (Presupuesto) */}
-        <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
+        <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-blue-500/30 transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Meta Mensual</h3>
-            <span className="material-symbols-outlined text-[20px] text-text-dim/30">account_balance_wallet</span>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Presupuesto</h3>
+            <div className="size-8 rounded-full bg-blue-500/10 flex items-center justify-center transition-colors group-hover:bg-blue-500/20">
+              <span className="material-symbols-outlined text-[18px] text-blue-500/80">account_balance_wallet</span>
+            </div>
           </div>
-          <AmountDisplay value={monthlyBudget} className="text-3xl font-black text-text-main" symbolClassName="text-primary/40" />
-          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Presupuesto global asignado</p>
+          <div>
+            <AmountDisplay value={monthlyBudget} className="text-3xl font-black text-text-main" symbolClassName="text-blue-500/50" />
+            <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Límite definido</p>
+          </div>
         </div>
 
         {/* Card 3: Saldo Disponible (Barra de progreso) */}
@@ -98,7 +109,13 @@ export default function DashboardPage() {
           <div>
             <div className="flex justify-between items-start mb-3">
               <h3 className="text-text-sub text-sm font-bold uppercase tracking-widest text-[10px]">Saldo Disponible</h3>
-              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${usedPercentage > 90 ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"}`}>
+              <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg transition-colors ${
+                usedPercentage > 90 
+                  ? "bg-red-500/10 text-red-500" 
+                  : usedPercentage > 75 
+                    ? "bg-amber-500/10 text-amber-500" 
+                    : "bg-primary/10 text-primary"
+              }`}>
                 {usedPercentage.toFixed(0)}% Utilizado
               </span>
             </div>
@@ -111,8 +128,14 @@ export default function DashboardPage() {
           
           <div className="w-full bg-background rounded-full h-3 overflow-hidden shadow-inner p-[2px] border border-border/50">
             <div 
-              className={`h-full rounded-full transition-all duration-1000 ease-out fill-mode-forwards ${usedPercentage > 90 ? 'bg-gradient-to-r from-red-600 to-red-400' : 'bg-gradient-to-r from-primary to-emerald-400'}`} 
-              style={{ width: `${usedPercentage}%` }}
+              className={`h-full rounded-full transition-all duration-1000 ease-out fill-mode-forwards ${
+                usedPercentage > 90 
+                  ? 'bg-gradient-to-r from-red-600 to-red-400' 
+                  : usedPercentage > 75 
+                    ? 'bg-gradient-to-r from-amber-500 to-amber-400'
+                    : 'bg-gradient-to-r from-primary to-emerald-400'
+              }`} 
+              style={{ width: `${Math.min(usedPercentage, 100)}%` }}
             >
               <div className="w-full h-full opacity-30 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:20px_20px] animate-[progress-stripe_2s_linear_infinite]"></div>
             </div>

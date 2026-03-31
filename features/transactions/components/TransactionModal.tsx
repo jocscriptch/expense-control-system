@@ -5,6 +5,8 @@ import { createPortal } from "react-dom";
 import { TransactionForm } from "./TransactionForm";
 import { EditTransactionForm } from "./EditTransactionForm";
 import type { Category, TransactionWithCategory } from "../types";
+import { useTransactionModal } from "../context/TransactionModalContext";
+import { useRouter } from "next/navigation";
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -21,6 +23,14 @@ export function TransactionModal({
 }: TransactionModalProps) {
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const { triggerRefresh } = useTransactionModal();
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    triggerRefresh(); // Actualiza clientes (Dashboard)
+    router.refresh(); // Actualiza Componentes de Servidor (Tabla de Gastos)
+    onClose();
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -91,13 +101,13 @@ export function TransactionModal({
               transaction={editingTransaction}
               categories={categories}
               onClose={onClose}
-              onSuccess={onClose}
+              onSuccess={handleSuccess}
             />
           ) : (
             <TransactionForm
               categories={categories}
               onClose={onClose}
-              onSuccess={onClose}
+              onSuccess={handleSuccess}
             />
           )}
         </div>

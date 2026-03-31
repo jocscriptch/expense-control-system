@@ -8,6 +8,8 @@ interface TransactionModalContextValue {
   editingTransaction: TransactionWithCategory | null;
   openModal: (transaction?: TransactionWithCategory) => void;
   closeModal: () => void;
+  refreshTrigger: number;
+  triggerRefresh: () => void;
 }
 
 const TransactionModalContext =
@@ -21,6 +23,9 @@ export function TransactionModalProvider({
   const [isOpen, setIsOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] =
     useState<TransactionWithCategory | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const openModal = (transaction?: TransactionWithCategory) => {
     setEditingTransaction(transaction || null);
@@ -41,6 +46,8 @@ export function TransactionModalProvider({
         editingTransaction,
         openModal,
         closeModal,
+        refreshTrigger,
+        triggerRefresh,
       }}
     >
       {children}
