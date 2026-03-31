@@ -129,6 +129,7 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
         setData((prev) => prev.filter((t) => t.id !== toDelete.id));
         setIsDeleteOpen(false);
         setToDelete(null);
+        toast.success("Gasto eliminado exitosamente", { icon: "🗑️" });
       } else {
         setDeleteError(result.error || "No se pudo eliminar el gasto.");
       }
