@@ -193,9 +193,13 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
       id: "amount",
       header: "Monto",
       accessorKey: "amount",
-      cell: ({ getValue }) => (
+      cell: ({ row }) => (
         <div className="text-right">
-          <AmountDisplay value={Number(getValue())} className="text-sm font-bold justify-end" />
+          <AmountDisplay 
+            value={Number(row.original.amount)} 
+            className="text-sm font-black text-text-main justify-end" 
+            symbolClassName="mr-1 text-rose-500/60"
+          />
         </div>
       ),
     },
@@ -216,7 +220,7 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
           </button>
         ) : (
           <span className="text-text-dim/20 mx-auto block w-fit" title="Sin comprobante">
-            <span className="material-symbols-outlined text-[20px]">hide_source</span>
+            <span className="material-symbols-outlined text-[20px] font-fill opacity-40">receipt_long</span>
           </span>
         );
       },
@@ -371,7 +375,7 @@ export function ExpensesTable({ initialData }: ExpensesTableProps) {
                       <span className="text-[13px] font-medium text-text-main line-clamp-1 truncate">
                         {t.description || <span className="text-text-dim italic text-xs">Sin descripción</span>}
                       </span>
-                      <AmountDisplay value={Number(t.amount)} className="text-xl font-bold text-text-main tracking-tight mt-0.5" />
+                      <AmountDisplay value={Number(t.amount)} className="text-xl font-bold text-text-main tracking-tight mt-0.5" symbolClassName="mr-1 text-rose-500/60" />
                       <span className="text-[10px] font-bold text-text-dim uppercase tracking-wider mt-0.5 bg-background border border-border w-fit px-2 py-0.5 rounded-md">
                         {PAYMENT_METHOD_LABELS[t.payment_method] ?? t.payment_method}
                       </span>

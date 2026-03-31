@@ -205,11 +205,11 @@ export default function DashboardPage() {
                   </tr>
                 ) : (
                   recentTransactions.map((trx: any) => (
-                    <tr key={trx.id} className="hover:bg-surface-hover/30 transition-colors group">
+                    <tr key={trx.id} className="hover:bg-surface-hover/50 transition-colors group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border border-white/5"
+                            className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 border border-white/5 shadow-sm"
                             style={{
                               backgroundColor: `${trx.category?.color || "#3b82f6"}15`,
                               color: trx.category?.color || "#3b82f6",
@@ -225,12 +225,12 @@ export default function DashboardPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-text-sub text-sm truncate max-w-[180px] block">
+                        <span className="text-text-sub text-sm truncate max-w-[180px] block group-hover:text-text-main transition-colors">
                           {trx.description || <span className="italic opacity-40">Sin detalles</span>}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className="text-[11px] font-bold text-text-dim uppercase tracking-tighter bg-background/50 px-2 py-1 rounded-md border border-border/40">
+                        <span className="text-[10px] font-bold text-text-dim uppercase tracking-widest bg-background/80 px-2 py-1.5 rounded-lg border border-border/40 group-hover:border-border transition-colors">
                           {new Date(trx.date).toLocaleDateString("es-ES", {
                             day: "2-digit",
                             month: "short",
@@ -242,7 +242,7 @@ export default function DashboardPage() {
                         <AmountDisplay
                           value={Number(trx.amount)}
                           className="text-base font-black text-text-main justify-end"
-                          symbolClassName="text-primary/40 mr-1"
+                          symbolClassName={`mr-1 ${trx.type === 'income' ? 'text-primary/60' : 'text-rose-500/60'}`}
                         />
                       </td>
                     </tr>
@@ -289,6 +289,7 @@ export default function DashboardPage() {
                     <AmountDisplay 
                       value={Number(trx.amount)} 
                       className="text-lg font-black text-text-main flex-shrink-0" 
+                      symbolClassName={`mr-1 ${trx.type === 'income' ? 'text-primary/60' : 'text-rose-500/60'}`}
                     />
                   </div>
                 </div>
