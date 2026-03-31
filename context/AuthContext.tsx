@@ -1,6 +1,10 @@
 "use client";
 
-import { getUser } from "@/features/auth/actions";
+import {
+  getUser,
+  logout as logoutAction, // renamed to avoid conflict if any
+  updateUserThemeAction,
+} from "@/features/auth/actions";
 import type { User } from "@/features/auth/types";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -9,6 +13,7 @@ import {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 import { useTheme } from "next-themes";
 
@@ -18,6 +23,7 @@ export interface AuthContextType {
 
   refreshUser: () => Promise<void>;
   signOut: () => Promise<void>;
+  updateTheme: (theme: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -53,6 +59,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
     setUser(null);
   }, []);
+
+  const updateTheme = useCallback(
+    async (newTheme: string) => {
+      // Cambio local inmediato para UX
+      setTheme(newTheme);
+      lastSyncedTheme.current = newTheme;
+
+      // Persistencia en DB
+      const res = await updateUserThemeAction(newTheme);
+      if (res.success) {
+        await refreshUser();
+      }
+    },
+    [setTheme, refreshUser],
+  );
+
+  const lastServerTheme = useRef<string | null>(null);
+  const lastSyncedTheme = useRef<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -96,16 +120,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   /**
    * Sincronización de Temas con next-themes
-   * Asegura que la preferencia del usuario en la BD se refleje en el sistema estándar.
+   * Solo sincroniza cuando el tema en la base de datos cambia genuinamente
+   * (por ejemplo, desde otro dispositivo o la página de Ajustes).
    */
   useEffect(() => {
     if (!isLoading && user) {
-      setTheme(user.theme || "system");
+      const serverTheme = user.theme || "system";
+
+      // Si el tema del servidor cambió desde nuestra última sincronización de servidor
+      if (serverTheme !== lastServerTheme.current) {
+        setTheme(serverTheme);
+        lastServerTheme.current = serverTheme;
+        lastSyncedTheme.current = serverTheme;
+      }
     }
   }, [user?.theme, isLoading, setTheme]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, refreshUser, signOut }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, refreshUser, signOut, updateTheme }}
+    >
       {children}
     </AuthContext.Provider>
   );

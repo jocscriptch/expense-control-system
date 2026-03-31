@@ -3,6 +3,7 @@
 import Button from "@/components/ui/button";
 import { getLastMonths } from "@/lib/utils/date";
 import { useTransactionModal } from "@/features/transactions/context/TransactionModalContext";
+import { useCommandMenu } from "@/context/CommandMenuContext";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { openModal } = useTransactionModal();
+  const { openCommandMenu } = useCommandMenu();
   const months = getLastMonths(3);
 
   return (
@@ -25,20 +27,22 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </button>
       </div>
 
-      {/* Search Bar - More flexible on mobile */}
+      {/* Search Bar - Interactive Trigger */}
       <div className="flex-1 max-w-md mx-2 md:mx-4">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-dim">
-            <span className="material-symbols-outlined text-[18px]">
-              search
-            </span>
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-9 pr-3 py-1.5 border border-border rounded-full bg-background/50 text-text-main placeholder:text-text-dim focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-xs md:text-sm transition-all shadow-inner"
-            placeholder="Buscar..."
-          />
-        </div>
+        <button
+          onClick={() => openCommandMenu()}
+          className="group relative w-full flex items-center gap-3 px-3 py-1.5 border border-border rounded-full bg-background/50 hover:bg-background/80 hover:border-primary/50 transition-all cursor-pointer shadow-inner"
+        >
+          <span className="material-symbols-outlined text-[18px] text-text-dim group-hover:text-primary transition-colors">
+            search
+          </span>
+          <span className="text-text-dim text-xs md:text-sm flex-1 text-left">
+            ¿Qué necesitas hoy?...
+          </span>
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-1 rounded border border-border bg-surface px-1.5 font-mono text-[10px] font-medium text-text-dim opacity-100 italic">
+            <span className="text-[10px]">⌘</span> K
+          </kbd>
+        </button>
       </div>
 
       {/* Actions */}

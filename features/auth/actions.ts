@@ -1,7 +1,14 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { AuthResponse, User, SignInData, SignUpData, RecoverData, UpdatePasswordData } from "./types";
+import type {
+  AuthResponse,
+  User,
+  SignInData,
+  SignUpData,
+  RecoverData,
+  UpdatePasswordData,
+} from "./types";
 import { translateError } from "./utils";
 
 /**
@@ -44,16 +51,16 @@ export async function signup(formData: SignUpData): Promise<AuthResponse> {
   }
 
   if (data.user && data.user.identities?.length === 0) {
-    return { 
-      success: false, 
-      error: "Este correo electrónico ya está registrado." 
+    return {
+      success: false,
+      error: "Este correo electrónico ya está registrado.",
     };
   }
 
-  return { 
-    success: true, 
-    message: `¡Cuenta creada con éxito! Hemos enviado un correo de confirmación a ${formData.email}. Por favor, verifícalo para continuar.`, 
-    data 
+  return {
+    success: true,
+    message: `¡Cuenta creada con éxito! Hemos enviado un correo de confirmación a ${formData.email}. Por favor, verifícalo para continuar.`,
+    data,
   };
 }
 
@@ -61,10 +68,14 @@ export async function signup(formData: SignUpData): Promise<AuthResponse> {
  * Envía un correo electrónico para el restablecimiento de contraseña.
  * El flujo continuará a través de la ruta de callback definida en Supabase.
  */
-export async function sendRecoveryEmail(formData: RecoverData): Promise<AuthResponse> {
+export async function sendRecoveryEmail(
+  formData: RecoverData,
+): Promise<AuthResponse> {
   const supabase = await createClient();
 
-  const { error, data } = await supabase.auth.resetPasswordForEmail(formData.email);
+  const { error, data } = await supabase.auth.resetPasswordForEmail(
+    formData.email,
+  );
 
   if (error) {
     return { success: false, error: translateError(error.message) };
@@ -72,7 +83,8 @@ export async function sendRecoveryEmail(formData: RecoverData): Promise<AuthResp
 
   return {
     success: true,
-    message: "Correo de recuperación enviado exitosamente. Revisa tu bandeja de entrada.",
+    message:
+      "Correo de recuperación enviado exitosamente. Revisa tu bandeja de entrada.",
     data,
   };
 }
@@ -81,7 +93,9 @@ export async function sendRecoveryEmail(formData: RecoverData): Promise<AuthResp
  * Actualiza la contraseña del usuario actualmente autenticado (normalmente tras recuperar cuenta).
  * Al finalizar, limpia la cookie de seguridad sb-recovery-mode para evitar reutilización del flujo.
  */
-export async function updatePassword(formData: UpdatePasswordData): Promise<AuthResponse> {
+export async function updatePassword(
+  formData: UpdatePasswordData,
+): Promise<AuthResponse> {
   const supabase = await createClient();
 
   // Actualizamos la contraseña en el núcleo de Auth de Supabase
@@ -96,7 +110,11 @@ export async function updatePassword(formData: UpdatePasswordData): Promise<Auth
   const cookieStore = await (await import("next/headers")).cookies();
   cookieStore.delete("sb-recovery-mode");
 
-  return { success: true, message: "Contraseña actualizada correctamente", data };
+  return {
+    success: true,
+    message: "Contraseña actualizada correctamente",
+    data,
+  };
 }
 
 /**
@@ -111,11 +129,15 @@ export async function logout(): Promise<void> {
  * Verifica si la contraseña actual del usuario es correcta.
  * Se utiliza como paso de seguridad antes de permitir cambiar la contraseña.
  */
-export async function verifyCurrentPassword(password: string): Promise<boolean> {
+export async function verifyCurrentPassword(
+  password: string,
+): Promise<boolean> {
   const supabase = await createClient();
-  
+
   // Obtenemos el correo del usuario actual para la verificación
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user?.email) return false;
 
   // Intentamos iniciar sesión con la contraseña actual
@@ -134,11 +156,11 @@ export async function verifyCurrentPassword(password: string): Promise<boolean> 
 export async function getUser(): Promise<User | null> {
   try {
     const supabase = await createClient();
-    
+
     // Obtenemos el ID de la sesión actual
     const {
       data: { user: session },
-      error: sessionError
+      error: sessionError,
     } = await supabase.auth.getUser();
 
     if (!session) {
@@ -161,5 +183,36 @@ export async function getUser(): Promise<User | null> {
   } catch (error) {
     console.error("Error inesperado en getUser:", error);
     return null;
+  }
+}
+
+// Actualiza el tema del usuario
+export async function updateUserThemeAction(
+  theme: string,
+): Promise<AuthResponse> {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return { success: false, error: "No se encontró un usuario autenticado" };
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .update({ theme, updated_at: new Date().toISOString() })
+      .eq("id", user.id);
+
+    if (error) {
+      console.error("Error al actualizar tema:", error.message);
+      return { success: false, error: translateError(error.message) };
+    }
+
+    return { success: true, message: "Preferencia de tema actualizada" };
+  } catch (error) {
+    console.error("Error inesperado al actualizar tema:", error);
+    return { success: false, error: "Error inesperado al actualizar el tema" };
   }
 }
