@@ -54,6 +54,11 @@ function Calendar({
           "aria-selected:bg-primary aria-selected:text-[#0d1b12] aria-selected:font-bold aria-selected:shadow-md aria-selected:hover:bg-primary-hover",
         ),
 
+        // Estilos para RANGOS (Importante para Reportes)
+        range_start: "day_range_start aria-selected:bg-primary aria-selected:text-[#0d1b12] rounded-l-xl",
+        range_end: "day_range_end aria-selected:bg-primary aria-selected:text-[#0d1b12] rounded-r-xl",
+        range_middle: "day_range_middle aria-selected:bg-primary/20 aria-selected:text-primary !rounded-none",
+
         today:
           "font-extrabold text-[#0d1b12] dark:text-white bg-primary/30 border-2 border-primary rounded-[10px]",
         outside: "text-text-dim opacity-30 aria-selected:opacity-50",
