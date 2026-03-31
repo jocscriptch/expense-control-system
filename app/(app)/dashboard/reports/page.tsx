@@ -138,6 +138,17 @@ export default function ReportsPage() {
                         onSelect={(range: any) => {
                           setTempRange(range);
 
+                          // Si ya hay un rango completo y el usuario hace clic para uno nuevo,
+                          // resetear el filtro de reportes de inmediato.
+                          const isRestarting =
+                            customRange?.from &&
+                            customRange?.to &&
+                            range?.from &&
+                            !range?.to;
+                          if (isRestarting) {
+                            setCustomRange(undefined);
+                          }
+
                           const isRealRangeSelection =
                             range?.from &&
                             range?.to &&
