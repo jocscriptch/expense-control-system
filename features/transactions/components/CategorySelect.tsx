@@ -69,7 +69,7 @@ export function CategorySelect({
 
       {/* Menú Desplegable */}
       {isOpen && (
-        <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-surface border border-border rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-top">
+        <div className="absolute top-[calc(100%+8px)] left-0 w-full bg-surface border border-border rounded-xl shadow-xl z-[1000] overflow-hidden animate-in fade-in zoom-in-95 duration-150 origin-top">
           <div className="max-h-[280px] overflow-y-auto p-1.5 custom-scrollbar">
             {categories.length === 0 && (
               <p className="text-sm text-text-dim p-4 text-center">

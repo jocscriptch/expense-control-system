@@ -44,17 +44,26 @@ function Calendar({
         week: "flex w-full m-0 p-0",
 
         // Celda individual y botón del día
-        day: "w-10 h-10 flex items-center justify-center p-0 m-0",
+        day: cn(
+          "h-10 w-10 p-0 font-normal aria-selected:opacity-100 relative focus-within:z-20",
+          "aria-selected:bg-primary/20",
+          "first:[&:has([aria-selected])]:rounded-l-xl last:[&:has([aria-selected])]:rounded-r-xl"
+        ),
         day_button: cn(
-          "w-9 h-9 font-normal text-sm rounded-xl transition-all cursor-pointer",
-          "flex items-center justify-center bg-transparent border-0",
+          "h-10 w-10 p-0 font-normal transition-all", // Aumentado a h-10 w-10 para llenar la celda
+          "flex items-center justify-center bg-transparent border-0 rounded-xl",
           "text-text-sub hover:bg-surface-hover hover:text-text-main",
-          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary",
-          "aria-selected:bg-primary aria-selected:text-[#0d1b12] aria-selected:font-bold aria-selected:shadow-md aria-selected:hover:bg-primary-hover",
+          "aria-selected:bg-primary aria-selected:text-[#0d1b12] aria-selected:font-bold",
+          "focus-visible:outline-none"
         ),
 
-        today:
-          "font-bold text-primary bg-primary/5 ring-1 ring-inset ring-primary/30",
+        // Estilos para RANGOS
+        day_selected: "bg-primary text-[#0d1b12] hover:bg-primary hover:text-[#0d1b12] focus:bg-primary focus:text-[#0d1b12]",
+        range_start: "day_range_start aria-selected:bg-primary aria-selected:text-[#0d1b12] !rounded-l-xl !rounded-r-none",
+        range_end: "day_range_end aria-selected:bg-primary aria-selected:text-[#0d1b12] !rounded-r-xl !rounded-l-none",
+        range_middle: "day_range_middle aria-selected:!bg-primary/20 aria-selected:!text-primary !rounded-none",
+
+        today: "font-extrabold text-[#0d1b12] dark:text-white bg-primary/30 border-2 border-primary rounded-[10px]",
         outside: "text-text-dim opacity-30 aria-selected:opacity-50",
         disabled:
           "text-text-dim opacity-50 cursor-not-allowed hover:bg-transparent",

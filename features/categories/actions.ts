@@ -116,7 +116,7 @@ export async function upsertCategoryAction(
       await supabase.from("budgets").delete().eq("category_id", categoryId);
     }
 
-    revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard", "layout");
 
     return {
       success: true,
@@ -168,7 +168,7 @@ export async function deleteCategoryAction(
 
     if (deleteError) throw deleteError;
 
-    revalidatePath("/dashboard/categories");
+    revalidatePath("/dashboard", "layout");
 
     return { success: true, message: "Categoría eliminada con éxito" };
   } catch (error: any) {

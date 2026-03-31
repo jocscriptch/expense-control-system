@@ -52,8 +52,8 @@ export function DatePickerShadcn({ value, onChange }: DatePickerShadcnProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[310px] p-0 border-border bg-surface shadow-2xl rounded-2xl overflow-hidden"
-          align="start"
+          className="w-auto p-0 border-border bg-surface shadow-2xl rounded-2xl overflow-hidden z-[1000]"
+          align="center"
         >
           <Calendar
             mode="single"

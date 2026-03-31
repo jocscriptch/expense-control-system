@@ -74,8 +74,8 @@ export async function createTransaction(
       throw new Error(error.message);
     }
     
-    // 4. Revalidar
-    revalidatePath("/dashboard");
+    // 4. Revalidar de forma anidada todo el dashboard (tabla y metricas)
+    revalidatePath("/dashboard", "layout");
 
     return {
       success: true,
@@ -136,58 +136,52 @@ export async function getDashboardSummary() {
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
 
-    // Traer transacciones del mes actual con su categoría
+    // Traer los 5 movimientos más recientes de todo el historial (para el feed)
+    const { data: recent, error: recentError } = await supabase
+      .from("transactions")
+      .select(`
+        id, amount, date, description,
+        category:categories ( id, name, icon, color, type )
+      `)
+      .eq("user_id", user.id)
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    if (recentError) throw recentError;
+
+    // Traer transacciones del mes actual para las métricas
     const { data: transactions, error } = await supabase
       .from("transactions")
       .select(`
-        id,
         amount,
-        date,
-        description,
-        category:categories (
-          id,
-          name,
-          icon,
-          color,
-          type
-        )
+        category:categories ( type )
       `)
       .eq("user_id", user.id)
       .gte("date", firstDay)
-      .lte("date", lastDay)
-      .order("date", { ascending: false });
+      .lte("date", lastDay);
 
     if (error) throw error;
 
     let totalExpenses = 0;
-    let totalIncomes = 0;
-
-    const typedTransactions = (transactions || [])
-      .filter((t: any) => t.category?.type === "expense")
-      .map((t: any) => {
-        const amount = Number(t.amount);
-        totalExpenses += amount;
-        return {
-          ...t,
-          category: t.category
-        };
-      });
+    (transactions || []).forEach((t: any) => {
+      if (t.category?.type === "expense") {
+        totalExpenses += Number(t.amount);
+      }
+    });
 
     const monthlyBudget = Number(user.monthly_budget || 0);
-    const remainingBudget = monthlyBudget - totalExpenses;
     const usedPercentage = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
-    const availableBalance = monthlyBudget - totalExpenses;
 
     return {
       success: true,
       data: {
         totalExpenses,
-        totalIncomes,
         monthlyBudget,
-        remainingBudget,
+        remainingBudget: monthlyBudget - totalExpenses,
         usedPercentage: Math.min(usedPercentage, 100),
-        availableBalance,
-        recentTransactions: typedTransactions.slice(0, 5), // Top 5 recientes
+        availableBalance: monthlyBudget - totalExpenses,
+        recentTransactions: recent || [], 
       }
     };
   } catch (error: any) {
@@ -248,8 +242,7 @@ export async function deleteTransactionAction(id: string): Promise<{
 
     if (error) throw new Error(error.message);
 
-    revalidatePath("/dashboard/expenses");
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -344,8 +337,7 @@ export async function updateTransactionAction(
       }
     }
 
-    revalidatePath("/dashboard/expenses");
-    revalidatePath("/dashboard");
+    revalidatePath("/dashboard", "layout");
 
     return { success: true, message: "Gasto actualizado correctamente.", data };
   } catch (error: any) {
@@ -395,7 +387,7 @@ export async function deleteReceiptAction(transactionId: string, path: string) {
 
     if (dbError) throw dbError;
 
-    revalidatePath("/dashboard/expenses");
+    revalidatePath("/dashboard", "layout");
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

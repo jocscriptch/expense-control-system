@@ -2,19 +2,30 @@
 
 import React, { useEffect, useState } from "react";
 import { getDashboardSummary } from "@/features/transactions/actions";
+import { getDashboardTrendData, getReportsData } from "@/features/transactions/reportsActions";
+import type { TrendDataPoint, CategoryChartData } from "@/features/transactions/reportsActions";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { SpendingTrendChart, CategoryDistributionChart } from "@/features/transactions/components/ReportsCharts";
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryChartData[]>([]);
 
   useEffect(() => {
     async function fetchData() {
-      const result = await getDashboardSummary();
-      if (result.success) {
-        setData(result.data);
-      }
+      const [summaryResult, trendResult, reportsResult] = await Promise.all([
+        getDashboardSummary(),
+        getDashboardTrendData(),
+        getReportsData({ period: "month" }),
+      ]);
+
+      if (summaryResult.success) setData(summaryResult.data);
+      if (trendResult.success && trendResult.data) setTrendData(trendResult.data);
+      if (reportsResult.success && reportsResult.data) setCategoryData(reportsResult.data.categoryDistribution);
+
       setLoading(false);
     }
     fetchData();
@@ -23,12 +34,12 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-6 animate-in fade-in duration-500">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-32 bg-surface rounded-2xl border border-border" />
+            <Skeleton key={i} className="h-32 rounded-2xl" />
           ))}
         </div>
-        <Skeleton className="h-64 bg-surface rounded-2xl border border-border" />
+        <Skeleton className="h-[400px] rounded-2xl" />
       </div>
     );
   }
@@ -51,37 +62,35 @@ export default function DashboardPage() {
     recentTransactions: []
   };
 
-
-
   return (
-    <div className="space-y-6 transition-colors duration-200">
+    <div className="space-y-6 transition-colors duration-200 pb-10">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
         {/* Card 1: Gasto del mes */}
         <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
-            <h3 className="text-sm">Gasto del mes</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Gasto del mes</h3>
             <span className="material-symbols-outlined text-[20px] text-primary/40">payments</span>
           </div>
           <AmountDisplay value={totalExpenses} className="text-3xl font-black text-text-main" />
-          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3">Total acumulado este mes</p>
+          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Total acumulado este mes</p>
         </div>
 
         {/* Card 2: Meta Mensual (Presupuesto) */}
         <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
-            <h3 className="text-sm">Meta Mensual</h3>
+            <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">Meta Mensual</h3>
             <span className="material-symbols-outlined text-[20px] text-text-dim/30">account_balance_wallet</span>
           </div>
           <AmountDisplay value={monthlyBudget} className="text-3xl font-black text-text-main" symbolClassName="text-primary/40" />
-          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3">Presupuesto global asignado</p>
+          <p className="text-[10px] uppercase font-bold tracking-wider text-text-dim mt-3 italic opacity-60">Presupuesto global asignado</p>
         </div>
 
         {/* Card 3: Saldo Disponible (Barra de progreso) */}
         <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-3">
-              <h3 className="text-text-sub text-sm font-medium">Saldo Disponible</h3>
+              <h3 className="text-text-sub text-sm font-bold uppercase tracking-widest text-[10px]">Saldo Disponible</h3>
               <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg ${usedPercentage > 90 ? "bg-red-500/10 text-red-500" : "bg-primary/10 text-primary"}`}>
                 {usedPercentage.toFixed(0)}% Utilizado
               </span>
@@ -104,11 +113,41 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* Analytics Quick View */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-sm group hover:border-primary/20 transition-all">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-sm font-black uppercase tracking-widest text-text-dim">Tendencia Mensual</h3>
+            <a href="/dashboard/reports" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">Ver Reportes</a>
+          </div>
+          <SpendingTrendChart data={trendData} />
+        </div>
+        
+        <div className="bg-surface rounded-2xl border border-border p-6 shadow-sm group hover:border-primary/20 transition-all flex flex-col">
+          <h3 className="text-sm font-black uppercase tracking-widest text-text-dim mb-6">Distribución</h3>
+          <CategoryDistributionChart data={categoryData} />
+          
+          {categoryData.length > 0 && (
+            <div className="mt-auto pt-6 grid grid-cols-2 gap-2 border-t border-border/50">
+              {categoryData.slice(0, 4).map((cat) => (
+                <div key={cat.name} className="flex items-center gap-2 overflow-hidden">
+                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
+                  <span className="text-[10px] font-bold text-text-sub uppercase tracking-tight truncate">
+                    {cat.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+
       {/* Recent Transactions List */}
       <div className="bg-surface rounded-2xl border border-border shadow-sm overflow-hidden mt-6">
         <div className="px-6 py-5 border-b border-border flex justify-between items-center">
           <h3 className="text-base font-bold text-text-main">Últimos movimientos</h3>
-          <a href="/dashboard/transactions" className="text-sm font-semibold text-primary hover:text-primary-hover">Ver todos</a>
+          <a href="/dashboard/expenses" className="text-sm font-semibold text-primary hover:text-primary-hover uppercase tracking-widest text-[10px]">Ver todos</a>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[500px] sm:min-w-0">
