@@ -22,7 +22,7 @@ export function TransactionForm({ categories, onClose, onSuccess }: TransactionF
   const router = useRouter();
   const isModalMode = !!onClose;
 
-  const { control, onSubmit, isLoading, setValue } = useTransactionForm({
+  const { control, onSubmit, isLoading, setValue, errors } = useTransactionForm({
     onSuccess: onSuccess ?? (() => {}),
   });
 
@@ -48,10 +48,15 @@ export function TransactionForm({ categories, onClose, onSuccess }: TransactionF
         <div className={`flex-1 flex flex-col gap-5 ${isModalMode ? "p-5" : "p-6 sm:p-8 border-r border-border"}`}>
           {/* Monto */}
           <div>
-            <label className="block text-sm font-medium text-text-sub mb-2">
+            <label className="text-sm font-medium text-text-sub mb-2 flex items-center justify-between">
               Monto del gasto
+              {errors?.amount && (
+                <span className="text-red-500 font-bold text-[10px] uppercase tracking-wider bg-red-500/10 px-2 py-0.5 rounded-md animate-in fade-in slide-in-from-right-2">
+                  Monto requerido
+                </span>
+              )}
             </label>
-            <div className="relative flex items-center">
+            <div className={`relative flex items-center transition-all duration-300 rounded-2xl ${errors?.amount ? "ring-2 ring-red-500 bg-red-500/5 shadow-sm shadow-red-500/20" : ""}`}>
               <span className={`absolute left-0 top-1/2 -translate-y-1/2 font-bold text-text-main pl-4 ${isModalMode ? "text-xl" : "text-2xl md:text-4xl"}`}>
                 ₡
               </span>
@@ -60,7 +65,7 @@ export function TransactionForm({ categories, onClose, onSuccess }: TransactionF
                 type="number"
                 min="0.01"
                 step="0.01"
-                className={`w-full bg-background border-0 rounded-2xl font-bold text-text-main placeholder:text-text-dim focus:ring-2 focus:ring-primary focus:outline-none transition-shadow ${isModalMode ? "py-3 pl-9 pr-4 text-2xl" : "py-4 md:py-6 pl-10 md:pl-12 pr-6 text-3xl md:text-5xl"}`}
+                className={`w-full bg-transparent border-0 rounded-2xl font-bold text-text-main placeholder:text-text-dim focus:ring-2 focus:ring-primary focus:outline-none transition-shadow ${isModalMode ? "py-3 pl-9 pr-4 text-2xl" : "py-4 md:py-6 pl-10 md:pl-12 pr-6 text-3xl md:text-5xl"}`}
                 placeholder="0.00"
                 onChange={(e) => setValue("amount", parseFloat(e.target.value))}
               />
@@ -68,11 +73,20 @@ export function TransactionForm({ categories, onClose, onSuccess }: TransactionF
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <CategorySelect
-              categories={categories}
-              value={categoryId}
-              onChange={(id) => setValue("category_id", id)}
-            />
+            <div className="flex flex-col gap-1.5">
+              <div className={`transition-all duration-300 rounded-xl ${errors?.category_id ? "ring-2 ring-red-500 shadow-sm shadow-red-500/20" : ""}`}>
+                <CategorySelect
+                  categories={categories}
+                  value={categoryId}
+                  onChange={(id) => setValue("category_id", id)}
+                />
+              </div>
+              {errors?.category_id && (
+                <span className="text-red-500 font-bold text-[10px] uppercase tracking-wider pl-1 animate-in fade-in slide-in-from-top-1">
+                  Categoría requerida
+                </span>
+              )}
+            </div>
             <DatePickerShadcn
               value={dateValue}
               onChange={(date) => setValue("date", date)}

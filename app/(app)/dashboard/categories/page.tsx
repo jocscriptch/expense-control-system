@@ -13,9 +13,8 @@ export default async function CategoriesPage() {
           <h2 className="text-3xl font-bold tracking-tight text-text-main">
             Categorías y Presupuestos
           </h2>
-          <p className="text-text-sub mt-1">
-            Administra tus categorías de gastos e ingresos, y define límites de
-            presupuesto mensuales para mantener el control de tus finanzas.
+          <p className="text-text-sub mt-1 text-sm">
+            Define límites mensuales y clasifica tus movimientos financieros.
           </p>
         </div>
       </div>

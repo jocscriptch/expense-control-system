@@ -11,6 +11,7 @@ import {
   Cell,
   PieChart,
   Pie,
+  Legend,
 } from "recharts";
 import type {
   TrendDataPoint,
@@ -21,6 +22,18 @@ import type {
 const formatAmount = (value: number) => {
   if (value >= 1000000) return `₡${(value / 1000000).toFixed(1)}M`;
   return `₡${value.toLocaleString("es-CR")}`;
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-surface border border-border/50 shadow-xl rounded-xl p-3 flex flex-col gap-1 z-50">
+        <span className="text-[10px] font-bold text-text-dim uppercase tracking-widest">{label || payload[0].name || "Total"}</span>
+        <span className="text-sm font-black text-text-main">{formatAmount(Number(payload[0].value || 0))}</span>
+      </div>
+    );
+  }
+  return null;
 };
 
 interface SpendingTrendChartProps {
@@ -66,27 +79,19 @@ export function SpendingTrendChart({ data }: SpendingTrendChartProps) {
           />
           <YAxis hide />
           <Tooltip
-            cursor={{ fill: "rgba(19,236,91,0.05)", radius: 8 }}
-            contentStyle={{
-              backgroundColor: "#1e293b",
-              border: "none",
-              borderRadius: "12px",
-              boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-            }}
-            itemStyle={{ color: "#fff", fontSize: "12px", fontWeight: "bold" }}
-            formatter={(value) => [formatAmount(Number(value ?? 0)), "Gasto"]}
-            labelStyle={{ display: "none" }}
+            cursor={{ fill: "rgba(244, 63, 94, 0.05)", radius: 6 }}
+            content={<CustomTooltip />}
           />
-          <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
+          <Bar dataKey="amount" radius={[6, 6, 6, 6]}>
             {chartData.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={
                   index === lastIndex
-                    ? "#13ec5b"
+                    ? "#f43f5e" // rose-500
                     : entry.amount === maxAmount
-                      ? "rgba(19,236,91,0.5)"
-                      : "rgba(19,236,91,0.2)"
+                      ? "rgba(244, 63, 94, 0.45)" // max value subtle
+                      : "rgba(244, 63, 94, 0.15)" // other values very subtle
                 }
               />
             ))}
@@ -130,23 +135,16 @@ export function CategoryDistributionChart({
             cy="50%"
             innerRadius={65}
             outerRadius={90}
-            paddingAngle={3}
+            paddingAngle={2}
             dataKey="value"
-            stroke="none"
+            stroke="var(--color-surface)"
+            strokeWidth={3}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#1e293b",
-              border: "none",
-              borderRadius: "12px",
-              color: "#fff",
-            }}
-            formatter={(value) => [formatAmount(Number(value ?? 0)), ""]}
-          />
+          <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
       {/* Pie Central Label */}
@@ -167,6 +165,26 @@ export function CategoryDistributionChart({
 interface HouseholdComparisonChartProps {
   data?: HouseholdDataPoint[];
 }
+
+const HouseholdTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-surface border border-border/50 shadow-xl rounded-xl p-4 flex flex-col gap-2 z-50 min-w-[140px]">
+        <span className="text-[10px] font-bold text-text-dim uppercase tracking-widest border-b border-border/50 pb-2 mb-1">{label}</span>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: entry.color }} />
+              <span className="text-xs font-bold text-text-sub uppercase tracking-tight">{entry.name}</span>
+            </div>
+            <span className="text-sm font-black text-text-main">{formatAmount(Number(entry.value || 0))}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export function HouseholdComparisonChart({
   data,
@@ -192,7 +210,7 @@ export function HouseholdComparisonChart({
         <BarChart
           data={chartData}
           margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-          barGap={4}
+          barGap={6}
         >
           <CartesianGrid
             strokeDasharray="3 3"
@@ -208,23 +226,24 @@ export function HouseholdComparisonChart({
           />
           <YAxis hide />
           <Tooltip
-            contentStyle={{
-              backgroundColor: "#1e293b",
-              border: "none",
-              borderRadius: "12px",
-            }}
-            formatter={(value) => [formatAmount(Number(value ?? 0)), ""]}
+            cursor={{ fill: "var(--color-surface-hover)" }}
+            content={<HouseholdTooltip />}
+          />
+          <Legend 
+            wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase', color: 'var(--color-text-dim)' }} 
+            iconType="circle"
+            iconSize={8}
           />
           <Bar
             dataKey="hogar"
-            fill="#13ec5b"
-            radius={[5, 5, 0, 0]}
+            fill="#3b82f6"
+            radius={[4, 4, 4, 4]}
             name="Hogar"
           />
           <Bar
             dataKey="personal"
-            fill="rgba(148,163,184,0.4)"
-            radius={[5, 5, 0, 0]}
+            fill="rgba(148,163,184,0.3)"
+            radius={[4, 4, 4, 4]}
             name="Personal"
           />
         </BarChart>

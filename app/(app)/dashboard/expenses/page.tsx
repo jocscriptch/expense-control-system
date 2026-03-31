@@ -17,8 +17,8 @@ export default async function ExpensesListPage() {
           <h2 className="text-3xl font-bold tracking-tight text-text-main">
             Lista de Gastos
           </h2>
-          <p className="text-text-sub mt-1">
-            Gestiona y visualiza tus gastos personales de manera eficiente.
+          <p className="text-text-sub mt-1 text-sm">
+            Historial detallado de todos tus movimientos y salidas de dinero.
           </p>
         </div>
       </div>

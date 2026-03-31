@@ -14,7 +14,7 @@ interface UseTransactionFormOptions {
 export function useTransactionForm({ onSuccess }: UseTransactionFormOptions = {}) {
   const router = useRouter();
 
-  const { control, onSubmit, isLoading, watch, setValue, reset } = useFormAction({
+  const { control, onSubmit, isLoading, watch, setValue, reset, formState } = useFormAction({
     schema: transactionSchema,
     action: createTransaction,
     defaultValues: {
@@ -45,6 +45,7 @@ export function useTransactionForm({ onSuccess }: UseTransactionFormOptions = {}
     watch,
     setValue,
     reset,
+    errors: formState.errors,
   };
 }
 

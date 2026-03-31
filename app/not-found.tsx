@@ -52,7 +52,7 @@ export default function NotFound() {
 
         <Link
           href="/"
-          className="mt-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300"
+          className="mt-4 flex justify-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300"
         >
           <Button className="h-12 px-10 bg-primary hover:bg-primary-hover text-primary-foreground font-bold rounded-2xl transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 group active:scale-95 text-sm">
             <span className="material-symbols-outlined text-[20px] transition-transform group-hover:-translate-x-1">
