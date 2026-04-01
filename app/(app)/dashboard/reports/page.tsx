@@ -42,6 +42,8 @@ export default function ReportsPage() {
     period,
     startDate: customRange?.from ?? undefined,
     endDate: customRange?.to ?? undefined,
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
   });
 
   const isLoading = isCalendarOpen ? false : reportsLoading;

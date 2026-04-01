@@ -7,16 +7,18 @@ interface useReportsProps {
   period: "week" | "month" | "year" | "custom";
   startDate?: Date;
   endDate?: Date;
+  month?: number;
+  year?: number;
 }
 
-export function useReports({ period, startDate, endDate }: useReportsProps) {
+export function useReports({ period, startDate, endDate, month, year }: useReportsProps) {
   const [reportsData, setReportsData] = useState<ReportsData | null>(null);
   const [isLoading, setIsLoading] = useState(!reportsData);
   const [error, setError] = useState<string | null>(null);
 
   const startDateStr = startDate?.toISOString().split("T")[0];
   const endDateStr = endDate?.toISOString().split("T")[0];
-  const paramsKey = `${period}-${startDateStr}-${endDateStr}`;
+  const paramsKey = `${period}-${startDateStr}-${endDateStr}-${month}-${year}`;
   const lastParams = useRef<string | null>(null);
 
   useEffect(() => {
@@ -32,6 +34,8 @@ export function useReports({ period, startDate, endDate }: useReportsProps) {
           period,
           startDate: startDateStr,
           endDate: endDateStr,
+          month,
+          year,
         };
 
         const result = await getReportsData(filters);
@@ -50,7 +54,7 @@ export function useReports({ period, startDate, endDate }: useReportsProps) {
     }
 
     fetchData();
-  }, [period, startDateStr, endDateStr, paramsKey, isLoading]);
+  }, [period, startDateStr, endDateStr, month, year, paramsKey, isLoading]);
 
   return { reportsData, isLoading, error };
 }
