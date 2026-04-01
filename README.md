@@ -1,102 +1,93 @@
-# Sistema de Control de Gastos 💰
+# 💰 Sistema de Control de Gastos
 
-Un sistema moderno y premium para la gestión de presupuestos familiares, diseñado para ofrecer una experiencia visual impactante y un control financiero inteligente.
-
-## 🚀 Tecnologías
-
-- **Framework:** [Next.js 16.1.6](https://nextjs.org/) (App Router)
-- **Autenticación:** [Supabase Auth](https://supabase.com/auth)
-- **Estilos:** [Tailwind CSS v4](https://tailwindcss.com/)
-- **Validación:** [Zod](https://zod.dev/) + [React Hook Form](https://react-hook-form.com/)
-- **Notificaciones:** [React Hot Toast](https://react-hot-toast.com/)
+Un ecosistema financiero personal diseñado para ofrecer **claridad, control y empoderamiento** sobre tus finanzas. Este sistema no es solo un registrador de gastos; es una herramienta inteligente que te ayuda a definir metas, organizar categorías y visualizar tu salud financiera en tiempo real con una experiencia de usuario de primer nivel.
 
 ---
 
-## 💡 Conceptos Clave
+## 🖼️ Vista General del Sistema
 
-Para entender este proyecto, es importante conocer dos piezas fundamentales de su arquitectura:
-
-### 1. ¿Qué es Supabase?
-**Supabase** es nuestra infraestructura de backend (Backend-as-a-Service). En lugar de crear un servidor desde cero para la base de datos y la seguridad, usamos Supabase para:
-- **Base de Datos (PostgreSQL):** Donde se guardan tus gastos y perfil.
-- **Autenticación:** Maneja el inicio de sesión, el registro y la recuperación de contraseñas de forma segura.
-- **Seguridad:** Nos permite definir quién puede ver qué datos mediante políticas.
-
-### 2. ¿Qué son las Server Actions?
-Las **Server Actions** son funciones especiales de Next.js que nos permiten enviar datos del formulario directamente a la base de datos sin necesidad de crear una "API" tradicional.
-- **Cómo funcionan:** Cuando haces clic en "Guardar", se ejecuta una función que tiene el marcador `"use server"` en la parte superior.
-- **Simplicidad:** Esto hace que el código sea más rápido de escribir y más seguro, ya que la lógica de las contraseñas y llaves secretas nunca sale del servidor hacia el navegador del usuario.
+<img width="1475" height="720" alt="sistema gastos" src="https://github.com/user-attachments/assets/034f5e6a-9f2d-4b43-adc5-ad2615b59f5a" />
 
 ---
 
-## 🛠️ Guía de Instalación y Configuración
+## 🎯 ¿Qué busca resolver este proyecto?
 
-Sigue estos pasos para configurar el proyecto en tu entorno local.
+La gestión financiera suele ser tediosa y difícil de seguir. Este proyecto nace para resolver la falta de visibilidad en el gasto diario a través de:
 
-### 1. Requisitos Previos
+- **Establecimiento de Metas**: Define un presupuesto mensual y monitorea tu progreso.
+- **Categorización Inteligente**: Clasifica tus gastos para saber exactamente a dónde se va tu dinero.
+- **Onboarding Guiado**: Un sistema que te acompaña paso a paso desde que te registras hasta que dominas la herramienta.
+- **Diseño Adaptable**: Una interfaz premium que luce increíble tanto en modo claro como en modo oscuro.
 
-Asegúrate de tener instalados los siguientes componentes:
+---
 
-- **Node.js:** Versión 20.x o superior (LTS recomendada).
-  - [Descargar Node.js](https://nodejs.org/)
-- **pnpm:** Utilizado como gestor de paquetes (más rápido que npm).
-  - Para instalarlo globalmente: `npm install -g pnpm`
+## 🏗️ Arquitectura y Filosofía de Código
 
-### 2. Clonar el Proyecto
+Este proyecto ha sido construido siguiendo los principios de **Clean Code** y una **Arquitectura Limpia basada en Features (Vertical Slices)**.
 
-Si aún no tienes el código, clona el repositorio:
+### 🧩 Estructura General
+
+En lugar de organizar el código por tipo de archivo (componentes, hooks, acciones), lo organizamos por **funcionalidades**:
+
+- **`features/auth`**: Todo lo relacionado con seguridad y sesiones.
+- **`features/transactions`**: Core de la lógica de gastos y registros.
+- **`features/categories`**: Gestión y personalización de categorías.
+- **`features/onboarding`**: El flujo de bienvenida y tours guiados.
+- **`features/settings`**: Configuración de perfil, moneda y presupuestos.
+
+### 🚀 Rendimiento Moderno (SSR & Server Actions)
+
+- **Renderizado del Lado del Servidor (SSR)**: La aplicación genera las páginas en el servidor. Esto significa que cuando entras, la información ya viene lista, mejorando la velocidad percibida y el posicionamiento.
+- **Server Actions**: Utilizamos la tecnología más moderna de Next.js para enviar datos. No hay APIs intermediarias lentas; las acciones se ejecutan directamente en el servidor, garantizando seguridad y una respuesta instantánea al usuario.
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+
+| Capa              | Tecnología                                                                |
+| :---------------- | :------------------------------------------------------------------------ |
+| **Framework**     | [Next.js 16](https://nextjs.org/) (App Router)                            |
+| **Base de Datos** | [Supabase](https://supabase.com/) (PostgreSQL)                            |
+| **Estilos**       | [Tailwind CSS v4](https://tailwindcss.com/) (Modern CSS)                  |
+| **Animaciones**   | [Framer Motion](https://www.framer.com/motion/)                           |
+| **Formularios**   | [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) |
+| **Tours Guiados** | [Driver.js](https://driverjs.com/)                                        |
+| **Gráficos**      | [Recharts](https://recharts.org/)                                         |
+
+---
+
+## ⚙️ Instalación y Configuración
+
+Sigue estos pasos para tener el sistema corriendo en tu computadora en menos de 5 minutos:
+
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/jocscriptch/expense-control-system.git
 cd sistema-control-gastos
 ```
 
-### 3. Instalar Dependencias
+### 2. Instalar dependencias
 
-Desde la raíz del proyecto, ejecuta:
+Recomendamos usar `pnpm` por su velocidad:
 
 ```bash
 pnpm install
 ```
 
-### 4. Variables de Entorno
+### 3. Configurar variables de entorno
 
-El proyecto requiere conexión con Supabase. Crea un archivo llamado `.env.local` en la raíz del proyecto:
+Crea un archivo `.env.local` y añade tus credenciales de Supabase:
 
-1. Duplica el ejemplo:
-   ```bash
-   cp .env.example .env.local
-   ```
-2. Abre `.env.local` y coloca tus credenciales de Supabase:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu-clave-anon-key
-   ```
+```env
+NEXT_PUBLIC_SUPABASE_URL=tu-url-de-supabase
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=tu-anon-key
+```
 
-### 5. Iniciar el Servidor de Desarrollo
-
-Una vez configurado todo, lanza la aplicación:
+### 4. Ejecutar el proyecto
 
 ```bash
 pnpm dev
 ```
 
-La aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
-
----
-
-## 🏗️ Estructura del Proyecto
-
-El proyecto sigue una arquitectura organizada por **Slices Verticales** (Dominios):
-
-- 📂 `app/`: Routing de Next.js, Layouts globales y páginas.
-- 📂 `features/`: Lógica de negocio (aquí están las **Server Actions**).
-- 📂 `components/`:
-  - `auth/`: Componentes específicos del flujo de login y registro.
-  - `ui/`: Componentes base reutilizables.
-- 📂 `lib/`: Lógica de infraestructura (Configuración de Supabase).
-
----
-
-## 🔒 Seguridad
-Las rutas están protegidas mediante la nueva convención de Next.js 16 utilizando `proxy.ts` (Middleware), asegurando una validación robusta de sesiones tanto en cliente como en servidor.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver el sistema en acción.
