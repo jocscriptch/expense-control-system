@@ -212,7 +212,7 @@ function OnboardingStepItem({
             e.stopPropagation();
             onAction();
           }}
-          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/60 text-primary text-[11px] font-black uppercase tracking-wide transition-all active:scale-95"
+          className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/60 text-primary text-[11px] font-black uppercase tracking-wide transition-all active:scale-95 animate-micro-bounce"
         >
           <span className="material-symbols-outlined text-[14px]">
             {step.id === "transaction" ? "add_circle" : "near_me"}
