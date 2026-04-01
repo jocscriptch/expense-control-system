@@ -219,3 +219,18 @@ html, body {
 .dark .driver-overlay {
   fill: rgba(0, 0, 0, 0.9) !important;
 }
+
+/* ============ Micro-Animación de Atención ============ */
+@keyframes micro-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+    filter: brightness(1.1);
+  }
+}
+
+.animate-micro-bounce {
+  animation: micro-bounce 2s ease-in-out infinite;
+}

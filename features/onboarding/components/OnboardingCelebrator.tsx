@@ -16,7 +16,7 @@ export function OnboardingCelebrator() {
     if (!status || hasCelebrated) return;
 
     if (status.isComplete && !status.isDismissed) {
-      const CELEBRATION_KEY = "onboarding_celebrated_v10_final_custom";
+      const CELEBRATION_KEY = "onboarding_celebrated";
       const alreadyShownGlobally = sessionStorage.getItem(CELEBRATION_KEY);
 
       if (!alreadyShownGlobally) {
