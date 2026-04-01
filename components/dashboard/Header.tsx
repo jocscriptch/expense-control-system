@@ -36,6 +36,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <div className="flex items-center gap-1 md:gap-3">
         {/* Mobile Menu Toggle */}
         <button
+          id="mobile-burger-button"
           onClick={onMenuClick}
           className="lg:hidden p-2 text-text-sub hover:text-primary transition-colors"
           aria-label="Menu"
@@ -127,6 +128,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         )}
 
         <Button
+          id="btn-new-transaction"
           onClick={() => openModal()}
           className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-[#102216] px-3 md:px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all active:scale-95 border-0 font-bold shrink-0 h-10"
         >

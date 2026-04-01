@@ -19,12 +19,15 @@ import {
 import { AmountDisplay } from "@/components/ui/AmountDisplay";
 import { ResponsiveTableWrapper } from "@/components/ui/ResponsiveTableWrapper";
 import { useTransactionModal } from "@/features/transactions/context/TransactionModalContext";
+import { OnboardingChecklist } from "@/features/onboarding/components/OnboardingChecklist";
+import { getOnboardingStatus, type OnboardingStatus } from "@/features/onboarding/actions/onboardingActions";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [trendData, setTrendData] = useState<TrendDataPoint[]>([]);
   const [categoryData, setCategoryData] = useState<CategoryChartData[]>([]);
+  const [onboardingStatus, setOnboardingStatus] = useState<OnboardingStatus | null>(null);
 
   const searchParams = useSearchParams();
   const searchMonth = searchParams.get("month");
@@ -38,17 +41,17 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
-      const [summaryResult, trendResult, reportsResult] = await Promise.all([
+      const [summaryResult, trendResult, reportsResult, onboardingResult] = await Promise.all([
         getDashboardSummary(month, year),
         getDashboardTrendData(month, year),
         getReportsData({ period: "month", month, year }),
+        getOnboardingStatus(),
       ]);
 
       if (summaryResult.success) setData(summaryResult.data);
-      if (trendResult.success && trendResult.data)
-        setTrendData(trendResult.data);
-      if (reportsResult.success && reportsResult.data)
-        setCategoryData(reportsResult.data.categoryDistribution);
+      if (trendResult.success && trendResult.data) setTrendData(trendResult.data);
+      if (reportsResult.success && reportsResult.data) setCategoryData(reportsResult.data.categoryDistribution);
+      if (onboardingResult.success && onboardingResult.data) setOnboardingStatus(onboardingResult.data);
 
       setLoading(false);
     }
@@ -88,9 +91,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 transition-colors duration-200 pb-10">
+      {/* Onboarding Checklist */}
+      <OnboardingChecklist initialStatus={onboardingStatus} />
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-        {/* Card 1: Gasto del mes */}
         <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-red-500/30 transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
             <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">
@@ -114,7 +119,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 2: Meta Mensual (Presupuesto) */}
         <div className="bg-surface p-5 md:p-6 rounded-2xl border border-border shadow-sm group hover:border-blue-500/30 transition-all flex flex-col justify-between">
           <div className="flex justify-between items-start mb-2 text-text-sub font-medium">
             <h3 className="text-sm font-bold uppercase tracking-widest text-[10px]">
@@ -138,7 +142,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Card 3: Saldo Disponible (Barra de progreso) */}
         <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm group hover:border-primary/30 transition-all flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-start mb-3">
@@ -183,7 +186,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Analytics Quick View */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-sm group hover:border-primary/20 transition-all">
           <div className="flex justify-between items-center mb-6">
@@ -227,7 +229,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Transactions List */}
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4 px-2">
           <h3 className="text-sm font-black uppercase tracking-widest text-text-dim">

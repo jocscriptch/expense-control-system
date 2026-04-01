@@ -139,6 +139,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
           Cancelar
         </button>
         <Button
+          id="settings-save-button"
           type="submit"
           disabled={isButtonDisabled}
           className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3 text-base font-bold transition-all duration-300 ${

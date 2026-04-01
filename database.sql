@@ -15,8 +15,12 @@ create table if not exists users (
   currency text default 'CRC', 
   language text default 'es',  
   theme text default 'system',
-  monthly_budget decimal(12,2) default 0
+  monthly_budget decimal(12,2) default 0,
+  onboarding_dismissed boolean default false
 );
+
+-- Migración para tablas existentes (ejecutar si la tabla ya existe):
+-- ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_dismissed boolean default false;
 
 -- Habilitar Row Level Security (RLS) para proteger los datos
 alter table users enable row level security;

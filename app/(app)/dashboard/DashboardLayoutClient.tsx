@@ -3,7 +3,6 @@
 import Sidebar from "@/components/dashboard/Sidebar";
 import Header from "@/components/dashboard/Header";
 import { useAuth } from "@/context/AuthContext";
-import { Spinner } from "@/components/ui/spinner";
 import { useState } from "react";
 import {
   TransactionModalProvider,
@@ -14,6 +13,8 @@ import type { Category } from "@/features/transactions/types";
 
 import { CommandMenuProvider } from "@/context/CommandMenuContext";
 import { CommandMenu } from "@/components/dashboard/CommandMenu";
+import { TourAutoStarter } from "@/features/onboarding/components/TourAutoStarter";
+import { OnboardingCelebrator } from "@/features/onboarding/components/OnboardingCelebrator";
 
 function DashboardInner({
   children,
@@ -30,7 +31,6 @@ function DashboardInner({
     return (
       <div className="bg-background h-screen w-screen flex flex-col items-center justify-center transition-colors duration-500">
         <div className="relative flex flex-col items-center gap-6">
-          {/* Logo/Icon Container with Pulse */}
           <div className="relative">
             <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
             <div className="relative bg-surface p-6 rounded-full border border-border/50 shadow-2xl flex items-center justify-center w-24 h-24">
@@ -38,7 +38,6 @@ function DashboardInner({
                 savings
               </span>
             </div>
-            {/* Spinning ring outside the logo */}
             <div className="absolute -inset-2 border border-primary/30 border-t-primary rounded-full animate-spin" />
           </div>
 
@@ -64,9 +63,9 @@ function DashboardInner({
         onClose={() => setIsMobileMenuOpen(false)}
       />
 
-      {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div
+          id="mobile-sidebar-overlay"
           className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm transition-opacity"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -79,7 +78,6 @@ function DashboardInner({
         </div>
       </main>
 
-      {/* Modal Global de Registro/Edición de Gasto */}
       <TransactionModal
         isOpen={isOpen}
         onClose={closeModal}
@@ -87,8 +85,9 @@ function DashboardInner({
         editingTransaction={editingTransaction}
       />
 
-      {/* Buscador Inteligente Global (Command Palette) */}
       <CommandMenu />
+      <TourAutoStarter />
+      <OnboardingCelebrator />
     </div>
   );
 }

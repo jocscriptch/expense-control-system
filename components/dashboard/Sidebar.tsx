@@ -54,6 +54,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   return (
     <aside
+      id="mobile-sidebar"
       className={`fixed lg:relative inset-y-0 left-0 z-50 transform ${
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       } ${
@@ -96,6 +97,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           return (
             <Link
               key={item.href}
+              id={`sidebar-nav-${item.href.split("/").pop()}`}
               href={item.href}
               onClick={() => onClose?.()}
               title={isCollapsed ? item.label : undefined}
@@ -123,6 +125,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         <div className="pt-4 mt-4 border-t border-border">
           <Link
+            id="sidebar-nav-settings"
             href="/dashboard/settings"
             onClick={() => onClose?.()}
             title={isCollapsed ? "Ajustes" : undefined}

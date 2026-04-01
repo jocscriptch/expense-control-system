@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { upsertCategoryAction } from "../actions";
 import { CategoryFormData } from "../types";
 import { formatInputAmount, parseInputAmount } from "@/components/ui/AmountDisplay";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 interface CategoryFormModalProps {
@@ -51,6 +52,9 @@ export function CategoryFormModal({
   const [color, setColor] = useState("#f97316");
   const [icon, setIcon] = useState("category");
   const [budget, setBudget] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isOnboarding = searchParams.get("onboarding") === "true";
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -119,6 +123,16 @@ export function CategoryFormModal({
       if (result.success) {
         toast.success(isEditing ? "Categoría actualizada" : "Categoría creada");
         onClose();
+        
+        if (isOnboarding && !isEditing) {
+          toast.success("¡Categoría lista! Volviendo al Dashboard...", { 
+            duration: 3000,
+            icon: "✨"
+          });
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 1500);
+        }
       } else {
         setError(result.error || "Ocurrió un error inesperado.");
       }
