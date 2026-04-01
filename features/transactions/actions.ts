@@ -3,15 +3,21 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { TransactionFormValues } from "./schema";
-import type { TransactionResponse, Category, Transaction, TransactionWithCategory } from "./types";
+import type {
+  TransactionResponse,
+  Category,
+  Transaction,
+  TransactionWithCategory,
+} from "./types";
 import { getUser } from "@/features/auth/actions";
+import { formatDateToISO, getMonthRange } from "@/lib/utils/date";
 
 /**
  * Registra una nueva transacción en la base de datos de Supabase.
  * Valida la sesión del usuario antes de proceder.
  */
 export async function createTransaction(
-  formData: TransactionFormValues
+  formData: TransactionFormValues,
 ): Promise<TransactionResponse> {
   const supabase = await createClient();
 
@@ -45,7 +51,7 @@ export async function createTransaction(
         console.error("Error al subir comprobante en lote:", uploadError);
         throw new Error("No se pudo subir el comprobante. Registro cancelado.");
       }
-      
+
       attachmentUrl = fileName; // Guardamos la ruta en la DB
     }
 
@@ -57,7 +63,7 @@ export async function createTransaction(
           user_id: user.id,
           category_id: formData.category_id,
           amount: formData.amount,
-          date: formData.date || new Date().toISOString().split("T")[0],
+          date: formData.date || formatDateToISO(),
           description: formData.description || "",
           payment_method: formData.payment_method,
           is_recurring: formData.is_recurring,
@@ -73,7 +79,7 @@ export async function createTransaction(
       console.error("Error Supabase:", error);
       throw new Error(error.message);
     }
-    
+
     // 4. Revalidar de forma anidada todo el dashboard (tabla y metricas)
     revalidatePath("/dashboard", "layout");
 
@@ -132,20 +138,17 @@ export async function getDashboardSummary(month?: number, year?: number) {
     const user = await getUser();
     if (!user) throw new Error("No autenticado");
 
-    const now = new Date();
-    const targetMonth = month !== undefined ? month : now.getMonth();
-    const targetYear = year !== undefined ? year : now.getFullYear();
-
-    const firstDay = new Date(targetYear, targetMonth, 1).toISOString();
-    const lastDay = new Date(targetYear, targetMonth + 1, 0).toISOString();
+    const { firstDay, lastDay } = getMonthRange(month, year);
 
     // Traer los 5 movimientos más recientes de ese periodo específico
     const { data: recent, error: recentError } = await supabase
       .from("transactions")
-      .select(`
+      .select(
+        `
         id, amount, date, description,
         category:categories ( id, name, icon, color, type )
-      `)
+      `,
+      )
       .eq("user_id", user.id)
       .gte("date", firstDay)
       .lte("date", lastDay)
@@ -155,13 +158,15 @@ export async function getDashboardSummary(month?: number, year?: number) {
 
     if (recentError) throw recentError;
 
-    // Traer transacciones del mes actual para las métricas
+    // Traer transacciones del periodo específico para las métricas
     const { data: transactions, error } = await supabase
       .from("transactions")
-      .select(`
+      .select(
+        `
         amount,
         category:categories ( type )
-      `)
+      `,
+      )
       .eq("user_id", user.id)
       .gte("date", firstDay)
       .lte("date", lastDay);
@@ -176,7 +181,8 @@ export async function getDashboardSummary(month?: number, year?: number) {
     });
 
     const monthlyBudget = Number(user.monthly_budget || 0);
-    const usedPercentage = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
+    const usedPercentage =
+      monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
 
     return {
       success: true,
@@ -186,8 +192,8 @@ export async function getDashboardSummary(month?: number, year?: number) {
         remainingBudget: monthlyBudget - totalExpenses,
         usedPercentage: Math.min(usedPercentage, 100),
         availableBalance: monthlyBudget - totalExpenses,
-        recentTransactions: recent || [], 
-      }
+        recentTransactions: recent || [],
+      },
     };
   } catch (error: any) {
     console.error("Error getDashboardSummary:", error);
@@ -210,18 +216,23 @@ export async function getTransactionsAction(): Promise<{
 
     const { data, error } = await supabase
       .from("transactions")
-      .select(`
+      .select(
+        `
         id, user_id, category_id, amount, date, description,
         payment_method, is_recurring, is_household, is_shared,
         attachment_url, created_at,
         category:categories ( id, name, icon, color, type )
-      `)
+      `,
+      )
       .eq("user_id", user.id)
       .order("date", { ascending: false });
 
     if (error) throw new Error(error.message);
 
-    return { success: true, data: (data || []) as unknown as TransactionWithCategory[] };
+    return {
+      success: true,
+      data: (data || []) as unknown as TransactionWithCategory[],
+    };
   } catch (error: any) {
     return { success: false, data: [], error: error.message };
   }
@@ -269,12 +280,14 @@ export async function getTransactionByIdAction(id: string): Promise<{
 
     const { data, error } = await supabase
       .from("transactions")
-      .select(`
+      .select(
+        `
         id, user_id, category_id, amount, date, description,
         payment_method, is_recurring, is_household, is_shared,
         attachment_url, created_at,
         category:categories ( id, name, icon, color, type )
-      `)
+      `,
+      )
       .eq("id", id)
       .eq("user_id", user.id)
       .single();
@@ -292,7 +305,7 @@ export async function getTransactionByIdAction(id: string): Promise<{
  */
 export async function updateTransactionAction(
   id: string,
-  formData: TransactionFormValues
+  formData: TransactionFormValues,
 ): Promise<TransactionResponse> {
   const supabase = await createClient();
   try {
@@ -304,7 +317,7 @@ export async function updateTransactionAction(
       .update({
         category_id: formData.category_id,
         amount: formData.amount,
-        date: formData.date || new Date().toISOString().split("T")[0],
+        date: formData.date || formatDateToISO(),
         description: formData.description || "",
         payment_method: formData.payment_method,
         is_recurring: formData.is_recurring,
