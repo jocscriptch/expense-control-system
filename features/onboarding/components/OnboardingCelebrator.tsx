@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useOnboardingStatus } from "../hooks/useOnboardingStatus";
+import { dismissOnboardingAction } from "../actions/onboardingActions";
 import toast from "react-hot-toast";
 
 /**
@@ -16,8 +17,8 @@ export function OnboardingCelebrator() {
     if (!status || hasCelebrated) return;
 
     if (status.isComplete && !status.isDismissed) {
-      const CELEBRATION_KEY = "onboarding_celebrated";
-      const alreadyShownGlobally = sessionStorage.getItem(CELEBRATION_KEY);
+      const CELEBRATION_KEY = `onboarding_celebrated_${status.hasBudget ? "v11" : "v11"}`;
+      const alreadyShownGlobally = localStorage.getItem(CELEBRATION_KEY);
 
       if (!alreadyShownGlobally) {
         const timer = setTimeout(() => {
@@ -58,8 +59,14 @@ export function OnboardingCelebrator() {
             },
           );
 
-          sessionStorage.setItem(CELEBRATION_KEY, "true");
+          // Persistencia en LocalStorage Cliente
+          localStorage.setItem(CELEBRATION_KEY, "true");
           setHasCelebrated(true);
+
+          // Persistencia en DB Servidor
+          dismissOnboardingAction().catch((err) =>
+            console.error("Error dismiss:", err),
+          );
         }, 2000);
 
         return () => clearTimeout(timer);
