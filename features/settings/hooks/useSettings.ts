@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useFormAction } from "@/hooks/useFormAction";
 import { settingsSchema, type SettingsFormData } from "../schema";
@@ -18,6 +18,8 @@ import type { User } from "@/features/auth/types";
  */
 export function useSettings(user: User) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isOnboarding = searchParams.get("onboarding") === "true";
   const { refreshUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -98,6 +100,16 @@ export function useSettings(user: User) {
         } else {
           await refreshUser();
           toast.success(result.message || "Cambios guardados", { id: toastId });
+          
+          if (isOnboarding) {
+            toast.success("¡Meta configurada! Volviendo al Dashboard...", { 
+              duration: 3000,
+              icon: "🎉"
+            });
+            setTimeout(() => {
+              router.push("/dashboard");
+            }, 1500);
+          }
         }
       } else {
         toast.error(result.error || "Ocurrió un error", { id: toastId });
