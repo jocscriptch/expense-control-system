@@ -70,22 +70,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       </button>
 
       {/* Brand */}
-      <div
-        className={`py-8 flex items-center ${isCollapsed ? "justify-center px-0" : "px-6 gap-3"}`}
-      >
-        <div className="h-10 w-10 flex-shrink-0 rounded-xl bg-primary flex items-center justify-center text-[#102216] shadow-sm">
-          <span className="material-symbols-outlined text-white font-fill">
+      <div className={`py-8 flex items-center ${isCollapsed ? "justify-center px-0" : "px-6 gap-3"}`}>
+        <div className="h-10 w-10 flex-shrink-0 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 hover:scale-105 transition-transform group">
+          <span className="material-symbols-outlined text-primary-foreground font-fill text-[20px] drop-shadow-sm">
             account_balance_wallet
           </span>
         </div>
-
-        <div
-          className={`flex flex-col whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:w-0" : "opacity-100 w-auto"}`}
-        >
-          <h1 className="text-text-main text-lg font-bold leading-none tracking-tight">
-            ControlGastos
+        <div className={`flex flex-col justify-center whitespace-nowrap overflow-hidden transition-all duration-300 ${isCollapsed ? "lg:opacity-0 lg:w-0" : "opacity-100 w-auto"}`}>
+          <h1 className="text-text-main text-[19px] font-black leading-none tracking-tight">
+            Control<span className="text-primary font-extrabold ml-0.5">Gastos</span>
           </h1>
-          <p className="text-text-sub text-[10px] font-bold mt-0.5 uppercase tracking-wider opacity-70">
+          <p className="text-text-sub text-[10px] font-bold mt-1 uppercase tracking-[0.25em] opacity-60">
             Intelligent Cash
           </p>
         </div>
@@ -94,8 +89,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href || 
-            (item.href === "/dashboard/expenses" && pathname.startsWith("/dashboard/edit-expense/"));
+          const isActive =
+            pathname === item.href ||
+            (item.href === "/dashboard/expenses" &&
+              pathname.startsWith("/dashboard/edit-expense/"));
           return (
             <Link
               key={item.href}
