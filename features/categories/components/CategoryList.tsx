@@ -208,7 +208,23 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                           <span className="material-symbols-outlined text-[20px]">{cat.icon}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-3 font-bold text-text-main text-base">{cat.name}</td>
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-text-main text-base">{cat.name}</span>
+                          {cat.transactionCount !== undefined && cat.transactionCount > 0 && (
+                            <span 
+                              className="text-[10px] font-black px-2 py-0.5 rounded-full border animate-in fade-in zoom-in duration-500 transition-transform group-hover:scale-110"
+                              style={{ 
+                                backgroundColor: `${cat.color}15`, 
+                                color: cat.color,
+                                borderColor: `${cat.color}30`
+                              }}
+                            >
+                              {cat.transactionCount} {cat.transactionCount === 1 ? 'gasto' : 'gastos'}
+                            </span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-3 text-right tabular-nums font-bold text-text-main text-base">
                         {cat.budget && <AmountDisplay value={Number(cat.budget.amount_limit)} />}
                       </td>
@@ -230,7 +246,13 @@ export function CategoryList({ initialCategories }: CategoryListProps) {
                     className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold border"
                     style={{ backgroundColor: `${cat.color}15`, color: cat.color, borderColor: `${cat.color}30` }}
                   >
-                    <span className="material-symbols-outlined text-[14px]">{cat.icon}</span>{cat.name}
+                    <span className="material-symbols-outlined text-[14px]">{cat.icon}</span>
+                    {cat.name}
+                    {cat.transactionCount !== undefined && cat.transactionCount > 0 && (
+                      <span className="ml-1.5 bg-background/50 px-1.5 py-0.5 rounded-full text-[9px] border border-current/20">
+                        {cat.transactionCount}
+                      </span>
+                    )}
                   </span>
                   <div className="flex gap-1">
                     <button onClick={() => handleOpenEdit(cat)} className="p-1.5 text-text-sub hover:text-primary rounded-lg"><span className="material-symbols-outlined text-[16px]">edit</span></button>
