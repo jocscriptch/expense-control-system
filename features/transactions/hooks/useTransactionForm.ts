@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import { transactionSchema, TransactionFormValues } from "../schema";
 import { createTransaction } from "../actions";
+import { formatDateToISO } from "@/lib/utils/date";
 import { useFormAction } from "@/hooks/useFormAction";
 
 interface UseTransactionFormOptions {
@@ -20,7 +21,7 @@ export function useTransactionForm({ onSuccess }: UseTransactionFormOptions = {}
     defaultValues: {
       amount: 0,
       category_id: "",
-      date: new Date().toISOString().split("T")[0],
+      date: formatDateToISO(),
       payment_method: "cash",
       description: "",
       is_recurring: false,

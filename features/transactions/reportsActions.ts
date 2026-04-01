@@ -11,6 +11,11 @@ import {
   eachMonthOfInterval,
 } from "date-fns";
 import { es } from "date-fns/locale";
+import {
+  getEffectiveDate,
+  getMonthRange,
+  formatDateToISO,
+} from "@/lib/utils/date";
 
 // ==========================================
 // TIPOS PÚBLICOS
@@ -48,11 +53,13 @@ export interface ReportsFilters {
   period: "week" | "month" | "year" | "custom";
   startDate?: string;
   endDate?: string;
+  month?: number;
+  year?: number;
 }
 
 // Helper: Calcular rangos de fechas
 function getPeriodDates(filters: ReportsFilters) {
-  const now = new Date();
+  const referenceNow = getEffectiveDate(filters.month, filters.year);
 
   if (filters.period === "custom" && filters.startDate && filters.endDate) {
     const from = new Date(filters.startDate + "T00:00:00");
@@ -67,29 +74,31 @@ function getPeriodDates(filters: ReportsFilters) {
   }
 
   if (filters.period === "week") {
-    const from = subDays(now, 6);
+    const from = subDays(referenceNow, 6);
     return {
       from,
-      to: now,
+      to: referenceNow,
       prevFrom: subDays(from, 7),
       prevTo: subDays(from, 1),
     };
   }
 
   if (filters.period === "year") {
+    const targetYear =
+      filters.year !== undefined ? filters.year : referenceNow.getFullYear();
     return {
-      from: new Date(now.getFullYear(), 0, 1),
-      to: new Date(now.getFullYear(), 11, 31, 23, 59, 59),
-      prevFrom: new Date(now.getFullYear() - 1, 0, 1),
-      prevTo: new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59),
+      from: new Date(targetYear, 0, 1),
+      to: new Date(targetYear, 11, 31, 23, 59, 59),
+      prevFrom: new Date(targetYear - 1, 0, 1),
+      prevTo: new Date(targetYear - 1, 11, 31, 23, 59, 59),
     };
   }
 
-  // Default: mes actual
-  const prevMonth = subMonths(now, 1);
+  // Default: mes actual (o el proporcionado)
+  const prevMonth = subMonths(referenceNow, 1);
   return {
-    from: startOfMonth(now),
-    to: endOfMonth(now),
+    from: startOfMonth(referenceNow),
+    to: endOfMonth(referenceNow),
     prevFrom: startOfMonth(prevMonth),
     prevTo: endOfMonth(prevMonth),
   };
@@ -196,9 +205,11 @@ export async function getReportsData(filters: ReportsFilters): Promise<{
 
     const topCategories = categoryDistribution.slice(0, 3);
 
-    // Tendencia de los últimos 6 meses (siempre fija, independiente del rango)
-    const trendStart = startOfMonth(subMonths(new Date(), 5));
-    const trendEnd = endOfMonth(new Date());
+    // Tendencia de los últimos 6 meses (alineada al mes de referencia)
+    const referenceNow = getEffectiveDate(filters.month, filters.year);
+
+    const trendStart = startOfMonth(subMonths(referenceNow, 5));
+    const trendEnd = endOfMonth(referenceNow);
 
     const { data: trendRaw } = await supabase
       .from("transactions")
@@ -267,7 +278,10 @@ export async function getReportsData(filters: ReportsFilters): Promise<{
 }
 
 // Mini chart del Dashboard (últimos 6 meses)
-export async function getDashboardTrendData(): Promise<{
+export async function getDashboardTrendData(
+  month?: number,
+  year?: number,
+): Promise<{
   success: boolean;
   data?: TrendDataPoint[];
 }> {
@@ -277,17 +291,19 @@ export async function getDashboardTrendData(): Promise<{
     const user = await getUser();
     if (!user) return { success: false };
 
-    const now = new Date();
-    const start = startOfMonth(subMonths(now, 5));
+    const referenceNow = getEffectiveDate(month, year);
+
+    const start = startOfMonth(subMonths(referenceNow, 5));
+    const end = endOfMonth(referenceNow);
 
     const { data: raw } = await supabase
       .from("transactions")
       .select(`amount, date, category:categories ( type )`)
       .eq("user_id", user.id)
       .gte("date", start.toISOString().split("T")[0])
-      .lte("date", endOfMonth(now).toISOString().split("T")[0]);
+      .lte("date", end.toISOString().split("T")[0]);
 
-    const months = eachMonthOfInterval({ start, end: now });
+    const months = eachMonthOfInterval({ start, end: referenceNow });
     const data: TrendDataPoint[] = months.map((m) => {
       const monthStr = format(m, "yyyy-MM");
       const total = (raw || [])
